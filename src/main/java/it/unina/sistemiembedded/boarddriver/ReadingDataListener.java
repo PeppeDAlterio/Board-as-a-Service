@@ -1,4 +1,4 @@
-package it.corsose.juartcommunic.driver;
+package it.unina.sistemiembedded.boarddriver;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;

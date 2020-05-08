@@ -1,6 +1,7 @@
-package it.corsose.juartcommunic.main;
+package it.unina.sistemiembedded.main;
 
-import it.corsose.juartcommunic.net.Server;
+import it.unina.sistemiembedded.net.Server;
+import it.unina.sistemiembedded.utility.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,16 +11,14 @@ public class ServerApplication {
 
     private static Server server;
 
-    private static Scanner scanner = new Scanner(System.in);;
+    private static final Scanner scanner = new Scanner(System.in);;
 
     public static void main(String[] args) throws IOException {
 
         server = new Server(1234);
         server.startServer();
 
-        boolean continua = true;
-
-        while (continua) {
+        while (server.isRunning()) {
 
             int selection = printMenuAndGetSelection();
 
@@ -32,9 +31,10 @@ public class ServerApplication {
                 case 2:
                     try {
                         sendMessageToClient();
+                        Thread.sleep(2000);
                     } catch (IllegalArgumentException e) {
                         System.err.println(e.getMessage());
-                    }
+                    } catch (InterruptedException ignored) { }
                     break;
 
                 case 3:
@@ -47,10 +47,6 @@ public class ServerApplication {
 
                 case 0: default:
                     server.stopServer();
-                    System.out.println("Premi invio per continuare...");
-                    System.out.flush();
-                    scanner.nextLine();
-                    continua = false;
                     break;
 
             }
@@ -82,10 +78,9 @@ public class ServerApplication {
     }
 
     private static void sendMessageToClient() {
-        System.out.println(server.getClients());
-        System.out.print("\nInserisci id client: ");
-        System.out.flush();
-        long id = scanner.nextLong();scanner.nextLine();
+
+        long id = selectClientId();
+
         String clientName = server.getClientNameById(id);
         if(clientName==null) {
             throw new IllegalArgumentException("Client non trovato");
@@ -116,13 +111,32 @@ public class ServerApplication {
             throw new IllegalArgumentException("Il file non ha estensione .ELF");
         }
 
+        long id = selectClientId();
+
+        server.sendMessage(id, Constants.BEGIN_OF_REMOTE_FLASH);
+        server.sendFile(id, filePath);
+
+    }
+
+    private static long selectClientId() {
+
+        if(server.getClients().isEmpty()) {
+            throw new RuntimeException("Nessun client connesso");
+        }
+
+        long id;
         System.out.println(server.getClients());
         System.out.print("\nInserisci id client: ");
         System.out.flush();
-        long id = scanner.nextLong();scanner.nextLine();
+        try {
+            id = scanner.nextLong();
+            scanner.nextLine();
+        } catch (Exception e) {
+            scanner.nextLine();
+            throw new IllegalArgumentException("Client non trovato");
+        }
 
-        server.sendFile(id, filePath);
-
+        return id;
     }
 
     private static void enterToContinue() {

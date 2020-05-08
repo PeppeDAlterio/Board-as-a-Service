@@ -1,6 +1,11 @@
-package it.corsose.juartcommunic.net;
+package it.unina.sistemiembedded.net;
 
-import java.io.*;
+import it.unina.sistemiembedded.net.file.SocketFileHelper;
+import it.unina.sistemiembedded.utility.Constants;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -47,7 +52,6 @@ public class Server {
         @Override
         public void run() {
 
-            //System.out.println("In attesa del nome per il client con ID: " + this.id + " ...");
             try {
                 this.name = dis.readUTF();
                 server.clients.put(getId(), this);
@@ -63,15 +67,21 @@ public class Server {
 
                 try
                 {
+
                     // receive the string
                     buffer = dis.readUTF();
-                    if(buffer.equalsIgnoreCase("exit")) break;
 
-                    System.out.println("\t[ Client ("+this.id+", "+this.name+") ] Ricevuto: " + buffer);
+                    if(buffer.equals(Constants.END_OF_REMOTE_FLASH)) {
+                        System.out.println("\t[ Client ("+this.id+", "+this.name+") ] Flash remoto completato.");
+                    } else {
+
+                        System.out.println("\t[ Client (" + this.id + ", " + this.name + ") ] Ricevuto: " + buffer);
+
+                    }
 
                 } catch (IOException e) {
                     this.server.removeClient(this);
-                    return;
+                    break;
                 }
 
             }
@@ -87,18 +97,22 @@ public class Server {
 
     }
 
-    private ServerSocket serverSocket;
-
+    // Server main thread
     private Thread serverThread;
-    private List<Thread> clientThreads = new LinkedList<>();
 
-    // ArrayList to store active clients
-    private Map<Long, ClientHandler> clients = new HashMap<>();
-    private int port;
+    // Threads handlng clients
+    private final List<Thread> clientThreads = new LinkedList<>();
+    // ArrayList to store active client handlers
+    private final Map<Long, ClientHandler> clients = new HashMap<>();
+    // Sequencer for client unique ID
+    private final AtomicLong sequencer = new AtomicLong(0);
 
-    private boolean started = false;
+    // Server socket
+    private ServerSocket serverSocket;
+    // Server socket port
+    private final int port;
 
-    private AtomicLong sequencer = new AtomicLong(0);
+    private boolean running = false;
 
     public Server(int port) {
         this.port = port;
@@ -108,13 +122,13 @@ public class Server {
 
         synchronized (this) {
 
-            if(started) return;
+            if(running) return;
 
             serverSocket = new ServerSocket(port);
 
             System.out.println("Server avviato. In attesa di connessioni...");
 
-            this.started = true;
+            this.running = true;
 
         }
 
@@ -122,7 +136,7 @@ public class Server {
 
             try {
 
-                while(true) {
+                while(this.running) {
 
                     Socket socket = serverSocket.accept();
 
@@ -162,6 +176,19 @@ public class Server {
         clients.values().forEach(ClientHandler::stop);
         clientThreads.forEach(Thread::interrupt);
         serverThread.interrupt();
+        this.running = false;
+    }
+
+    public boolean isRunning() {return this.running;}
+
+    public String getClientNameById(long id) {
+
+        if(this.clients.get(id) != null) {
+            return this.clients.get(id).getName();
+        } else {
+            return null;
+        }
+
     }
 
     public void removeClient(ClientHandler clientHandler) {
@@ -197,49 +224,12 @@ public class Server {
 
         ClientHandler clientHandler = getClientById(clientId).orElseThrow(IllegalArgumentException::new);
 
-        File myFile = new File(file);
-
-        if(!myFile.exists()) {
-            throw new IllegalArgumentException("Il file specificato non esiste");
-        }
-
-        FileInputStream fis = new FileInputStream(myFile);
-
-        clientHandler.dos.writeUTF("--- BEGIN OF FILE TX ---");
-
-        clientHandler.dos.writeUTF(myFile.getName());
-
-        clientHandler.dos.writeLong(myFile.length());
-
-        long totalCount = 0L;
-        int count;
-        byte[] buffer = new byte[1024];
-        while ( (count = fis.read(buffer)) > 0) {
-            clientHandler.dos.write(buffer, 0, count);
-            clientHandler.dos.flush();
-            totalCount += count;
-        }
-
-        System.out.println("Trasferito: " + totalCount);
-
-        System.out.println("...trasferimento completato.");
-
-        fis.close();
+        SocketFileHelper.sendFile(clientHandler.getDataOutputStream(), file);
 
     }
 
     private Optional<ClientHandler> getClientById(long id) {
         return Optional.ofNullable(this.clients.get(id));
-    }
-
-    public String getClientNameById(long id) {
-
-        if(this.clients.get(id) != null) {
-            return this.clients.get(id).getName();
-        } else {
-            return null;
-        }
-
     }
 
 }

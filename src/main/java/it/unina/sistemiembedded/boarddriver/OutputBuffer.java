@@ -1,4 +1,4 @@
-package it.corsose.juartcommunic.driver;
+package it.unina.sistemiembedded.boarddriver;
 
 public class OutputBuffer {
 
