@@ -2,9 +2,7 @@ package it.corsose.juartcommunic.net;
 
 import it.corsose.juartcommunic.driver.COMDriver;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
@@ -102,23 +100,6 @@ public class Client
                 System.err.println("Socket non connessa");
             }
 
-//            while (socket!=null && socket.isConnected()) {
-//
-//                System.out.println("Please, type your message for the server: ");
-//                msg = scanner.nextLine();
-//                if(socket.isConnected()) {
-//                    try {
-//                        dos.writeUTF(msg);
-//                    } catch (IOException e) {
-//                        return;
-//                    }
-//                } else {
-//                    System.err.println("Socket non connessa");
-//                    return;
-//                }
-//
-//            }
-
         });
 
         // readMessage thread
@@ -129,25 +110,35 @@ public class Client
                         // read the message sent to this client
                         String msg = dis.readUTF();
 
-                        System.out.println("Ho ricevuto: " + msg);
+                        if(msg.equals("--- BEGIN OF FILE TX ---")) {
 
-                        comDriver.writeLn(msg);
+                            String receivedFile = receiveFile();
+                            runCommandAndPrintOutput(".\\tools\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe -c port=SWD -d " + receivedFile);
 
-                        new Thread( () -> {
+                        } else {
 
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            System.out.println("Ho ricevuto: " + msg);
 
-                            comDriver.consumeAllAvailableMessages().forEach(m -> {
+                            comDriver.writeLn(msg);
+
+                            new Thread(() -> {
+
                                 try {
-                                    this.dos.writeUTF(m);
-                                } catch (IOException ignored) { }
-                            });
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
 
-                        }).start();
+                                comDriver.consumeAllAvailableMessages().forEach(m -> {
+                                    try {
+                                        this.dos.writeUTF(m);
+                                    } catch (IOException ignored) {
+                                    }
+                                });
+
+                            }).start();
+
+                        }
 
 
                     } catch (IOException e) {
@@ -165,4 +156,76 @@ public class Client
         receiveThread.start();
 
     }
+
+    private String receiveFile() throws IOException {
+
+        String filename = dis.readUTF();
+
+        filename = filename.trim();
+
+        File newFile = new File("received/" + filename);
+
+        if(newFile.exists() &&!newFile.delete()) {
+            throw new IllegalArgumentException("Esiste già un file col nome '" + filename + "' e non è possibile cancellarlo.");
+        }
+
+        if(!newFile.createNewFile()) {
+            throw new IllegalArgumentException("Impossibile creare il file '" + filename + "'.");
+        }
+
+        long fileSize = dis.readLong();
+
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(newFile));
+
+
+        long currentBytes = 0L;
+
+        while( currentBytes<fileSize ) {
+
+            int availableBytes = 0;
+            if( (availableBytes = dis.available())>0 ) {
+
+                byte[] fileBytes = new byte[availableBytes];
+                currentBytes += dis.read(fileBytes, 0, availableBytes);
+                bos.write(fileBytes, 0, fileBytes.length);
+                bos.flush();
+            }
+
+        }
+
+        String finalTx = dis.readUTF();
+
+        if(finalTx.equals("--- END OF FILE TX ---")) {
+            System.out.println("VERY GUD");
+        }
+
+        System.out.println("File " + filename
+                + " downloaded (" + currentBytes + " bytes read)");
+
+        return "received/" + filename;
+
+
+    }
+
+    private void runCommandAndPrintOutput(String command) throws IOException {
+
+        Process flashProcess = Runtime.getRuntime().exec(
+                "cmd.exe /c " +
+                        command
+        );
+
+        try {
+            flashProcess.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int cnt=0;
+        while( (cnt = flashProcess.getInputStream().available())>0 ) {
+            byte[] buffer = new byte[cnt];
+            flashProcess.getInputStream().read(buffer, 0, cnt);
+            System.out.println(new String(buffer));
+        }
+
+    }
+
 }

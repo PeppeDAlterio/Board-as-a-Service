@@ -1,8 +1,6 @@
 package it.corsose.juartcommunic.net;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -193,6 +191,46 @@ public class Server {
             throw new IllegalArgumentException();
         }
 
+    }
+
+    public void sendFile(long clientId, String file) throws IOException {
+
+        ClientHandler clientHandler = getClientById(clientId).orElseThrow(IllegalArgumentException::new);
+
+        File myFile = new File(file);
+
+        if(!myFile.exists()) {
+            throw new IllegalArgumentException("Il file specificato non esiste");
+        }
+
+        FileInputStream fis = new FileInputStream(myFile);
+
+        clientHandler.dos.writeUTF("--- BEGIN OF FILE TX ---");
+
+        clientHandler.dos.writeUTF(myFile.getName());
+
+        clientHandler.dos.writeLong(myFile.length());
+
+        long totalCount = 0L;
+        int count;
+        byte[] buffer = new byte[1024];
+        while ( (count = fis.read(buffer)) > 0)
+        {
+            clientHandler.dos.write(buffer, 0, count);
+            clientHandler.dos.flush();
+            totalCount += count;
+        }
+
+        System.out.println("Trasferito: " + totalCount);
+
+        clientHandler.dos.writeUTF("--- END OF FILE TX ---");
+
+        System.out.println("...trasferimento completato.");
+
+    }
+
+    private Optional<ClientHandler> getClientById(long id) {
+        return Optional.ofNullable(this.clients.get(id));
     }
 
     public String getClientNameById(long id) {
