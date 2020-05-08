@@ -113,7 +113,7 @@ public class Client
                         if(msg.equals("--- BEGIN OF FILE TX ---")) {
 
                             String receivedFile = receiveFile();
-                            runCommandAndPrintOutput(".\\tools\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe -c port=SWD -d " + receivedFile);
+                            runCommandAndPrintOutput(".\\tools\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe -c port=SWD -d " + receivedFile + " --start");
 
                         } else {
 
@@ -193,14 +193,10 @@ public class Client
 
         }
 
-        String finalTx = dis.readUTF();
-
-        if(finalTx.equals("--- END OF FILE TX ---")) {
-            System.out.println("VERY GUD");
-        }
-
         System.out.println("File " + filename
                 + " downloaded (" + currentBytes + " bytes read)");
+
+        bos.close();
 
         return "received/" + filename;
 
@@ -214,16 +210,22 @@ public class Client
                         command
         );
 
+
         try {
             flashProcess.waitFor();
+
+            int cnt=0;
+            try {
+                while ((cnt = flashProcess.getInputStream().available()) > 0) {
+                    byte[] buffer = new byte[cnt];
+                    flashProcess.getInputStream().read(buffer, 0, cnt);
+                    System.out.println(new String(buffer));
+                }
+                System.out.println();
+            } catch (Exception ignored) {}
+
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        int cnt=0;
-        while( (cnt = flashProcess.getInputStream().available())>0 ) {
-            byte[] buffer = new byte[cnt];
-            flashProcess.getInputStream().read(buffer, 0, cnt);
-            System.out.println(new String(buffer));
         }
 
     }

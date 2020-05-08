@@ -33,3 +33,21 @@
 [0.000] initConfigParams():   version                        false
 [0.000] initConfigParams():   help                           false
 [0.000] initConfigParams():  Configuration flags end
+[0.061] init():  STMicroelectronics ST-LINK GDB server. Version 5.5.0
+Copyright (c) 2019, STMicroelectronics. All rights reserved.
+[0.077] Device_Initialise():  Target connection mode: Default
+[0.092] reset_hw_wtchpt_module():  Hardware watchpoint supported by the target 
+[0.100] Device_Initialise():  COM frequency = 4000 kHz
+[0.103] Device_Initialise():  ST-LINK Firmware version : V2J36M26
+[0.106] Device_Initialise():  Device ID: 0x421
+[0.109] Device_Initialise():  PC: 0x8000d64
+[0.112] Device_GetStatus():  ST-LINK device status: HALT_MODE
+[0.116] Device_Initialise():  ST-LINK detects target voltage = 3.25 V
+[0.121] Device_Initialise():  ST-LINK device status: HALT_MODE
+[0.123] initServerContext():  ST-LINK device initialization OK
+[0.131] WaitConnection():  Waiting for connection on port 61234...
+[4.483] WaitConnection():  Accepted connection on port 61234...
+[4.485] read():  <688> Rx: \x06\x01\x00\x00
+[5.496] WaitConnection():  Waiting for connection on port 61234...
+[16.418] stop():  Stopping port 61234
+[16.461] WaitConnection():  Received stop for port 61234, not accepting new connections.

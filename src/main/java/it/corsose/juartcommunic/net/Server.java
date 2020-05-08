@@ -214,8 +214,7 @@ public class Server {
         long totalCount = 0L;
         int count;
         byte[] buffer = new byte[1024];
-        while ( (count = fis.read(buffer)) > 0)
-        {
+        while ( (count = fis.read(buffer)) > 0) {
             clientHandler.dos.write(buffer, 0, count);
             clientHandler.dos.flush();
             totalCount += count;
@@ -223,9 +222,9 @@ public class Server {
 
         System.out.println("Trasferito: " + totalCount);
 
-        clientHandler.dos.writeUTF("--- END OF FILE TX ---");
-
         System.out.println("...trasferimento completato.");
+
+        fis.close();
 
     }
 
