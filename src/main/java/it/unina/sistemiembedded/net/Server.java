@@ -72,7 +72,13 @@ public class Server {
                     buffer = dis.readUTF();
 
                     if(buffer.equals(Constants.END_OF_REMOTE_FLASH)) {
-                        System.out.println("\t[ Client ("+this.id+", "+this.name+") ] Flash remoto completato.");
+                        System.out.println("\t[ Client (" + this.id + ", " + this.name + ") ] Flash remoto completato.");
+                    } else if (buffer.equals(Constants.BEGIN_OF_DEBUG)) {
+                        System.out.println("\t[ Client (" + this.id + ", " + this.name + ") ] Sessione di debug remoto avviata." +
+                                " Utilizza l'ambiente di sviluppo verso questo IP: " + this.socket.getInetAddress()
+                                + " con il porto specificato in precedenza.");
+                    } else if(buffer.equals(Constants.END_OF_DEBUG)) {
+                        System.out.println("\t[ Client (" + this.id + ", " + this.name + ") ] Sessione di debug remoto terminata.");
                     } else {
 
                         System.out.println("\t[ Client (" + this.id + ", " + this.name + ") ] Ricevuto: " + buffer);

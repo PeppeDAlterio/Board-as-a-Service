@@ -30,6 +30,8 @@ public class Client
 
     private boolean running = false;
 
+    private Process debugProcess = null;
+
     //
 
     public static List<SerialPort> listAvailableCOMPorts() {
@@ -158,18 +160,54 @@ public class Client
 
                     if (msg.equals(Constants.BEGIN_OF_REMOTE_FLASH)) {
 
+                        killActiveDebugSession();
+
                         System.out.println("Il server ha richiesto un flash remoto...");
                         String receivedFile = SocketFileHelper.receiveFile(dis, ".elf");
                         System.out.println("...trasferimento file ELF completato.");
 
                         SystemHelper.runCommandAndPrintOutput(
-                                ".\\tools\\STM32CubeProgrammer\\bin\\STM32_Programmer_CLI.exe -c port=SWD -d "
-                                        + receivedFile + " --start"
+                                "."+Constants.STM_PROGRAMMER_PATH+Constants.STM_PROGRAMMER_EXE_NAME +
+                                        " -c port=SWD -d " + receivedFile + " --start"
                         );
 
                         dos.writeUTF(Constants.END_OF_REMOTE_FLASH);
 
                         consumeAndSendCOMBufferAsync();
+
+                    } else if(msg.equals(Constants.BEGIN_OF_DEBUG)) {
+
+                        killActiveDebugSession();
+
+                        int port = 0;
+                        try {
+                            port = Integer.parseInt(dis.readUTF());
+                        } catch (NumberFormatException e) {
+                            System.err.println("Ricevuto porto non valido: " + port);
+                            continue;
+                        }
+
+                        System.out.println("Il server ha richiesto una sessione di debug remota sul porto "+ port + " ...");
+
+                        final int finalPort = port;
+                        new Thread( () -> {
+
+                            try {
+                                this.debugProcess = SystemHelper.remoteDebug(finalPort, dos);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                if(this.debugProcess != null) {
+                                    this.debugProcess.destroyForcibly();
+                                    try {
+                                        this.debugProcess.waitFor();
+                                    } catch (InterruptedException ignored) {
+                                    }
+                                }
+                            }
+
+                            System.out.println("\nSessione di debug terminata.");
+
+                        }).start();
 
                     } else {
 
@@ -197,6 +235,24 @@ public class Client
             stopClient();
 
         }).start();
+    }
+
+    private void killActiveDebugSession() throws IOException {
+        if(this.debugProcess!=null && this.debugProcess.isAlive()) {
+
+            synchronized (dos) {
+                dos.writeUTF("E' già in esecuzione una sessione di debug. Cancello la precedente...");
+            }
+            try {
+                this.debugProcess.destroyForcibly();
+                this.debugProcess.waitFor();
+            } catch (Exception ignored) {}
+
+            synchronized (dos) {
+                dos.writeUTF("La precedente sessione di debug è stata terminata.");
+            }
+
+        }
     }
 
 }

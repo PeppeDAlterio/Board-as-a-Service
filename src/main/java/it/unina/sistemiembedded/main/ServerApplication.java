@@ -45,6 +45,14 @@ public class ServerApplication {
                     }
                     break;
 
+                case 9:
+                    try {
+                        remoteDebug();
+                    } catch (Exception e) {
+                        System.err.println(e.getMessage());
+                    }
+                    break;
+
                 case 0: default:
                     server.stopServer();
                     break;
@@ -64,6 +72,7 @@ public class ServerApplication {
         System.out.println("1. Lista client");
         System.out.println("2. Invio messagio a client");
         System.out.println("3. Flash remoto");
+        System.out.println("9. Debug remoto");
         System.out.println("0. Esci");
         System.out.println("====================================");
         int selection = scanner.nextInt();
@@ -115,6 +124,25 @@ public class ServerApplication {
 
         server.sendMessage(id, Constants.BEGIN_OF_REMOTE_FLASH);
         server.sendFile(id, filePath);
+
+    }
+
+    private static void remoteDebug() {
+
+        long id = selectClientId();
+
+        String port;
+        System.out.println("Inserisci un porto per il debug remoto:");
+        System.out.flush();
+        port = scanner.nextLine();
+
+        server.sendMessage(id, Constants.BEGIN_OF_DEBUG);
+        server.sendMessage(id, port);
+
+        System.out.println("\nLa sessione di debug verrà avviata a breve...");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ignored) { }
 
     }
 
