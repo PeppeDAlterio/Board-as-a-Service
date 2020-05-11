@@ -100,12 +100,16 @@ public class Client
         new Thread(() -> {
 
             String msg;
+            String board;
 
             System.out.println("Inserisci il tuo nome: ");
             msg = scanner.nextLine();
+            System.out.println("Inserisci il tipo di board che si vuole mettere a disposizione: ");
+            board = scanner.nextLine();
             if (socket.isConnected()) {
                 try {
                     dos.writeUTF(msg);
+                    dos.writeUTF(board);
                 } catch (IOException e) {
                     //e.printStackTrace();
                 }

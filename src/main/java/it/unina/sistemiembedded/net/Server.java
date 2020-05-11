@@ -17,6 +17,7 @@ public class Server {
 
         private long id;
         private String name = "";
+        private String board= "";
 
         final DataInputStream dis;
         final DataOutputStream dos;
@@ -54,8 +55,9 @@ public class Server {
 
             try {
                 this.name = dis.readUTF();
+                this.board = dis.readUTF();
                 server.clients.put(getId(), this);
-                System.out.println("\t<<<Nuovo client connesso con id:: " + this.id + " e nome " + this.name + ">>>");
+                System.out.println("\t<<< Nuovo client connesso con ID [ " + this.id + " ] - NOME [ " + this.name + " ] - BOARD [ " + this.board + " ] >>>");
             } catch (IOException e) {
                 //e.printStackTrace();
                 this.server.removeClient(this);
@@ -98,7 +100,7 @@ public class Server {
 
         @Override
         public String toString() {
-            return "Id: " + this. id + ", nome: " + this.name;
+            return "ID: " + this. id + " - NOME: " + this.name + " - BOARD: "+this.board;
         }
 
     }
@@ -202,9 +204,7 @@ public class Server {
         this.clients.remove(clientHandler.getId(), clientHandler);
     }
 
-    public List<ClientHandler> getClients() {
-        return new ArrayList<>(this.clients.values());
-    }
+    public List<ClientHandler> getClients() { return new ArrayList<>(this.clients.values()); }
 
     public void sendMessage(long id, String message) {
 
