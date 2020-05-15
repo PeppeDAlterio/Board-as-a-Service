@@ -1,4 +1,4 @@
-package it.unina.sistemiembedded.boarddriver;
+package it.unina.sistemiembedded.driver;
 
 public class OutputBuffer {
 

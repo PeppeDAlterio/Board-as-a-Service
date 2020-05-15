@@ -1,4 +1,4 @@
-package it.unina.sistemiembedded.boarddriver;
+package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;

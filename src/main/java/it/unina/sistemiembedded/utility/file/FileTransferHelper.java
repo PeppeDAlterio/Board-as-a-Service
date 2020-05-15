@@ -1,10 +1,10 @@
-package it.unina.sistemiembedded.net.file;
+package it.unina.sistemiembedded.utility.file;
 
 import it.unina.sistemiembedded.utility.Constants;
 
 import java.io.*;
 
-public class SocketFileHelper {
+public class FileTransferHelper {
 
     /**
      * Transfers a file

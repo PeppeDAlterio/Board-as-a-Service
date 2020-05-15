@@ -2,8 +2,8 @@ package it.unina.sistemiembedded.net;
 
 
 import it.unina.sistemiembedded.main.MainServerApplicationGUI;
-import it.unina.sistemiembedded.net.file.SocketFileHelper;
 import it.unina.sistemiembedded.utility.Constants;
+import it.unina.sistemiembedded.utility.file.FileTransferHelper;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -244,7 +244,7 @@ public class Server {
 
         ClientHandler clientHandler = getClientById(clientId).orElseThrow(IllegalArgumentException::new);
 
-        SocketFileHelper.sendFile(clientHandler.getDataOutputStream(), file);
+        FileTransferHelper.sendFile(clientHandler.getDataOutputStream(), file);
 
     }
 

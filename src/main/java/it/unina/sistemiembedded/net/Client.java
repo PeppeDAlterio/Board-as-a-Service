@@ -1,10 +1,10 @@
 package it.unina.sistemiembedded.net;
 
 import com.fazecast.jSerialComm.SerialPort;
-import it.unina.sistemiembedded.boarddriver.COMDriver;
-import it.unina.sistemiembedded.net.file.SocketFileHelper;
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.utility.Constants;
 import it.unina.sistemiembedded.utility.SystemHelper;
+import it.unina.sistemiembedded.utility.file.FileTransferHelper;
 
 import javax.swing.*;
 import java.io.DataInputStream;
@@ -165,7 +165,7 @@ public class Client
                         killActiveDebugSession();
 
                         System.out.println("Il server ha richiesto un flash remoto...");
-                        String receivedFile = SocketFileHelper.receiveFile(dis, ".elf");
+                        String receivedFile = FileTransferHelper.receiveFile(dis, ".elf");
                         System.out.println("...trasferimento file ELF completato.");
 
                         SystemHelper.runCommandAndPrintOutput(
