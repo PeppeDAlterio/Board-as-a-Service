@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.net.file.SocketFileHelper;
 import it.unina.sistemiembedded.utility.Constants;
 import it.unina.sistemiembedded.utility.SystemHelper;
 
+import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class Client
 
     }
 
-    public void startClient(int comPortNumber) throws IOException {
+    public void startClient(int comPortNumber,String name,String board) throws IOException {
 
         try {
 
@@ -69,7 +70,7 @@ public class Client
             comDriver = new COMDriver(COMDriver.listPorts().get(comPortNumber));
 
         } catch (IOException e) {
-
+            JOptionPane.showMessageDialog(null,"Errore di connessione verso il server");
             System.err.println("Errore di connessione verso il server.");
 
             throw e;
@@ -99,16 +100,13 @@ public class Client
         // Thread for handshake
         new Thread(() -> {
 
-            String msg;
-            String board;
-
             System.out.println("Inserisci il tuo nome: ");
-            msg = scanner.nextLine();
+            //scanner.nextLine();
             System.out.println("Inserisci il tipo di board che si vuole mettere a disposizione: ");
-            board = scanner.nextLine();
+            //board = scanner.nextLine();
             if (socket.isConnected()) {
                 try {
-                    dos.writeUTF(msg);
+                    dos.writeUTF(name);
                     dos.writeUTF(board);
                 } catch (IOException e) {
                     //e.printStackTrace();

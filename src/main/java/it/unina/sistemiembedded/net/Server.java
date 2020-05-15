@@ -1,5 +1,7 @@
 package it.unina.sistemiembedded.net;
 
+
+import it.unina.sistemiembedded.main.MainServerApplicationGUI;
 import it.unina.sistemiembedded.net.file.SocketFileHelper;
 import it.unina.sistemiembedded.utility.Constants;
 
@@ -8,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,21 +27,24 @@ public class Server {
         private final Socket socket;
 
         private final Server server;
-
+        private MainServerApplicationGUI serverApplicationGUI;
 
         // constructor
         public ClientHandler(Socket socket, long clientId,
-                             DataInputStream dis, DataOutputStream dos, Server server) {
+                             DataInputStream dis, DataOutputStream dos, Server server , MainServerApplicationGUI serverApplicationGUI) {
             this.id = clientId;
             this.dis = dis;
             this.dos = dos;
             this.socket = socket;
             this.server = server;
+            this.serverApplicationGUI = serverApplicationGUI;
         }
 
         public long getId() { return this.id; }
 
         public String getName() { return this.name; }
+
+        public String getBoard() {return this.board;}
 
         public DataOutputStream getDataOutputStream() { return this.dos; }
 
@@ -52,12 +58,14 @@ public class Server {
 
         @Override
         public void run() {
-
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = new Date();
             try {
                 this.name = dis.readUTF();
                 this.board = dis.readUTF();
                 server.clients.put(getId(), this);
-                System.out.println("\t<<< Nuovo client connesso con ID [ " + this.id + " ] - NOME [ " + this.name + " ] - BOARD [ " + this.board + " ] >>>");
+                System.out.println("\t[ "+formatter.format(date)+" ] New client connected [ID : " + this.id + " | NOME : " + this.name + " | BOARD : " + this.board + " ]\t\n");
+                serverApplicationGUI.setStoryClientConnection("\t[ "+formatter.format(date)+" ] New client connected [ ID : " + this.id + " | NOME : " + this.name + " | BOARD : " + this.board + " ]\t\n");
             } catch (IOException e) {
                 //e.printStackTrace();
                 this.server.removeClient(this);
@@ -100,7 +108,7 @@ public class Server {
 
         @Override
         public String toString() {
-            return "ID: " + this. id + " - NOME: " + this.name + " - BOARD: "+this.board;
+            return "ID: " + this. id + " | NOME: " + this.name + " | BOARD: "+this.board;
         }
 
     }
@@ -119,11 +127,12 @@ public class Server {
     private ServerSocket serverSocket;
     // Server socket port
     private final int port;
-
     private boolean running = false;
+    private MainServerApplicationGUI serverApplicationGUI;
 
-    public Server(int port) {
+    public Server(int port , MainServerApplicationGUI serverApplicationGUI) {
         this.port = port;
+        this.serverApplicationGUI = serverApplicationGUI;
     }
 
     public void startServer() throws IOException {
@@ -156,7 +165,7 @@ public class Server {
 
                     // Create a new handler object for handling this request.
                     ClientHandler clientHandler = new ClientHandler(socket, sequencer.getAndIncrement(),
-                            dis, dos, this);
+                            dis, dos, this,serverApplicationGUI);
 
                     // Create a new Thread with this object.
                     Thread thread = new Thread(clientHandler);
@@ -200,7 +209,12 @@ public class Server {
     }
 
     public void removeClient(ClientHandler clientHandler) {
-        System.out.println("\t[ Client ("+clientHandler.getId()+", "+clientHandler.getName()+") ] Disconnesso.");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        System.out.println("\t[ "+formatter.format(date)+" ] client [ ID : " + clientHandler.getId() +
+                " | NOME : " + clientHandler.getName() + " | BOARD : " + clientHandler.getBoard() + " ] disconnected \t\n");
+        serverApplicationGUI.setStoryClientConnection("\t[ "+formatter.format(date)+" ] client [ ID : " + clientHandler.getId() +
+                " | NOME : " + clientHandler.getName() + " | BOARD : " + clientHandler.getBoard() + " ] disconnected \t\n");
         this.clients.remove(clientHandler.getId(), clientHandler);
     }
 
