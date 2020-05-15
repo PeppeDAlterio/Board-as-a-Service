@@ -1,41 +1,79 @@
+
 package it.unina.sistemiembedded.main;
 
+
+import it.unina.sistemiembedded.boundary.SendMessageGUI;
 import it.unina.sistemiembedded.net.Server;
 import it.unina.sistemiembedded.utility.Constants;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-public class ServerApplication {
+public class MainServerApplicationGUI extends JFrame {
 
     private static Server server;
+    private static MainServerApplicationGUI serverApplicationGUI;
+    private JPanel ServerPanel;
 
-    private static final Scanner scanner = new Scanner(System.in);;
+    private static final Scanner scanner = new Scanner(System.in);
+
+    private JLabel labelPortNumber;
+    private JTextArea TextAreaClientConnected;
+    private JTextField textFieldListClient;
+    private JLabel StroryClientConnection;
+    private JLabel ServerStartLabel;
+    private JLabel LabelListConnectedClient;
+    private JButton buttongetClientSList;
+    private JButton buttonsendMessageToAClient;
+    private JButton buttonrequireARemoteFlash;
+    private JButton buttonrequireARemoteDebug;
+
+    public JTextArea getTextAreaClientConnected(){return this.TextAreaClientConnected;}
+    public void setStoryClientConnection(String string){this.TextAreaClientConnected.append(string);}
+    public void setListofclientconnected(String string){this.textFieldListClient.setText(string);}
+    public void setlabelPortNumber (String portNumer){this.labelPortNumber.setText(portNumer);}
+
+    public MainServerApplicationGUI(){
+        super();
+        this.setContentPane(this.ServerPanel);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.pack();
+        this.setVisible(true);
+        this.textFieldListClient.setEditable(false);
+        this.TextAreaClientConnected.setEditable(false);
+
+        buttonsendMessageToAClient.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                 new SendMessageGUI();
+            }
+        });
+        buttongetClientSList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setListofclientconnected(printClients().toString());
+            }
+        });
+    }
 
     public static void main(String[] args) throws IOException {
+        serverApplicationGUI = new MainServerApplicationGUI();
 
-        server = new Server(1234);
+        int port=1235;
+        server = new Server(port,serverApplicationGUI);
         server.startServer();
+        serverApplicationGUI.setlabelPortNumber(Integer.toString(port));
 
         while (server.isRunning()) {
 
             int selection = printMenuAndGetSelection();
 
             switch (selection) {
-
-                case 1:
-                    printClients();
-                    break;
-
-                case 2:
-                    try {
-                        sendMessageToClient();
-                        Thread.sleep(2000);
-                    } catch (IllegalArgumentException e) {
-                        System.err.println(e.getMessage());
-                    } catch (InterruptedException ignored) { }
-                    break;
 
                 case 3:
                     try {
@@ -82,30 +120,35 @@ public class ServerApplication {
         return selection;
     }
 
-    private static void printClients() {
+    private static ArrayList<String> printClients() {
+        ArrayList<String> temp = new ArrayList<>();
         System.out.println(server.getClients());
+        if(server.getClients().size()!=0) {
+            for (int i = 0; i < server.getClients().size(); i++)
+                temp.add(server.getClients().get(i).toString() + "\n");
+        }else{
+            temp.add("Nessun client connesso");
+        }
+        return temp;
     }
 
-    private static void sendMessageToClient() {
-
-        long id = selectClientId();
+    public static void sendMessageToClient(long id , String msg) {
 
         String clientName = server.getClientNameById(id);
         if(clientName==null) {
+            JOptionPane.showMessageDialog(null,"Client non trovato");
             throw new IllegalArgumentException("Client non trovato");
         }
-        System.out.println("Hai inserito l'id: " + id + ". Inserisci il messaggio da inviare a " + clientName + " :");
-        System.out.flush();
-        String msg = scanner.nextLine();
         try {
             server.sendMessage(id, msg);
         } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(null,"Client non trovato o non connesso");
             throw new IllegalArgumentException("Client non trovato o non connesso");
         }
-        System.out.println("Messaggio '" + msg + "' inviato al client id " + id + ".");
+        JOptionPane.showMessageDialog(null,"Messaggio '" + msg + "' inviato al client id " + id + ".");
     }
 
-    private static void remoteFlash() throws IOException {
+    public static void remoteFlash() throws IOException {
 
         System.out.println("Inserisci la path al file .ELF da flashare: ");
         String filePath = scanner.nextLine();
@@ -127,7 +170,7 @@ public class ServerApplication {
 
     }
 
-    private static void remoteDebug() {
+    public static void remoteDebug() {
 
         long id = selectClientId();
 
@@ -149,6 +192,7 @@ public class ServerApplication {
     private static long selectClientId() {
 
         if(server.getClients().isEmpty()) {
+            JOptionPane.showMessageDialog(null,"Nessun client connesso");
             throw new RuntimeException("Nessun client connesso");
         }
 
@@ -161,6 +205,7 @@ public class ServerApplication {
             scanner.nextLine();
         } catch (Exception e) {
             scanner.nextLine();
+            JOptionPane.showMessageDialog(null,"Client non trovato");
             throw new IllegalArgumentException("Client non trovato");
         }
 
@@ -173,4 +218,8 @@ public class ServerApplication {
         scanner.nextLine();
     }
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
 }
+
