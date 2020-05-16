@@ -1,5 +1,7 @@
 package it.unina.sistemiembedded.server;
 
+import it.unina.sistemiembedded.model.Board;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -57,6 +59,12 @@ public abstract class ClientHandler implements Runnable {
      * @return boolean true if alive, false otherwise
      */
     public abstract boolean isAlive();
+
+    public abstract Board attachBoard(Board board);
+
+    public abstract Board detachBoard(Board board);
+
+    public abstract Board detachBoard();
 
     /**
      * Get client handler ID

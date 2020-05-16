@@ -1,26 +1,28 @@
 package it.unina.sistemiembedded.server.impl;
 
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@Getter
 public class ServerImpl extends Server {
 
     private final Logger logger = LoggerFactory.getLogger(ServerImpl.class);
@@ -62,7 +64,7 @@ public class ServerImpl extends Server {
      */
     private Thread serverMainThread;
 
-    protected ServerImpl(String name) {
+    public ServerImpl(String name) {
         super(name);
     }
 
@@ -95,16 +97,13 @@ public class ServerImpl extends Server {
     @Override
     public void stop() throws IOException {
 
-        clientHandlersRWLock.readLock().lock();
-        try {
-            this.clientHandlers.values().forEach(ClientHandler::stop);
-        } finally {
-            clientHandlersRWLock.readLock().unlock();
-        }
-
         clientHandlersRWLock.writeLock().lock();
         try {
+
+            List<ClientHandler> list = new LinkedList<>(this.clientHandlers.values());
+            list.forEach(ClientHandler::stop);
             this.clientHandlers.clear();
+
         } finally {
             clientHandlersRWLock.writeLock().unlock();
         }
@@ -231,6 +230,44 @@ public class ServerImpl extends Server {
 
         serverMainThread.start();
 
+    }
+
+    @Override
+    public boolean existsBoardBySerialNumber(String serialNumber) {
+        return boards.containsKey(serialNumber);
+    }
+
+    @Override
+    public @Nullable Board attachBoardOnClient(ClientHandler clientHandler,
+                                               String serialNumber)
+            throws BoardAlreadyInUseException, BoardNotFoundException {
+
+        Board board = null;
+
+        boardsRWLock.writeLock().lock();
+        try {
+
+            board = boards.get(serialNumber);
+
+            if (board == null) {
+                throw new BoardNotFoundException();
+            }
+
+            synchronized (board) {
+
+                if (board.isInUse()) {
+                    throw new BoardAlreadyInUseException();
+                }
+
+                board = clientHandler.attachBoard(board);
+
+            }
+
+        } finally {
+            boardsRWLock.writeLock().unlock();
+        }
+
+        return board;
     }
 
     /**

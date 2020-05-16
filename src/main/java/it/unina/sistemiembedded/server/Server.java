@@ -1,16 +1,18 @@
 package it.unina.sistemiembedded.server;
 
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 
 public abstract class Server {
 
-    private final int DEFAULT_PORT = 1234;
+    public static final int DEFAULT_PORT = 1234;
 
     /**
      * Server name
@@ -91,6 +93,11 @@ public abstract class Server {
      * @return Collection of Boards
      */
     abstract public Collection<Board> listBoards();
+
+    abstract public boolean existsBoardBySerialNumber(String serialNumber);
+
+    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String serialNumber)
+            throws BoardNotFoundException, BoardAlreadyInUseException;
 
     /**
      * Removes a client handler for the server

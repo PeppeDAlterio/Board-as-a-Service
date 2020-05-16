@@ -1,17 +1,23 @@
 package it.unina.sistemiembedded.server.impl;
 
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
+import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
-import it.unina.sistemiembedded.utility.Constants;
+import it.unina.sistemiembedded.utility.Commands;
+import lombok.Getter;
 import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+@Getter
 public class ClientHandlerImpl extends ClientHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandlerImpl.class);
@@ -20,6 +26,11 @@ public class ClientHandlerImpl extends ClientHandler {
      * Client name
      */
     private String name;
+
+    /**
+     * Attached board. Null if not attached
+     */
+    private Board board;
 
     /**
      * Client running state. Please not that just the desiderata state, socket may be open/closed.
@@ -69,8 +80,8 @@ public class ClientHandlerImpl extends ClientHandler {
         logger.info("[run] Client handler (" + this.id + ") has been started");
 
         try {
-            this.name = dis.readUTF();
-            logger.debug("[run] ");
+            this.name = readMessageFromClient();
+            logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
         } catch (IOException e) {
             e.printStackTrace();
             this.stop();
@@ -81,10 +92,12 @@ public class ClientHandlerImpl extends ClientHandler {
             try
             {
                 // receive and parse a string message ...
-                parseReceivedMessage(dis.readUTF());
+                parseReceivedMessage(readMessageFromClient());
 
             } catch (IOException e) {
-                e.printStackTrace();
+                if(this.running) {
+                    logger.error("[run] Connection lost");
+                }
                 break;
             }
 
@@ -99,6 +112,41 @@ public class ClientHandlerImpl extends ClientHandler {
         return this.running && socket.isConnected();
     }
 
+    @Override
+    public Board attachBoard(@Nonnull Board board) {
+
+        if(this.board == board) return this.board;
+
+        detachBoard();
+        this.board = board;
+        this.board.setInUse(true);
+
+        sendMessagesToClient(Commands.AttachOnBoard.Request.TRANSFER_BOARD, board.toString());
+
+        return this.board;
+
+    }
+
+    @Override
+    public Board detachBoard(Board board) {
+        if(this.board == board) {
+            return detachBoard();
+        }
+        return null;
+    }
+
+    @Override
+    public Board detachBoard() {
+
+        Board board = this.board;
+
+        if(board!=null) {
+            board.setInUse(false);
+        }
+
+        return board;
+    }
+
     private String parseReceivedMessage(String message) {
 
         if(StringUtils.isBlank(message)) return "";
@@ -110,23 +158,21 @@ public class ClientHandlerImpl extends ClientHandler {
 
         switch (message) {
 
-            case Constants.END_OF_REMOTE_FLASH:
+            case Commands.AttachOnBoard.Request.REQUEST:
 
-                stringBuilder.append(" Flash remoto completato.");
-
-                break;
-
-            case Constants.BEGIN_OF_DEBUG:
-
-                stringBuilder.append("Sessione di debug remoto avviata. Utilizza l'ambiente di sviluppo verso questo IP: ")
-                        .append(this.socket.getInetAddress())
-                        .append(" con il porto specificato in precedenza.");
+                stringBuilder.append(" Wants to attach on a board");
+                Board board = startAttachOnBoard();
 
                 break;
 
-            case Constants.END_OF_DEBUG:
+            case Commands.AttachOnBoard.Response.SUCCESS:
+                stringBuilder.append(" Successfully attached on Board: ").append(this.board.getSerialNumber());
 
-                stringBuilder.append("Sessione di debug remoto terminata.");
+                break;
+
+            case Commands.AttachOnBoard.Response.ERROR:
+                stringBuilder.append(" There was an error attaching on board: ").append(this.board.getSerialNumber());
+                detachBoard();
 
                 break;
 
@@ -142,6 +188,57 @@ public class ClientHandlerImpl extends ClientHandler {
 
         return stringBuilder.toString();
 
+    }
+
+    private Board startAttachOnBoard() {
+
+        try {
+
+            String serialNumber = readMessageFromClient();
+
+            try {
+                server.attachBoardOnClient(this, serialNumber);
+            } catch (BoardAlreadyInUseException e) {
+                sendMessageToClient(Commands.AttachOnBoard.Response.BOARD_BUSY);
+            } catch (BoardNotFoundException e) {
+                sendMessageToClient(Commands.AttachOnBoard.Response.BOARD_NOT_FOUND);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return this.board;
+
+    }
+
+    private String readMessageFromClient() throws IOException {
+        return this.dis.readUTF();
+    }
+
+    public void sendMessagesToClient(String ... messages) {
+
+        synchronized (dos) {
+            for (String m : messages) {
+                sendMessageToClient(m);
+            }
+        }
+
+
+    }
+
+    private void sendMessageToClient(String message) {
+
+        try {
+            synchronized (dos) {
+                logger.debug("[sendMessageToClient] Sending message: '" + message + "' to: " + this.id);
+                this.dos.writeUTF(message);
+            }
+        } catch (IOException e) {
+            logger.error("[sendMessageToClient] Connectino lost");
+            stop();
+        }
     }
 
 }
