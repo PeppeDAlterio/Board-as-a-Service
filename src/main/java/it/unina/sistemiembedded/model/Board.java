@@ -97,4 +97,5 @@ public class Board {
     public int hashCode() {
         return Objects.hash(serialNumber);
     }
+
 }

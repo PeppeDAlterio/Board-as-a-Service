@@ -1,29 +1,20 @@
 package it.unina.sistemiembedded.server;
 
-import it.unina.sistemiembedded.model.Board;
-import it.unina.sistemiembedded.net.Server;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.UUID;
 
 public abstract class ClientHandler implements Runnable {
 
     /**
      * Client handler id
      */
-    protected String id = UUID.randomUUID().toString();
+    protected long id;
 
     /**
      * Client name
      */
     protected String name;
-
-    /**
-     * Board used by the client
-     */
-    protected Board board;
 
     /**
      * Input stream of the client
@@ -47,12 +38,14 @@ public abstract class ClientHandler implements Runnable {
 
     /**
      * Create a new Client Handler
+     * @param id long client id
+     * @param server Server Server that handles the client
+     * @param socket Socket Socket connected to the client
      * @param dis DataInputStream Input stream of the client
      * @param dos DataOutputStream Output stream of the client
-     * @param socket Socket Socket connected to the client
-     * @param server Server Server that handles the client
      */
-    protected ClientHandler(DataInputStream dis, DataOutputStream dos, Socket socket, Server server) {
+    protected ClientHandler(long id, Server server, Socket socket, DataInputStream dis, DataOutputStream dos) {
+        this.id = id;
         this.dis = dis;
         this.dos = dos;
         this.socket = socket;
@@ -60,9 +53,20 @@ public abstract class ClientHandler implements Runnable {
     }
 
     /**
+     * Stop the client.
+     */
+    public abstract void stop();
+
+    /**
      * Get client handler status
      * @return boolean true if connected, false otherwise
      */
     public boolean isAlive() {return socket.isConnected();}
+
+    /**
+     * Get client handler ID
+     * @return long client handler id
+     */
+    public long getId() {return this.id;}
 
 }
