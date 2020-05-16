@@ -1,6 +1,5 @@
 package it.unina.sistemiembedded.model;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.maven.shared.utils.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -16,7 +15,7 @@ public class Board {
     /**
      * Global unique serial number
      */
-    private @NotNull final String serialNumber;
+    private final String serialNumber;
 
     /**
      * Board password. Used to authorize the connection

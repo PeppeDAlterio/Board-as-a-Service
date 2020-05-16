@@ -12,11 +12,6 @@ public abstract class ClientHandler implements Runnable {
     protected long id;
 
     /**
-     * Client name
-     */
-    protected String name;
-
-    /**
      * Input stream of the client
      */
     protected final DataInputStream dis;
@@ -59,9 +54,9 @@ public abstract class ClientHandler implements Runnable {
 
     /**
      * Get client handler status
-     * @return boolean true if connected, false otherwise
+     * @return boolean true if alive, false otherwise
      */
-    public boolean isAlive() {return socket.isConnected();}
+    public abstract boolean isAlive();
 
     /**
      * Get client handler ID

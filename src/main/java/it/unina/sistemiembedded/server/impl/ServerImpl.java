@@ -184,6 +184,16 @@ public class ServerImpl extends Server {
         return boards.values();
     }
 
+    @Override
+    public void removeClientHandler(@Nonnull ClientHandler clientHandler) {
+        clientHandlersRWLock.writeLock().lock();
+        try {
+            clientHandlers.remove(clientHandler.getId(), clientHandler);
+        } finally {
+            clientHandlersRWLock.writeLock().unlock();
+        }
+    }
+
     /**
      * Wait for client connections async
      */

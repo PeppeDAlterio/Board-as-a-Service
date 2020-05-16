@@ -92,4 +92,10 @@ public abstract class Server {
      */
     abstract public Collection<Board> listBoards();
 
+    /**
+     * Removes a client handler for the server
+     * @param clientHandler ClientHandler client handler to be removed
+     */
+    abstract public void removeClientHandler(@Nonnull ClientHandler clientHandler);
+
 }
