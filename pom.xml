@@ -56,24 +56,55 @@
 
     <dependencies>
 
+        <!-- Utilities -->
+
+        <!-- Google findbugs -->
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
         </dependency>
 
+        <!-- Maven shared utils -->
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-shared-utils</artifactId>
             <version>3.2.1</version>
         </dependency>
 
+        <!-- Logger slf4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.29</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.29</version>
+        </dependency>
+
+        <!-- Serial com port driver -->
         <dependency>
             <groupId>com.fazecast</groupId>
             <artifactId>jSerialComm</artifactId>
             <version>[2.0.0,3.0.0)</version>
             <optional>false</optional>
         </dependency>
+
+        <!-- / Utilities -->
+
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.5.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- / Testing -->
+
     </dependencies>
 
 </project>
