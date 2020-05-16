@@ -15,7 +15,7 @@ public class Board {
     /**
      * Global unique serial number
      */
-    private @NotNull final String serialNumber;
+    private final String serialNumber;
 
     /**
      * Board password. Used to authorize the connection
@@ -96,4 +96,5 @@ public class Board {
     public int hashCode() {
         return Objects.hash(serialNumber);
     }
+
 }

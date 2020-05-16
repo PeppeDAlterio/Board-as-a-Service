@@ -1,12 +1,12 @@
 package it.unina.sistemiembedded.server;
 
-import it.unina.sistemiembedded.exception.server.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 public abstract class Server {
 
@@ -21,16 +21,6 @@ public abstract class Server {
      * Server listening port
      */
     protected int port = DEFAULT_PORT;
-
-    /**
-     * Server running state
-     */
-    protected boolean running = false;
-
-    /**
-     * Server boards map: (serial number, board)
-     */
-    protected Map<String, Board> boards = new HashMap<>();
 
     /**
      * Create a new Server with a name listening on the default port
@@ -64,19 +54,48 @@ public abstract class Server {
 
     /**
      * Stop the server, if running
+     * @throws IOException if an I/O error occurs when closing the socket
      */
-    abstract public void stop();
+    abstract public void stop() throws IOException;
 
     /**
      * Add a board to server boards
      * @param board Board new board to add
+     * @return Server this
      */
-    abstract public void addBoard(@Nonnull Board board) throws BoardAlreadyExistsException;
+    abstract public Server addBoard(@Nonnull Board board) throws BoardAlreadyExistsException;
+
+    /**
+     * Add multple boards to server boards
+     * @param boards Board new board to add
+     * @return Server this
+     */
+    abstract public Server addBoards(@Nonnull Board ... boards) throws BoardAlreadyExistsException;
+
+    /**
+     * Remove a board from the server board list
+     * @param serialNumber String board serial number
+     * @throws BoardNotFoundException board not found on the server
+     * @return Server this
+     */
+    abstract public Server removeBoard(String serialNumber) throws BoardNotFoundException;
 
     /**
      * Get the server running state.
      * @return boolean true if running, false otherwise
      */
-    public boolean isRunning() {return this.running;}
+    abstract public boolean isRunning();
+
+    /**
+     * Get all boards shared by the server
+     * @return Collection of Boards
+     */
+    abstract public Collection<Board> listBoards();
+
+    /**
+     * Removes a client handler for the server
+     * @param clientHandler ClientHandler client handler to be removed
+     */
+    abstract public void removeClientHandler(@Nonnull ClientHandler clientHandler);
 
 }

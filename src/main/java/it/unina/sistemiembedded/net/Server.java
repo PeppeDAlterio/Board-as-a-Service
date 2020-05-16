@@ -14,9 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Server {
+@Deprecated public class Server {
 
-    public static class ClientHandler implements Runnable {
+    @Deprecated public static class ClientHandler implements Runnable {
 
         private long id;
         private String name = "";

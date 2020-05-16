@@ -15,8 +15,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
-public class Client
-{
+@Deprecated public class Client {
     private final Scanner scanner = new Scanner(System.in);
 
     private String serverIpAddress = "";

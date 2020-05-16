@@ -1,7 +1,7 @@
 package it.unina.sistemiembedded.client;
 
-import it.unina.sistemiembedded.exception.client.BoardNotFoundException;
-import it.unina.sistemiembedded.exception.client.ClientNotConnectedException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
+import it.unina.sistemiembedded.exception.ClientNotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 
 import java.io.IOException;
