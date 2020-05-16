@@ -57,6 +57,9 @@ public class ServerImpl extends Server {
 
     private ServerSocket serverSocket;
 
+    /**
+     * The server main thread waiting for client connections
+     */
     private Thread serverMainThread;
 
     protected ServerImpl(String name) {
@@ -220,7 +223,11 @@ public class ServerImpl extends Server {
 
     }
 
-    private void addClientHandler(ClientHandler clientHandler) {
+    /**
+     * Util to add a client handler to the map data struture
+     * @param clientHandler ClientHandler client handler to be added, nonnull
+     */
+    private void addClientHandler(@Nonnull ClientHandler clientHandler) {
         clientHandlersRWLock.writeLock().lock();
         try {
             clientHandlers.put(clientHandler.getId(), clientHandler);

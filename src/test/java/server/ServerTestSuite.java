@@ -68,16 +68,16 @@ public class ServerTestSuite {
 
         server = new ServerImpl("Server name", 1234);
         assertDoesNotThrow( () -> {
-            server.addBoards(new Board("STM32F3", "seriale 123"),
-                             new Board("STM32F4", "seriale 456"),
-                             new Board("STM32F5", "seriale 789"));
+            server.addBoards(new Board("seriale 123"),
+                             new Board("seriale 456"),
+                             new Board("seriale 789"));
 
             assertEquals(3, server.listBoards().size());
 
         });
 
         assertThrows(BoardAlreadyExistsException.class,
-                () -> server.addBoard(new Board("boh", "seriale 123")));
+                () -> server.addBoard(new Board( "seriale 123")));
 
     }
 
@@ -90,11 +90,11 @@ public class ServerTestSuite {
 
             assertTrue(server.listBoards().isEmpty());
 
-            server.addBoard(new Board("STM32F3", "seriale 123"));
+            server.addBoard(new Board( "seriale 123"));
 
             assertEquals(1, server.listBoards().size());
 
-            assertEquals(new Board("STM32F3", "seriale 123"),
+            assertEquals(new Board( "seriale 123"),
                     server.listBoards().iterator().next());
 
             server.removeBoard("seriale 123");
