@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
+import it.unina.sistemiembedded.utility.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -13,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 @Getter @Setter
@@ -82,27 +81,13 @@ public class ClientHandlerImpl extends ClientHandler {
 
         logger.info("[run] Client handler (" + this.id + ") has been started");
 
-        try {
-            this.name = readMessageFromClient();
-            logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
-        } catch (IOException e) {
-            e.printStackTrace();
-            this.stop();
-            return;
-        }
+        this.name = readMessageFromClient();
+        logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
 
         while(isAlive()) {
-            try
-            {
-                // receive and parse a string message ...
-                parseReceivedMessage(readMessageFromClient());
 
-            } catch (IOException e) {
-                if(this.running) {
-                    logger.error("[run] Connection lost");
-                }
-                break;
-            }
+            // receive and parse a string message ...
+            parseReceivedMessage(readMessageFromClient());
 
         }
 
@@ -122,7 +107,9 @@ public class ClientHandlerImpl extends ClientHandler {
 
         detachBoard();
         this.board = board;
-        this.board.setInUse(true);
+        synchronized (this.board) {
+            this.board.setInUse(true);
+        }
 
         sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.toString());
 
@@ -141,13 +128,24 @@ public class ClientHandlerImpl extends ClientHandler {
     @Override
     public Board detachBoard() {
 
-        Board board = this.board;
-
-        if(board!=null) {
-            board.setInUse(false);
+        if(this.board!=null) {
+            synchronized (this.board) {
+                this.board.setInUse(false);
+            }
         }
 
-        return board;
+        return this.board;
+    }
+
+    public void sendMessagesToClient(String ... messages) {
+
+        synchronized (dos) {
+            for (String m : messages) {
+                sendMessageToClient(m);
+            }
+        }
+
+
     }
 
     private String parseReceivedMessage(String message) {
@@ -161,10 +159,12 @@ public class ClientHandlerImpl extends ClientHandler {
 
         switch (message) {
 
+            // ATTACH ON BOARD
+
             case Commands.AttachOnBoard.REQUEST_BOARD:
 
                 stringBuilder.append(" request a board: ");
-                Board board = startAttachOnBoard();
+                Board board = attachOnBoardRequestCallback();
                 if(board!=null) {
                     stringBuilder.append(board.getId());
                 } else {
@@ -184,9 +184,35 @@ public class ClientHandlerImpl extends ClientHandler {
 
                 break;
 
+            //
+            // DETACH FROM BOARD
+
             case Commands.DetachFromBoard.REQUEST:
                 stringBuilder.append("Detach board request");
-                detachBoardRequest();
+                detachBoardRequestCallback();
+
+                break;
+
+            //
+            // FLASH
+
+            case Commands.Flash.REQUEST:
+                stringBuilder.append("Flash on board request");
+                flashRequestCallback();
+
+                break;
+
+            //
+            // DEBUG
+            case Commands.Debug.REQUEST:
+                stringBuilder.append("Debug on board request");
+                debugRequestCallback();
+
+                break;
+
+            case Commands.Debug.REQUEST_END:
+                stringBuilder.append("End debug on board request");
+                debugEndRequestCallback();
 
                 break;
 
@@ -204,22 +230,17 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private Board startAttachOnBoard() {
+    private Board attachOnBoardRequestCallback() {
+
+
+        String serialNumber = readMessageFromClient();
 
         try {
-
-            String serialNumber = readMessageFromClient();
-
-            try {
-                server.attachBoardOnClient(this, serialNumber);
-            } catch (BoardAlreadyInUseException e) {
-                sendMessageToClient(Commands.AttachOnBoard.BOARD_BUSY);
-            } catch (BoardNotFoundException e) {
-                sendMessageToClient(Commands.AttachOnBoard.BOARD_NOT_FOUND);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            server.attachBoardOnClient(this, serialNumber);
+        } catch (BoardAlreadyInUseException e) {
+            sendMessageToClient(Commands.AttachOnBoard.BOARD_BUSY);
+        } catch (BoardNotFoundException e) {
+            sendMessageToClient(Commands.AttachOnBoard.BOARD_NOT_FOUND);
         }
 
 
@@ -227,7 +248,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private void detachBoardRequest() {
+    private void detachBoardRequestCallback() {
 
         if(this.getBoard()!=null) {
             synchronized (this.getBoard()) {
@@ -240,18 +261,78 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private String readMessageFromClient() throws IOException {
-        return this.dis.readUTF();
+    private void flashRequestCallback() {
+
+        if(this.board==null) {
+            sendMessageToClient(Commands.Flash.ERROR);
+            return;
+        }
+
+        try {
+            this.receiveFile(".elf", Commands.Flash.SUCCESS);
+
+            // TODO: Avvia flash e applicazione !
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
+            sendMessageToClient(Commands.Flash.ERROR);
+        }
+
     }
 
-    public void sendMessagesToClient(String ... messages) {
+    private void debugRequestCallback() {
 
-        synchronized (dos) {
-            for (String m : messages) {
-                sendMessageToClient(m);
+        if(this.board==null) {
+            sendMessageToClient(Commands.Debug.ERROR);
+            return;
+        }
+
+        int debugPort = Integer.parseInt(this.readMessageFromClient());
+
+        // TODO: Avvia debug ! Sync on board or something like this
+        // In un nuovo thread the manda un END OF DEBUG se si chiude il processo
+
+    }
+
+    private void debugEndRequestCallback() {
+
+        if(this.board!=null) {
+
+            synchronized (this.board) {
+
+                this.board.getDebuggingProcess().destroyForcibly();
+                try {
+                    this.board.getDebuggingProcess().waitFor();
+                } catch (InterruptedException ignored) {
+                }
+
+                this.board.setDebuggingProcess(null);
+
+                sendMessageToClient(Commands.Debug.FINISHED);
+
+            }
+
+        }
+
+    }
+
+    private String readMessageFromClient() {
+
+        String message = "";
+
+        synchronized (dis) {
+            try {
+                message = this.dis.readUTF();
+            } catch (IOException e) {
+                if(this.running) {
+                    logger.error("[readMessageFromClient] Connection lost");
+                }
+                this.stop();
             }
         }
 
+        return message;
 
     }
 
@@ -266,6 +347,90 @@ public class ClientHandlerImpl extends ClientHandler {
             logger.error("[sendMessageToClient] Connectino lost");
             this.stop();
         }
+    }
+
+    /**
+     * Receives a file from a DataInputStream
+     * @param fileExtension String expected file extensions
+     * @param postMessage String message to be send when file's been received
+     * @return Received file path
+     * @throws IOException error while receiving file
+     */
+    private String receiveFile(String fileExtension, String postMessage) throws IOException {
+
+        synchronized (dis) {
+
+            String beginOfTx = dis.readUTF();
+
+            if (!beginOfTx.equals(Constants.BEGIN_FILE_TX)) {
+                throw new IllegalStateException("Begin of file transmission expected!");
+            }
+
+            String filename = dis.readUTF();
+
+            if (!filename.trim().toLowerCase().endsWith(fileExtension.trim().toLowerCase())) {
+                throw new IllegalStateException("File with extension '" + fileExtension + "' expected!");
+            }
+
+            filename = filename.trim();
+
+            File directory = new File("received/" + board.getSerialNumber());
+            if (!directory.exists() && !directory.mkdir()) {
+                throw new IllegalArgumentException("Impossibile creare la cartella");
+            }
+
+            File newFile = new File("received/" + board.getSerialNumber() + "/" + filename);
+
+            if (newFile.exists() && !newFile.delete()) {
+                throw new IllegalArgumentException("Esiste già un file col nome '" + filename + "' e non è possibile cancellarlo.");
+            }
+
+            if (!newFile.createNewFile()) {
+                throw new IllegalArgumentException("Impossibile creare il file '" + filename + "'.");
+            }
+
+            long fileSize = dis.readLong();
+
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(newFile));
+
+            long currentBytes = 0L;
+
+            while (currentBytes < fileSize) {
+
+                int availableBytes = 0;
+                if ((availableBytes = dis.available()) > 0) {
+
+                    int bytesToRead = Math.min((int) (fileSize - currentBytes), availableBytes);
+
+                    byte[] fileBytes = new byte[bytesToRead];
+                    currentBytes += dis.read(fileBytes, 0, bytesToRead);
+                    bos.write(fileBytes, 0, bytesToRead);
+                    bos.flush();
+
+                }
+
+            }
+
+            String endOfTx = dis.readUTF();
+
+            if (endOfTx.equals(Constants.END_FILE_TX)) {
+                logger.debug("[receiveFile] File transfer successfully completed.");
+            }
+
+            logger.info("[receiveFile] File " + filename
+                    + " downloaded (" + currentBytes + " bytes read)");
+
+            bos.close();
+
+            if(!StringUtils.isBlank(postMessage)) {
+                sendMessageToClient(postMessage);
+            }
+
+            return "received/" + board.getSerialNumber() + "/" + filename;
+
+        }
+
+
     }
 
 }

@@ -56,6 +56,54 @@ public class Commands {
 
     }
 
+    public static class Flash {
+
+        /**
+         * Sent by the client to request the flash
+         */
+        public static final String REQUEST          = "$--- FLASH ON BOARD REQUEST ---$";
+
+        /**
+         * Sent by the Server to acknowledge the flash
+         */
+        public static final String SUCCESS          = "$--- FLASH ON BOARD SUCCESS ---$";
+
+        /**
+         * Sent by the Server to acknowledge an error with the flash
+         */
+        public static final String ERROR          = "$--- FLASH ON BOARD ERROR ---$";
+
+    }
+
+    public static class Debug {
+
+        /**
+         * Sent by the client to request the debug
+         */
+        public static final String REQUEST          = "$--- DEBUG ON BOARD REQUEST ---$";
+
+        /**
+         * Sent by the Server as ready to debug
+         */
+        public static final String READY_TO_DEBUG   = "$--- DEBUG ON BOARD READY ---$";
+
+        /**
+         * Sent by the Server to acknowledge an error with the debug process
+         */
+        public static final String ERROR            = "$--- DEBUG ON BOARD ERROR ---$";
+
+        /**
+         * Sent by the client to request end of the debug
+         */
+        public static final String REQUEST_END      = "$--- DEBUG ON BOARD REQUEST END ---$";
+
+        /**
+         * Sent by the server when the debugging session finishes
+         */
+        public static final String FINISHED         = "$--- DEBUG ON BOARD FINISHED ---$";
+
+    }
+
     /**
      * BOARD COMMUNICATION
      */

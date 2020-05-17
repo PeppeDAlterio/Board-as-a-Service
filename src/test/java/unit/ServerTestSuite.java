@@ -88,14 +88,16 @@ public class ServerTestSuite {
 
             assertTrue(server.listBoards().isEmpty());
 
-            server.addBoard(new Board( "mia scheda","seriale 123", null));
+            Board testBoard = new Board("mia scheda", "seriale 123");
+
+            server.addBoard(testBoard);
 
             assertEquals(1, server.listBoards().size());
 
-            assertEquals(new Board( "mia scheda","seriale 123", null),
+            assertEquals(testBoard,
                     server.listBoards().iterator().next());
 
-            server.removeBoard("seriale 123");
+            server.removeBoard(testBoard.getId());
 
             assertTrue(server.listBoards().isEmpty());
 

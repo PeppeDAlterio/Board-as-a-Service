@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.client;
 
+import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 
@@ -26,12 +27,14 @@ public abstract class Client {
      * @param serverIp String ip of the server
      * @param serverPort int port on which the server is listening on
      * @throws IOException if an I/O error occurs when creating the socket
+     * @throws IllegalArgumentException if the port parameter is outside the specified range of valid port values,
+     *                                  which is between 0 and 65535, inclusive.
      */
-    public abstract void connect(String serverIp, int serverPort) throws IOException;
+    public abstract void connect(String serverIp, int serverPort) throws IOException, IllegalArgumentException;
 
     /**
      * Start a new client connection to a specific server.
-     * Default Server port will be used (see Server.DEFUALT_PORT)
+     * Default Server port will be used (see Server.DEFAULT_PORT)
      * @param serverIp String ip of the server
      * @throws IOException if an I/O error occurs when creating the socket
      */
@@ -43,7 +46,7 @@ public abstract class Client {
     public abstract void disconnect();
 
     /**
-     * Requested a board from the connected server.
+     * Request a board from the connected server.
      * @param boardId String serial number of the requested board
      * @throws NotConnectedException client is not connected to a server
      */
@@ -55,6 +58,20 @@ public abstract class Client {
     public abstract void releaseBoard();
 
     /**
+     * Request a flash on the connected board
+     * @param file String path to the file to flash
+     * @throws BoardNotAvailableException no board connected
+     */
+    public abstract void flash(String file) throws BoardNotAvailableException, IOException;
+
+    /**
+     * Request a flash on the connected board
+     * @param port int port to listen of for debug session
+     * @throws BoardNotAvailableException no board connected
+     */
+    public abstract void debug(int port) throws BoardNotAvailableException, IllegalArgumentException;
+
+    /**
      * Get client connected state
      * @return boolean true if connected, false otherwise
      */
@@ -64,5 +81,5 @@ public abstract class Client {
      * Get connected board, if exists. Empty otherwise
      * @return Optional connected board, if exists or empty otherwise
      */
-    public abstract Optional<Board> boardConnected();
+    public abstract Optional<Board> board();
 }

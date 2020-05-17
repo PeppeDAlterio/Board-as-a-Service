@@ -32,6 +32,16 @@ public abstract class ServerProxy {
     public abstract String receive() throws IOException;
 
     /**
+     * Transfers a file to the server
+     * @param preMessage String message to be send before the file transfer
+     * @param postMessage String message to be send when file transfer completes
+     * @param file String path to the file to transfer
+     * @param extension String file extension
+     * @throws IOException
+     */
+    public abstract void sendFile(String preMessage, String postMessage, String file, String extension) throws IOException;
+
+    /**
      * Send a string message to the server
      * @param msg String message
      */

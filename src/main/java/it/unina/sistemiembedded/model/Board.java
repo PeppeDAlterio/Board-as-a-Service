@@ -39,6 +39,8 @@ public class Board implements Serializable {
 
     private boolean inUse = false;
 
+    private Process debuggingProcess;
+
     /**
      * Deserializer constructor
      * @param serializedBoard String serialized board

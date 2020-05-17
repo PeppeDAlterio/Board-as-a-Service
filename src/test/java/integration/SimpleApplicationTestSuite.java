@@ -1,7 +1,9 @@
 package integration;
 
+import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SimpleApplicationTestSuite {
+class SimpleApplicationTestSuite {
 
     private ServerImpl server;
 
@@ -57,7 +60,7 @@ public class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("Client connection")
-    public void clientConnectTest1() {
+    void clientConnectTest1() {
 
         ClientImpl client;
 
@@ -72,7 +75,7 @@ public class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("Two clients requesting 2 boards")
-    public void requestBoardTest1() throws IOException {
+    void requestBoardTest1() throws IOException {
 
         ClientImpl client1, client2;
 
@@ -112,7 +115,7 @@ public class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("Client requesting non-existing board")
-    public void requestBoardTest2() throws IOException {
+    void requestBoardTest2() throws IOException {
 
         ClientImpl client1;
 
@@ -140,7 +143,7 @@ public class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("Client request a board held by a disconnected client.")
-    public void requestBoardTest3() throws IOException {
+    void requestBoardTest3() throws IOException {
 
         ClientImpl client1, client2;
 
@@ -187,7 +190,7 @@ public class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("Client requests a board then release it.")
-    public void releaseBoardTest1() throws IOException {
+    void releaseBoardTest1() throws IOException {
 
         ClientImpl client1;
 
@@ -237,6 +240,51 @@ public class SimpleApplicationTestSuite {
 
         assertFalse(testBoard1.isInUse());
         assertFalse(testBoard2.isInUse());
+
+    }
+
+    @Test
+    @DisplayName("Flash file transfer test")
+    public void flashRequestTest1() throws IOException {
+
+        Client client = new ClientImpl("Client");
+
+        client.connect("127.0.0.1");
+
+        client.requestBoard(testBoard1.getId());
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertDoesNotThrow( () -> client.flash("src/main/resources/testfile.elf"));
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertTrue(new File("received/" + testBoard1.getSerialNumber() + "/testfile.elf").exists());
+        assertTrue(new File("received/" + testBoard1.getSerialNumber() + "/testfile.elf").delete());
+
+        //noinspection ResultOfMethodCallIgnored
+        new File("received/" + testBoard1.getSerialNumber()).delete();
+
+
+    }
+
+    @Test
+    @DisplayName("Flash without a board")
+    public void flashRequestTest2() throws IOException {
+
+        Client client = new ClientImpl("Client");
+
+        client.connect("127.0.0.1");
+
+        assertThrows( BoardNotAvailableException.class, () -> client.flash("src/main/resources/testfile.elf"));
 
     }
 

@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.ServerProxy;
+import it.unina.sistemiembedded.utility.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -8,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,6 +40,55 @@ public class ServerProxyImpl extends ServerProxy {
     @Override
     public String receive() throws IOException {
         return this.dis.readUTF();
+    }
+
+    @Override
+    public void sendFile(String preMessage, String postMessage, String file, String extension) throws IOException {
+
+        messagingLock.lock();
+        try {
+
+            File myFile = new File(file);
+
+            if (!myFile.exists()) {
+                throw new IllegalArgumentException("Il file specificato non esiste");
+            }
+
+            FileInputStream fis = new FileInputStream(myFile);
+
+            if(!StringUtils.isBlank(preMessage)) {
+                dos.writeUTF(preMessage);
+            }
+
+            dos.writeUTF(Constants.BEGIN_FILE_TX);
+
+            dos.writeUTF(myFile.getName());
+
+            dos.writeLong(myFile.length());
+
+            long totalCount = 0L;
+            int count;
+            byte[] buffer = new byte[1024];
+            while ((count = fis.read(buffer)) > 0) {
+                dos.write(buffer, 0, count);
+                dos.flush();
+                totalCount += count;
+            }
+
+            assert totalCount == myFile.length();
+
+            dos.writeUTF(Constants.END_FILE_TX);
+
+            fis.close();
+
+            if(!StringUtils.isBlank(postMessage)) {
+                dos.writeUTF(postMessage);
+            }
+
+        } finally {
+            messagingLock.unlock();
+        }
+
     }
 
 

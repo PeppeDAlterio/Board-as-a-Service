@@ -2,6 +2,7 @@ package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.ServerProxy;
+import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
@@ -42,6 +43,9 @@ public class ClientImpl extends Client {
 
     @Override
     public void connect(String serverIp, int serverPort) throws IOException {
+
+        if(serverPort<0 || serverPort>65535)
+            throw new IllegalArgumentException("The port parameter is outside the specified range");
 
         try {
 
@@ -98,6 +102,41 @@ public class ClientImpl extends Client {
         return (this.server!=null && this.server.isConnected());
     }
 
+    @Override
+    public void flash(String file) throws BoardNotAvailableException, IOException {
+
+        if(!board().isPresent()) {
+            throw new BoardNotAvailableException();
+        }
+
+        logger.debug("[flash] Flash requested ...");
+
+        //TODO: Board specific extension !!
+        this.server.sendFile(Commands.Flash.REQUEST, "", file, ".elf");
+
+    }
+
+    @Override
+    public void debug(int port) throws BoardNotAvailableException, IllegalArgumentException {
+
+        if(!board().isPresent()) {
+            throw new BoardNotAvailableException();
+        }
+
+        if(port<0 || port>65535)
+            throw new IllegalArgumentException("The port parameter is outside the specified range");
+
+        logger.debug("[debug] Debug requested on port " + port + " ...");
+
+        this.server.sendMessages(Commands.Debug.REQUEST, String.valueOf(port));
+
+    }
+
+    @Override
+    public Optional<Board> board() {
+        return Optional.ofNullable(this.board);
+    }
+
     /**
      * Thread listening for new messages
      */
@@ -139,23 +178,49 @@ public class ClientImpl extends Client {
 
         if(StringUtils.isBlank(message)) return;
 
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[parseReceivedMessage] ");
+
         switch (message) {
 
+            // ATTACH ON BOARD
+
             case Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD:
-                logger.debug("[parseReceivedMessage] Transfer board message received");
-                receiveAndSetBoardCommand();
+                stringBuilder.append("Transfer board message received");
+                receiveAndSetBoardCallback();
                 break;
+
+            //
+            // DETACH FROM BOARD
 
             case Commands.DetachFromBoard.SUCCESS:
-                logger.debug("[parseReceivedMessage] Detach from board ack received");
-                detachBoardCommand();
+                stringBuilder.append("Detach from board ack received");
+                detachBoardCallback();
                 break;
 
+            //
+            // FLASH
+
+            case Commands.Flash.SUCCESS:
+                stringBuilder.append("Detach from board success ack received");
+                flashCallback("success");
+                break;
+
+            case Commands.Flash.ERROR:
+                stringBuilder.append("Detach from board error ack received");
+                flashCallback("error");
+                break;
+
+            //
+            // SIMPLE MESSAGE
+
             default:
-                logger.info("[parseReceivedMessage] Received: " + message);
+                stringBuilder.append("Received: ").append(message);
                 break;
 
         }
+
+        logger.debug(stringBuilder.toString());
 
     }
 
@@ -163,7 +228,7 @@ public class ClientImpl extends Client {
      * Receives a serialized board and set it.
      * @throws IOException error while receiving the board
      */
-    private void receiveAndSetBoardCommand() throws IOException {
+    private void receiveAndSetBoardCallback() throws IOException {
 
         String serializedBoard = this.server.receive();
 
@@ -185,12 +250,17 @@ public class ClientImpl extends Client {
     /**
      * Concrete detaches the board
      */
-    private void detachBoardCommand() {
+    private void detachBoardCallback() {
         this.board = null;
     }
 
-    @Override
-    public Optional<Board> boardConnected() {
-        return Optional.ofNullable(this.board);
+    /**
+     *
+     */
+    private void flashCallback(String result) {
+
+        logger.info("[flashCallback] Flash complete with result: " + result);
+
     }
+
 }

@@ -136,7 +136,7 @@ public class ServerImpl extends Server {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (boards.putIfAbsent(board.getId(), board) != null) {
+            if (listBoards().contains(board) || boards.putIfAbsent(board.getId(), board) != null) {
                 throw new BoardAlreadyExistsException("Board '" + board.getId() + "' already exists");
             }
         } finally {
