@@ -23,6 +23,16 @@ public class ClientHandlerImpl extends ClientHandler {
     private final Logger logger = LoggerFactory.getLogger(ClientHandlerImpl.class);
 
     /**
+     * Input stream of the client
+     */
+    private final DataInputStream dis;
+
+    /**
+     * Output stream of the client
+     */
+    private final DataOutputStream dos;
+
+    /**
      * Client name
      */
     private String name;
@@ -44,11 +54,13 @@ public class ClientHandlerImpl extends ClientHandler {
      * @param id     long client id
      * @param server Server Server that handles the client
      * @param socket Socket Socket connected to the client
-     * @param dis    DataInputStream Input stream of the client
-     * @param dos    DataOutputStream Output stream of the client
      */
-    protected ClientHandlerImpl(long id, Server server, Socket socket, DataInputStream dis, DataOutputStream dos) {
-        super(id, server, socket, dis, dos);
+    protected ClientHandlerImpl(long id, Server server, Socket socket) throws IOException {
+        super(id, server, socket);
+
+        this.dis = new DataInputStream(socket.getInputStream());
+        this.dos = new DataOutputStream(socket.getOutputStream());
+
     }
 
     @Override
@@ -397,7 +409,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             while (currentBytes < fileSize) {
 
-                int availableBytes = 0;
+                int availableBytes;
                 if ((availableBytes = dis.available()) > 0) {
 
                     int bytesToRead = Math.min((int) (fileSize - currentBytes), availableBytes);

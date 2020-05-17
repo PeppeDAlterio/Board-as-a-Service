@@ -217,7 +217,7 @@ public class ServerImpl extends Server {
 
                             // Create a new handler object for handling this request.
                             ClientHandler clientHandler = new ClientHandlerImpl(clientSequencer.getAndIncrement(),
-                                    this, socket, dis, dos);
+                                    this, socket);
 
                             addClientHandler(clientHandler);
 

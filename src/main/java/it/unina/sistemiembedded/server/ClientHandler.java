@@ -2,8 +2,6 @@ package it.unina.sistemiembedded.server;
 
 import it.unina.sistemiembedded.model.Board;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.Socket;
 
 public abstract class ClientHandler implements Runnable {
@@ -12,16 +10,6 @@ public abstract class ClientHandler implements Runnable {
      * Client handler id
      */
     protected long id;
-
-    /**
-     * Input stream of the client
-     */
-    protected final DataInputStream dis;
-
-    /**
-     * Output stream of the client
-     */
-    protected final DataOutputStream dos;
 
     /**
      * Socket connected to the client
@@ -38,13 +26,9 @@ public abstract class ClientHandler implements Runnable {
      * @param id long client id
      * @param server Server Server that handles the client
      * @param socket Socket Socket connected to the client
-     * @param dis DataInputStream Input stream of the client
-     * @param dos DataOutputStream Output stream of the client
      */
-    protected ClientHandler(long id, Server server, Socket socket, DataInputStream dis, DataOutputStream dos) {
+    protected ClientHandler(long id, Server server, Socket socket) {
         this.id = id;
-        this.dis = dis;
-        this.dos = dos;
         this.socket = socket;
         this.server = server;
     }
