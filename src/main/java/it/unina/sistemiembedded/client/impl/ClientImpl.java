@@ -1,47 +1,35 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.exception.BoardNotFoundException;
-import it.unina.sistemiembedded.exception.ClientNotConnectedException;
+import it.unina.sistemiembedded.client.ServerProxy;
+import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Optional;
 
 @Getter @Setter
 public class ClientImpl extends Client {
 
     private final Logger logger = LoggerFactory.getLogger(ClientImpl.class);
 
+    private ServerProxy server;
     private String serverIpAddress;
     private int serverPort;
 
-    private Socket socket;
+    private Board board;
 
     private Thread listeningThread;
 
-    private DataInputStream dis;
-    private DataOutputStream dos;
-
-    /**
-     * Lock for DataOutputStream
-     */
-    private final Lock messagingLock = new ReentrantLock(true);
-
-    private Board connectedBoard;
-
-    //private Process debugProcess = null;
 
     public ClientImpl(String name) {
         super(name);
@@ -57,19 +45,16 @@ public class ClientImpl extends Client {
 
         try {
 
-            this.socket = new Socket(InetAddress.getByName(serverIp), serverPort);
-
-            this.dis = new DataInputStream(socket.getInputStream());
-            this.dos = new DataOutputStream(socket.getOutputStream());
-
-            sendMessage(this.name);
+            this.server = new ServerProxyImpl(new Socket(InetAddress.getByName(serverIp), serverPort));
 
             this.serverIpAddress = serverIp;
             this.serverPort = serverPort;
 
+            this.server.sendMessage(this.name);
+
             waitForMessagesAsync();
 
-            logger.info("[connected] Connected to: "  + serverIp+":"+serverPort );
+            logger.info("[connected] Proxy to: "  + serverIp+":"+serverPort + " successfully created" );
 
         } catch (IOException e){
             logger.error("[connect] there was a problem during the connection to: " + serverIp + ":" + serverPort);
@@ -81,9 +66,10 @@ public class ClientImpl extends Client {
     @Override
     public void disconnect() {
 
-        try {
-            this.socket.close();
-        } catch (IOException ignored) {}
+        this.releaseBoard();
+        this.board = null;
+
+        this.server.disconnect();
 
         this.listeningThread.interrupt();
 
@@ -92,32 +78,51 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void attachOnBoardRequest(String serialNumber) throws ClientNotConnectedException, BoardNotFoundException {
+    public void requestBoard(String boardId) throws NotConnectedException {
 
-        sendMessages(Commands.AttachOnBoard.Request.REQUEST, serialNumber);
+        if(!this.isConnected()) {
+            throw new NotConnectedException();
+        }
+
+        this.server.sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardId);
 
     }
 
     @Override
-    public boolean isConnected() {
-        return this.socket.isConnected();
+    public void releaseBoard() {
+        this.server.sendMessage(Commands.DetachFromBoard.REQUEST);
     }
 
+    @Override
+    public boolean isConnected() {
+        return (this.server!=null && this.server.isConnected());
+    }
+
+    /**
+     * Thread listening for new messages
+     */
     private void waitForMessagesAsync() {
+
+        if(listeningThread!=null && listeningThread.isAlive()) {
+            logger.info("[waitForMessagesAsync] Thread already started and running");
+            return;
+        }
 
         listeningThread = new Thread( () -> {
 
-            String buffer;
-            while (isConnected()) {
+            while (server.isConnected()) {
 
                 try {
-                    parseReceivedMessage(this.dis.readUTF());
+
+                    parseReceivedMessage(this.server.receive());
+
                 } catch (IOException e) {
-                    logger.error("[waitForMessagesAsync] Connection lost");
                     break;
                 }
 
             }
+
+            logger.error("[waitForMessagesAsync] Server disconnected");
 
         });
 
@@ -125,72 +130,67 @@ public class ClientImpl extends Client {
 
     }
 
+    /**
+     * Received message parse
+     * @param message String received message
+     * @throws IOException error with some commands that need other messages to be read
+     */
     private void parseReceivedMessage(String message) throws IOException {
+
+        if(StringUtils.isBlank(message)) return;
 
         switch (message) {
 
-            case Commands.AttachOnBoard.Request.TRANSFER_BOARD:
+            case Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD:
                 logger.debug("[parseReceivedMessage] Transfer board message received");
-                attachOnBoard();
+                receiveAndSetBoardCommand();
+                break;
+
+            case Commands.DetachFromBoard.SUCCESS:
+                logger.debug("[parseReceivedMessage] Detach from board ack received");
+                detachBoardCommand();
                 break;
 
             default:
                 logger.info("[parseReceivedMessage] Received: " + message);
                 break;
+
         }
-
-    }
-
-    private void attachOnBoard() throws IOException {
-        String serializedBoard = this.dis.readUTF();
-        String[] boardData = serializedBoard.split(Board.SERIALIZATION_SEPARATOR);
-        if(boardData.length!=Board.SERIALIZATION_NUMBER_OF_FIELDS) {
-            logger.error("[parseReceivedMessage] Bad Board received: " + serializedBoard);
-            sendMessage(Commands.AttachOnBoard.Response.ERROR);
-        } else {
-            setConnectedBoard(new Board(boardData[0], boardData[1], null));
-            sendMessage(Commands.AttachOnBoard.Response.SUCCESS);
-        }
-    }
-
-    private void setConnectedBoard(Board connectedBoard) {
-        this.connectedBoard = connectedBoard;
-        this.connectedBoard.setInUse(true);
-    }
-
-    public void sendMessages(String ... messages) {
-
-        messagingLock.lock();
-        try {
-            for (String m : messages) {
-                sendMessage(m);
-            }
-        } finally {
-            messagingLock.unlock();
-        }
-
 
     }
 
     /**
-     * The method is NOT thread-safe !!
-     * @param msg String message to send over DataOutputStream
+     * Receives a serialized board and set it.
+     * @throws IOException error while receiving the board
      */
-    public void sendMessage(String msg) {
+    private void receiveAndSetBoardCommand() throws IOException {
 
-        if(!isConnected()) return;
+        String serializedBoard = this.server.receive();
 
-        messagingLock.lock();
         try {
-            logger.debug("[sendMessage] Sending message: " + msg);
-            this.dos.writeUTF(msg);
-        } catch (IOException e) {
-            logger.error("[sendMessage] Connection lost.");
-            this.disconnect();
-        } finally {
-            messagingLock.unlock();
+
+            Board board = new Board(serializedBoard);
+            board.setInUse(true);
+            setBoard(board);
+
+            this.server.sendMessage(Commands.AttachOnBoard.SUCCESS);
+
+        } catch (Exception e) {
+            logger.error("[parseReceivedMessage] Bad Board received: " + serializedBoard);
+            this.server.sendMessage(Commands.AttachOnBoard.ERROR);
         }
 
     }
 
+    /**
+     * Concrete detaches the board
+     */
+    private void detachBoardCommand() {
+        this.board = null;
+    }
+
+    @Override
+    public Optional<Board> boardConnected() {
+        return Optional.ofNullable(this.board);
+    }
 }

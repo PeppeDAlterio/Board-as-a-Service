@@ -8,7 +8,7 @@ import it.unina.sistemiembedded.model.Board;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 public abstract class Server {
 
@@ -76,11 +76,11 @@ public abstract class Server {
 
     /**
      * Remove a board from the server board list
-     * @param serialNumber String board serial number
+     * @param boardId String board object id
      * @throws BoardNotFoundException board not found on the server
      * @return Server this
      */
-    abstract public Server removeBoard(String serialNumber) throws BoardNotFoundException;
+    abstract public Server removeBoard(String boardId) throws BoardNotFoundException;
 
     /**
      * Get the server running state.
@@ -90,13 +90,15 @@ public abstract class Server {
 
     /**
      * Get all boards shared by the server
-     * @return Collection of Boards
+     * @return List list of Boards
      */
-    abstract public Collection<Board> listBoards();
+    abstract public List<Board> listBoards();
 
     abstract public boolean existsBoardBySerialNumber(String serialNumber);
 
-    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String serialNumber)
+    abstract public boolean existsBoardById(String boardId);
+
+    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String boardId)
             throws BoardNotFoundException, BoardAlreadyInUseException;
 
     /**

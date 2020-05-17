@@ -7,6 +7,7 @@ import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-@Getter
+@Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandlerImpl.class);
@@ -55,6 +56,8 @@ public class ClientHandlerImpl extends ClientHandler {
     public void stop() {
 
         this.running = false;
+
+        this.detachBoard();
 
         try {
             if(this.socket.isConnected()) {
@@ -121,7 +124,7 @@ public class ClientHandlerImpl extends ClientHandler {
         this.board = board;
         this.board.setInUse(true);
 
-        sendMessagesToClient(Commands.AttachOnBoard.Request.TRANSFER_BOARD, board.toString());
+        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.toString());
 
         return this.board;
 
@@ -158,21 +161,32 @@ public class ClientHandlerImpl extends ClientHandler {
 
         switch (message) {
 
-            case Commands.AttachOnBoard.Request.REQUEST:
+            case Commands.AttachOnBoard.REQUEST_BOARD:
 
-                stringBuilder.append(" Wants to attach on a board");
+                stringBuilder.append(" request a board: ");
                 Board board = startAttachOnBoard();
+                if(board!=null) {
+                    stringBuilder.append(board.getId());
+                } else {
+                    stringBuilder.append("??");
+                }
 
                 break;
 
-            case Commands.AttachOnBoard.Response.SUCCESS:
-                stringBuilder.append(" Successfully attached on Board: ").append(this.board.getSerialNumber());
+            case Commands.AttachOnBoard.SUCCESS:
+                stringBuilder.append("Successfully attached on Board: ").append(this.board.getSerialNumber());
 
                 break;
 
-            case Commands.AttachOnBoard.Response.ERROR:
-                stringBuilder.append(" There was an error attaching on board: ").append(this.board.getSerialNumber());
+            case Commands.AttachOnBoard.ERROR:
+                stringBuilder.append("There was an error attaching on board: ").append(this.board.getSerialNumber());
                 detachBoard();
+
+                break;
+
+            case Commands.DetachFromBoard.REQUEST:
+                stringBuilder.append("Detach board request");
+                detachBoardRequest();
 
                 break;
 
@@ -199,9 +213,9 @@ public class ClientHandlerImpl extends ClientHandler {
             try {
                 server.attachBoardOnClient(this, serialNumber);
             } catch (BoardAlreadyInUseException e) {
-                sendMessageToClient(Commands.AttachOnBoard.Response.BOARD_BUSY);
+                sendMessageToClient(Commands.AttachOnBoard.BOARD_BUSY);
             } catch (BoardNotFoundException e) {
-                sendMessageToClient(Commands.AttachOnBoard.Response.BOARD_NOT_FOUND);
+                sendMessageToClient(Commands.AttachOnBoard.BOARD_NOT_FOUND);
             }
 
         } catch (IOException e) {
@@ -210,6 +224,19 @@ public class ClientHandlerImpl extends ClientHandler {
 
 
         return this.board;
+
+    }
+
+    private void detachBoardRequest() {
+
+        if(this.getBoard()!=null) {
+            synchronized (this.getBoard()) {
+                this.getBoard().setInUse(false);
+            }
+            this.setBoard(null);
+        }
+
+        sendMessageToClient(Commands.DetachFromBoard.SUCCESS);
 
     }
 
@@ -237,7 +264,7 @@ public class ClientHandlerImpl extends ClientHandler {
             }
         } catch (IOException e) {
             logger.error("[sendMessageToClient] Connectino lost");
-            stop();
+            this.stop();
         }
     }
 

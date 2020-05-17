@@ -1,9 +1,10 @@
 package it.unina.sistemiembedded.client;
 
-import it.unina.sistemiembedded.exception.BoardNotFoundException;
-import it.unina.sistemiembedded.exception.ClientNotConnectedException;
+import it.unina.sistemiembedded.exception.NotConnectedException;
+import it.unina.sistemiembedded.model.Board;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public abstract class Client {
 
@@ -42,16 +43,26 @@ public abstract class Client {
     public abstract void disconnect();
 
     /**
-     * Attache the client to a board offered by the connected server.
-     * @param serialNumber String serial number of the requested board
-     * @throws ClientNotConnectedException client is not connected to a server
-     * @throws BoardNotFoundException board not found, or not available, in connected server
+     * Requested a board from the connected server.
+     * @param boardId String serial number of the requested board
+     * @throws NotConnectedException client is not connected to a server
      */
-    public abstract void attachOnBoardRequest(String serialNumber) throws ClientNotConnectedException, BoardNotFoundException;
+    public abstract void requestBoard(String boardId) throws NotConnectedException;
+
+    /**
+     * Release the connected board, if exists.
+     */
+    public abstract void releaseBoard();
 
     /**
      * Get client connected state
      * @return boolean true if connected, false otherwise
      */
     public abstract boolean isConnected();
+
+    /**
+     * Get connected board, if exists. Empty otherwise
+     * @return Optional connected board, if exists or empty otherwise
+     */
+    public abstract Optional<Board> boardConnected();
 }

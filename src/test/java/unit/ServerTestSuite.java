@@ -56,9 +56,7 @@ public class ServerTestSuite {
 
         server = new ServerImpl("Server name", 1234);
         assertDoesNotThrow(()->server.start());
-        assertThrows(IOException.class, () -> {
-            new ServerImpl("server name", 1234).start();
-        });
+        assertThrows(IOException.class, () -> new ServerImpl("server name", 1234).start());
 
     }
 
@@ -68,16 +66,16 @@ public class ServerTestSuite {
 
         server = new ServerImpl("Server name", 1234);
         assertDoesNotThrow( () -> {
-            server.addBoards(new Board("seriale 123", null),
-                             new Board("seriale 456", null),
-                             new Board("seriale 789", null));
+            server.addBoards(new Board("mia scheda 1","seriale 123"),
+                             new Board("mia scheda 2","seriale 456"),
+                             new Board("mia scheda 3", "seriale 789"));
 
             assertEquals(3, server.listBoards().size());
 
         });
 
         assertThrows(BoardAlreadyExistsException.class,
-                () -> server.addBoard(new Board( "seriale 123", null)));
+                () -> server.addBoard(new Board( "mia scheda 3","seriale 123")));
 
     }
 
@@ -90,11 +88,11 @@ public class ServerTestSuite {
 
             assertTrue(server.listBoards().isEmpty());
 
-            server.addBoard(new Board( "seriale 123", null));
+            server.addBoard(new Board( "mia scheda","seriale 123", null));
 
             assertEquals(1, server.listBoards().size());
 
-            assertEquals(new Board( "seriale 123", null),
+            assertEquals(new Board( "mia scheda","seriale 123", null),
                     server.listBoards().iterator().next());
 
             server.removeBoard("seriale 123");

@@ -33,7 +33,7 @@ public class ServerImpl extends Server {
     private boolean running = false;
 
     /**
-     * Server boards map: (serial number, board)
+     * Server boards map: (id, board)
      */
     private final Map<String, Board> boards = new HashMap<>();
 
@@ -136,8 +136,8 @@ public class ServerImpl extends Server {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (boards.putIfAbsent(board.getSerialNumber(), board) != null) {
-                throw new BoardAlreadyExistsException("Board '" + board.getSerialNumber() + "' already exists");
+            if (boards.putIfAbsent(board.getId(), board) != null) {
+                throw new BoardAlreadyExistsException("Board '" + board.getId() + "' already exists");
             }
         } finally {
             boardsRWLock.writeLock().unlock();
@@ -158,12 +158,12 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public Server removeBoard(String serialNumber) throws BoardNotFoundException {
+    public Server removeBoard(String boardId) throws BoardNotFoundException {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (!boards.remove(serialNumber, boards.get(serialNumber))) {
-                throw new BoardNotFoundException("Board '" + serialNumber + "' not found");
+            if (!boards.remove(boardId, boards.get(boardId))) {
+                throw new BoardNotFoundException("Board '" + boardId + "' not found");
             }
         } finally {
             boardsRWLock.writeLock().unlock();
@@ -179,8 +179,8 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public Collection<Board> listBoards() {
-        return boards.values();
+    public List<Board> listBoards() {
+        return new ArrayList<>(boards.values());
     }
 
     @Override
@@ -203,21 +203,31 @@ public class ServerImpl extends Server {
 
                 while(this.isRunning()) {
 
-                    Socket socket = serverSocket.accept();
+                    final Socket socket = serverSocket.accept();
 
                     logger.info("[waitForClientsAsync] New client connection request received: " + socket);
 
-                    // obtain input and output streams
-                    DataInputStream dis = new DataInputStream(socket.getInputStream());
-                    DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+                    new Thread( () -> {
 
-                    // Create a new handler object for handling this request.
-                    ClientHandler clientHandler = new ClientHandlerImpl(clientSequencer.getAndIncrement(),
-                            this, socket, dis, dos);
+                        // obtain input and output streams
+                        try {
 
-                    addClientHandler(clientHandler);
+                            DataInputStream dis = new DataInputStream(socket.getInputStream());
+                            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
-                    clientHandler.run();
+                            // Create a new handler object for handling this request.
+                            ClientHandler clientHandler = new ClientHandlerImpl(clientSequencer.getAndIncrement(),
+                                    this, socket, dis, dos);
+
+                            addClientHandler(clientHandler);
+
+                            clientHandler.run();
+
+                        } catch (IOException e) {
+                            logger.error("[waitForClientsAsync] Error while opening socket streams");
+                        }
+
+                    }).start();
 
                 }
 
@@ -234,20 +244,25 @@ public class ServerImpl extends Server {
 
     @Override
     public boolean existsBoardBySerialNumber(String serialNumber) {
-        return boards.containsKey(serialNumber);
+        return boards.values().parallelStream().anyMatch(board -> board.getSerialNumber().equalsIgnoreCase(serialNumber));
+    }
+
+    @Override
+    public boolean existsBoardById(String boardId) {
+        return false;
     }
 
     @Override
     public @Nullable Board attachBoardOnClient(ClientHandler clientHandler,
-                                               String serialNumber)
+                                               String boardId)
             throws BoardAlreadyInUseException, BoardNotFoundException {
 
-        Board board = null;
+        Board board;
 
         boardsRWLock.writeLock().lock();
         try {
 
-            board = boards.get(serialNumber);
+            board = boards.get(boardId);
 
             if (board == null) {
                 throw new BoardNotFoundException();
