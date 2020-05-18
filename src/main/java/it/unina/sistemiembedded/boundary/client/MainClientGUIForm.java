@@ -72,6 +72,7 @@ public class MainClientGUIForm extends  JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO : Refresh board list for each lab
+
             }
         });
     }
