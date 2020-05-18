@@ -29,7 +29,4 @@ public class RemoteDebugForm extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
-        RemoteDebugForm remoteDebugForm = new RemoteDebugForm();
-    }
 }

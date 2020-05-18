@@ -4,12 +4,14 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
+import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
+@Getter
 public abstract class Server {
 
     public static final int DEFAULT_PORT = 1234;

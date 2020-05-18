@@ -35,7 +35,4 @@ public class SendMessageForm extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
-        SendMessageForm sendMessageForm = new SendMessageForm();
-    }
 }
