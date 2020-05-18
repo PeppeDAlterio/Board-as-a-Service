@@ -26,7 +26,4 @@ public class RemoteFlashForm extends JFrame{
         });
     }
 
-    public static void main(String[] args) {
-        RemoteFlashForm remoteFlashForm = new RemoteFlashForm();
-    }
 }

@@ -1,10 +1,16 @@
-package it.unina.sistemiembedded.boundary.client;
+package it.unina.sistemiembedded.main;
+
+import it.unina.sistemiembedded.boundary.client.ChoiseForm;
+import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.client.impl.ClientImpl;
+import it.unina.sistemiembedded.server.impl.ServerImpl;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainClientGUIForm extends  JFrame{
@@ -46,19 +52,25 @@ public class MainClientGUIForm extends  JFrame{
             public void valueChanged(ListSelectionEvent e) {
                 modelBoard.clear();
                 Lab lab_selected = (Lab) listLab.getSelectedValue();
-                for(int i=0 ;i<lab_selected.getBoard().size();i++)
-                    modelBoard.addElement(lab_selected.getBoard().get(i).toString());
+
             }
         });
         buttonStartConnection.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = textFieldName.getText();
-                String surname = textFieldSurname.getText();
-                if(name.compareTo("")==0 | surname.compareTo("")==0){
+                String ipAddress = "localhost";
+                if(name.compareTo("")==0 ){
                     JOptionPane.showMessageDialog(null,"name or surname can not be blank !","Error message",JOptionPane.ERROR_MESSAGE);
-                }else
-                    new ChoiseForm(name,surname,listLab.getSelectedValue().toString(),listBoard.getSelectedValue().toString());
+                }else {
+                    ClientImpl client = new ClientImpl(name);
+                    try {
+                        client.connect(ipAddress);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString());
+                }
             }
         });
 
@@ -77,9 +89,8 @@ public class MainClientGUIForm extends  JFrame{
     }
 
     public static void main(String[] args) {
-        MainClientGUIForm mainClientGUIForm = new MainClientGUIForm();
+        new MainClientGUIForm();
     }
-
     //STUB
     public class Lab{
         private String exampleLab[] = {"Claudio LAB1","Agnano LAB3"};
