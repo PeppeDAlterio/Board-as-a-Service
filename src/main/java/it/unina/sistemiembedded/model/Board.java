@@ -202,4 +202,11 @@ public class Board implements Serializable {
                 this.name + SERIALIZATION_SEPARATOR +
                 this.serialNumber ;
     }
+
+    @Override
+    public String toString() {
+        return "[  ID = " + this.id +
+                "  |  Name = " + this.name+
+                "  |  Serial Number = " + this.serialNumber+"  ] \n";
+    }
 }
