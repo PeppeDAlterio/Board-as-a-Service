@@ -15,13 +15,13 @@ public class SetSerialParamForm extends JFrame {
     private JPanel mainPanel;
     private JTextField textFieldParity;
 
-    public SetSerialParamForm(Board board,String boardName){
+    public SetSerialParamForm(Board board){
         System.out.println("SetSerialParamForm");
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setTitle(boardName+" serial parameters");
+        this.setTitle(board.getName()+" serial parameters");
         textFieldBaudRate.setText("115200");
         textFieldNumData.setText("8");
         textFieldStopBit.setText("1");
