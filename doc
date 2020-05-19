@@ -20,7 +20,7 @@ Successivamente avviene la connessione al server che può quindi usufruire delle
 Vi sono più scenari che vengono gestiti come di seguito:
 
     SCENARIO_0 : generico utente (lato server) vuole conoscere la lista dei client connessi
-            - Viene restituita la lista di tutti i client connessi in modo che il server ha la possibilità di scegliere colui che saraà in grado di soddisfare la richiesta
+            - Viene restituita la lista di tutti i client connessi in modo che il server ha la possibilità di scegliere colui che sarà in grado di soddisfare la richiesta
 
     SCENARIO_1 : generico utente (lato server) vuole inviare un messaggio al client per fornire un'informazione di qualsiasi tipo.
             - Il server inserisce prima l'ID del client con la quale vuole comunicare e successivamente il messaggio in questione

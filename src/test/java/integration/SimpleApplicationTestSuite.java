@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -286,7 +287,7 @@ class SimpleApplicationTestSuite {
 
         assertThrows( BoardNotAvailableException.class, () -> client.flash("src/main/resources/testfile.elf"));
 
-    }
+    }  
 
 }
 

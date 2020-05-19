@@ -2,74 +2,79 @@ package it.unina.sistemiembedded.utility;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import it.unina.sistemiembedded.client.impl.ClientImpl;
+import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.server.impl.ServerImpl;
 
 public class SystemHelper {
 
     public static void runCommandAndPrintOutputAsync(final String command) {
 
-        new Thread( () -> {
+        new Thread(() -> {
             try {
                 runCommandAndPrintOutput(command);
-            } catch (IOException ignored) { }
+            } catch (final IOException ignored) {
+            }
         }).start();
 
     }
 
     /**
      * Executes a command in CMD and prints output in Standard Output
+     * 
      * @param command String command to execute
      * @throws IOException
      */
-    public static void runCommandAndPrintOutput(String command) throws IOException {
+    public static void runCommandAndPrintOutput(final String command) throws IOException {
 
-        Process flashProcess = Runtime.getRuntime().exec(
-                "cmd.exe /c " +
-                        command
-        );
+        final Process flashProcess = Runtime.getRuntime().exec("cmd.exe /c " + command);
 
         try {
             flashProcess.waitFor();
 
-            int cnt=0;
+            int cnt = 0;
             try {
                 while ((cnt = flashProcess.getInputStream().available()) > 0) {
-                    byte[] buffer = new byte[cnt];
+                    final byte[] buffer = new byte[cnt];
                     flashProcess.getInputStream().read(buffer, 0, cnt);
                     System.out.println(new String(buffer));
                 }
                 System.out.println();
-            } catch (Exception ignored) {}
+            } catch (final Exception ignored) {
+            }
 
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static Process remoteDebug(int port, DataOutputStream dos) throws IOException {
+    public static Process remoteDebug(final int port, final DataOutputStream dos) throws IOException {
 
-        final Process flashProcess = Runtime.getRuntime().exec(
-                "."+Constants.GDB_PATH+Constants.GDB_EXE_NAME + " -d -p " + port +
-                        " -cp " + "."+Constants.STM_PROGRAMMER_PATH
-        );
+        final Process flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
+                + " -d -p " + port + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
 
-        new Thread( () -> {
+        new Thread(() -> {
 
             try {
                 while (flashProcess.isAlive()) {
-                    int cnt=0;
-                    if(((cnt = flashProcess.getInputStream().available()) > 0)) {
-                        byte[] buffer = new byte[cnt];
+                    int cnt = 0;
+                    if (((cnt = flashProcess.getInputStream().available()) > 0)) {
+                        final byte[] buffer = new byte[cnt];
                         flashProcess.getInputStream().read(buffer, 0, cnt);
                         System.out.println(new String(buffer));
                     }
                 }
                 System.out.println();
-            } catch (Exception ignored) {}
+            } catch (final Exception ignored) {
+            }
 
         }).start();
 
-        new Thread( () -> {
+        new Thread(() -> {
             try {
                 dos.writeUTF(Constants.DEBUG_STARTED);
                 System.out.println("Sessione di debug remoto avviata");
@@ -78,11 +83,102 @@ public class SystemHelper {
                 synchronized (dos) {
                     dos.writeUTF(Constants.END_OF_DEBUG);
                 }
-            } catch (InterruptedException | IOException ignored) { }
+            } catch (InterruptedException | IOException ignored) {
+            }
         }).start();
 
         return flashProcess;
 
     }
 
+    /**
+     * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
+     * store the serial number and name
+     * 
+     * @param none
+     * @throws IOException
+     */
+    public static List<Board> ListBoards() throws IOException {
+        int check = 0;
+        String buffer_str;
+        int i = 0;
+        ArrayList<Board> list = new ArrayList<Board>();
+
+        do {
+            try {
+                Process flashProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH
+                        + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=swd index=" + i);
+                flashProcess.waitFor();
+                int cnt = 0;
+
+                cnt = flashProcess.getInputStream().available();
+                byte[] buffer = new byte[cnt];
+                flashProcess.getInputStream().read(buffer, 0, cnt);
+                System.out.println(new String(buffer));
+                buffer_str = new String(buffer);
+
+                if (buffer_str.indexOf("Error") != -1) {
+                    check = 1;
+                    break;
+                }
+
+                String serialNumber = buffer_str.substring(
+                        buffer_str.indexOf("ST-LINK SN  : ") + "ST-LINK SN  : ".length(),
+                        buffer_str.indexOf("ST-LINK FW  : ") - 1);
+
+                String name = buffer_str.substring(buffer_str.indexOf("Device name : ") + "Device name : ".length(),
+                        buffer_str.indexOf("Flash size  : ") - 1);
+
+                list.add(new Board(name, serialNumber));
+
+                System.out.println();
+                i++;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } while (check != 1);
+
+        return list;
+    }  
+    
+    public void flashBoard(String nameC, String nameB){
+        ServerImpl server = new ServerImpl("Rosa", 1234);
+        ClientImpl client = new ClientImpl(nameC);
+        String boardId = server.listBoards().get(server.listBoards().indexOf(nameB)).getId();
+        client.requestBoard(boardId);         
+    }
+
+    /**
+     * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
+     * store the serial number and name
+     * 
+     * @param br Baudrate
+     * @param P parity
+     * @param db Bata Bit
+     * @param sb Stop Bit
+     * @param fc Flow Control
+     * @return none
+     * @throws IOException
+     */
+    public void com (String COM, int br, String P, int db, int sb, String fc){
+        try {
+            Process flashProcess = Runtime.getRuntime()
+                    .exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=" + COM
+                            + " br=" + br + " P=" + P + " db=" + db + " sb=" + sb + " fc=" + fc);
+            
+            flashProcess.waitFor();
+            int cnt = 0;
+            cnt = flashProcess.getInputStream().available();
+            byte[] buffer = new byte[cnt];
+            flashProcess.getInputStream().read(buffer, 0, cnt);
+            System.out.println(new String(buffer));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+   
 }
