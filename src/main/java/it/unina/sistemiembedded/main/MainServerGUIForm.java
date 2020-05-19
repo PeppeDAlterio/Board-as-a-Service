@@ -79,5 +79,6 @@ public class MainServerGUIForm extends JFrame {
         boardList.add(new Board("0","STM32F4x","XXXX",null,"1234"));
         boardList.add(new Board("1","STM32F3x","YYYY",null,"1234"));
         new MainServerGUIForm(boardList);
+
     }
 }

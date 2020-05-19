@@ -127,7 +127,7 @@ public class ClientHandlerImpl extends ClientHandler {
             this.board.setInUse(true);
         }
 
-        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.toString());
+        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.serialize());
 
         return this.board;
 

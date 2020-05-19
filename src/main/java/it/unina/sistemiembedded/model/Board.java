@@ -190,8 +190,7 @@ public class Board implements Serializable {
         return Objects.hash(id, serialNumber);
     }
 
-    @Override
-    public String toString() {
+    public String serialize() {
         return  this.id + SERIALIZATION_SEPARATOR +
                 this.name + SERIALIZATION_SEPARATOR +
                 this.serialNumber ;
