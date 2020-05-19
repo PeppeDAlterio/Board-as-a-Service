@@ -29,19 +29,19 @@ public class CustomOutputStream extends OutputStream {
     public void write(int b) throws IOException {
         buffer.append((char)b);
         if ( buffer.toString().endsWith("\r") || buffer.toString().endsWith("\n") ) {
-            if(buffer.toString().contains(".client.RemoteFlashForm")){
+            if(buffer.toString().contains(RedirectStream.TEXT_AREA_FLASH_CLIENT)){
                 subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
                 textAreaRemoteFlash.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(".client.RemoteDebugForm")){
+            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_DEGUB_CLEINT)){
                 subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
                 textAreaRemoteDegubFormDebug.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(".client.SendMessageForm")) {
+            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT)) {
                 subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
                 textAreaSendMessage.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(".server.")) {
+            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_ACTION_SERVER)) {
                 subBuffer = buffer.toString().substring(buffer.indexOf("%")+1,buffer.length());
                 textAreaServerStartedFromClientAction.append(subBuffer+"\n");
-            } else if(buffer.toString().contains(".client.")){
+            } else if(buffer.toString().contains(RedirectStream.TEXT_AREA_COMUNICATION_SERVER)){
                 subBuffer = buffer.toString().substring(buffer.indexOf("%")+1,buffer.length());
                 textAreaServerStartedFromClientComunication.append(subBuffer+"\n");
             }

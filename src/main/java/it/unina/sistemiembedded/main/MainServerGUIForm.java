@@ -5,6 +5,7 @@ import it.unina.sistemiembedded.boundary.server.SetSerialParamForm;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+import it.unina.sistemiembedded.utility.SystemHelper;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class MainServerGUIForm extends JFrame {
 
@@ -25,34 +26,38 @@ public class MainServerGUIForm extends JFrame {
 
     private ServerImpl server;
 
-    private Board[] getBoards(LinkedList<Board> boardList){
-        Board[] board = new Board[boardList.size()];
-        for(int i=0;i<boardList.size();i++)
-            board[i] = boardList.get(i);
-        return board;
+    private void addElementToList(ArrayList<Board> boardList){
+        if(boardList.size()!=0) {
+            for (int i = 0; i < server.listBoards().size(); i++)
+                defaultListModel.addElement(boardList.get(i));
+        }else{
+            defaultListModel.addElement("No avaible boards");
+        }
+
     }
-    
-    public MainServerGUIForm(LinkedList<Board> boardList) throws BoardAlreadyExistsException {
+
+    public MainServerGUIForm(ArrayList<Board> boardList) throws BoardAlreadyExistsException {
         super();
         this.setContentPane(MainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setTitle("Board as a Service Server Application");
-        //TODO : Inizializzare la lista delle comPort
+
         server = new ServerImpl("DEFAULT_NAME");
-        server.addBoards(getBoards(boardList));
+        server.addBoards(boardList.toArray(new Board[0]));
         defaultListModel = new DefaultListModel();
-        for(int i=0;i<server.listBoards().size();i++) {
-            defaultListModel.addElement(server.listBoards().get(i));
-        }
+        addElementToList(boardList);
         listBoard.setModel(defaultListModel);
+
 
         listBoard.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                Board selectedBoard = (Board) listBoard.getSelectedValue();
-                new SetSerialParamForm(selectedBoard,selectedBoard.getName());
+                if(listBoard.getSelectedValue().getClass().toString().contains("Board")){
+                    Board selectedBoard = (Board) listBoard.getSelectedValue();
+                    new SetSerialParamForm(selectedBoard);
+                }
             }
         });
 
@@ -72,12 +77,7 @@ public class MainServerGUIForm extends JFrame {
 
     public static void main(String[] args) throws BoardAlreadyExistsException {
 
-        //TODO  : Funzione che riconosce le board attive e torna una lista
-        //      : Board {Serial Number , name , com port}
-        //Per ora uso uno stub
-        LinkedList<Board> boardList = new LinkedList<>(); //Uso una linkedlist poichè inserisco con tempo O(1)
-        boardList.add(new Board("0","STM32F4x","XXXX",null,"1234"));
-        boardList.add(new Board("1","STM32F3x","YYYY",null,"1234"));
+        ArrayList<Board> boardList = (ArrayList<Board>) SystemHelper.listBoards();
         new MainServerGUIForm(boardList);
 
     }

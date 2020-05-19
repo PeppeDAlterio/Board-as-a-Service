@@ -39,7 +39,7 @@ public class SendMessageForm extends JFrame{
                     Date date = new Date();
                     System.out.println(SendMessageForm.class +"%"+"[ "+formatter.format(date)+" ]   "+message);
                     textFieldMessage.setText("");
-                    //TODO : Client.sendMessage(String msg)
+                    client.sendMessage(message);
                 }
             }
         });
