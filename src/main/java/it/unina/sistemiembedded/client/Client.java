@@ -84,4 +84,11 @@ public abstract class Client {
      * @return Optional connected board, if exists or empty otherwise
      */
     public abstract Optional<Board> board();
+
+    /**
+     * Sends a text message to the server
+     * @param message String message to be sent
+     */
+    public abstract void sendMessage(String message);
+
 }

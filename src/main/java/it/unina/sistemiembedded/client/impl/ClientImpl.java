@@ -137,6 +137,11 @@ public class ClientImpl extends Client {
         return Optional.ofNullable(this.board);
     }
 
+    @Override
+    public void sendMessage(String message) {
+        this.server.sendMessage(message);
+    }
+
     /**
      * Thread listening for new messages
      */
