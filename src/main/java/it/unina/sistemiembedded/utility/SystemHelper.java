@@ -95,14 +95,13 @@ public class SystemHelper {
      * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
      * store the serial number and name
      * 
-     * @param none
      * @throws IOException
      */
     public static List<Board> ListBoards() throws IOException {
         int check = 0;
         String buffer_str;
         int i = 0;
-        ArrayList<Board> list = new ArrayList<Board>();
+        ArrayList<Board> list = new ArrayList<>();
 
         do {
             try {
@@ -143,7 +142,7 @@ public class SystemHelper {
         return list;
     }  
     
-    
+
     public void flashBoard(){
 
 
