@@ -94,53 +94,50 @@ public class SystemHelper {
     /**
      * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
      * store the serial number and name
-     * 
-     * @throws IOException
+     *
      */
-    public static List<Board> ListBoards() throws IOException {
-        int check = 0;
+    public static List<Board> listBoards()  {
         String buffer_str;
         int i = 0;
-        ArrayList<Board> list = new ArrayList<>();
+        ArrayList<Board> list = new ArrayList<Board>();
 
+        list.toArray(new Board[0]);
+
+        boolean finish = false;
         do {
             try {
                 Process flashProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH
                         + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=swd index=" + i);
                 flashProcess.waitFor();
-                int cnt = 0;
-
-                cnt = flashProcess.getInputStream().available();
+                int cnt = flashProcess.getInputStream().available();
                 byte[] buffer = new byte[cnt];
                 flashProcess.getInputStream().read(buffer, 0, cnt);
-                System.out.println(new String(buffer));
                 buffer_str = new String(buffer);
+                
+                finish = buffer_str.contains("Error");
+                
+                if(!finish) {
 
-                if (buffer_str.indexOf("Error") != -1) {
-                    check = 1;
-                    break;
+                    String serialNumber = buffer_str.substring(
+                            buffer_str.indexOf("ST-LINK SN  : ") + "ST-LINK SN  : ".length(),
+                            buffer_str.indexOf("ST-LINK FW  : ") - 1);
+
+                    String name = buffer_str.substring(buffer_str.indexOf("Device name : ") + "Device name : ".length(),
+                            buffer_str.indexOf("Flash size  : ") - 1);
+
+                    list.add(new Board(name, serialNumber));
+
+                    System.out.println();
+                    i++;
                 }
-
-                String serialNumber = buffer_str.substring(
-                        buffer_str.indexOf("ST-LINK SN  : ") + "ST-LINK SN  : ".length(),
-                        buffer_str.indexOf("ST-LINK FW  : ") - 1);
-
-                String name = buffer_str.substring(buffer_str.indexOf("Device name : ") + "Device name : ".length(),
-                        buffer_str.indexOf("Flash size  : ") - 1);
-
-                list.add(new Board(name, serialNumber));
-
-                System.out.println();
-                i++;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (IOException|InterruptedException e) {
                 e.printStackTrace();
             }
-        } while (check != 1);
+
+        } while (!finish);
 
         return list;
-    }  
+    }
     
 
     public void flashBoard(){
