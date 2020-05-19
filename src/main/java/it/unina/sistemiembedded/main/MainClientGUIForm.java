@@ -72,7 +72,8 @@ public class MainClientGUIForm extends  JFrame{
                 }else {
                     client.setName(name);
                 }
-                client.requestBoard(listBoard.getSelectedValue().toString());
+                Board selectedBoard = (Board) listBoard.getSelectedValue();
+                client.requestBoard(selectedBoard.getId());
                 new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString());
                 dispose();
             }
@@ -100,7 +101,8 @@ public class MainClientGUIForm extends  JFrame{
 
     public class Lab{
         private String exampleLab[] = {"Claudio LAB1"};
-        private Board exampleBoard[] = {new Board("STM32F4x","xxxx"),new Board("STM32F3x","yyyy")};
+        private Board exampleBoard[] = {new Board("0","STM32F4x","XXXX",null,"1234"),
+                new Board("1","STM32F3x","YYYY",null,"1234")};
 
         private String name;
         private ArrayList<Board> board = new ArrayList<Board>();

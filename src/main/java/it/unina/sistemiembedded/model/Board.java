@@ -177,9 +177,6 @@ public class Board implements Serializable {
         return Optional.ofNullable(comDriver);
     }
 
-
-    //public COMDriver getComDriver(){return comDriver;}
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
