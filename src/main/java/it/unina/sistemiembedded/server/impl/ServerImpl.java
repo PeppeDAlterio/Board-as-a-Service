@@ -85,6 +85,7 @@ public class ServerImpl extends Server {
             serverSocket = new ServerSocket(port);
 
             logger.info("[start] Server successfully started");
+            System.out.println(ServerImpl.class+"[start] Server successfully started");
 
             this.running = true;
 
@@ -179,9 +180,7 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public List<Board> listBoards() {
-        return new ArrayList<>(boards.values());
-    }
+    public List<Board> listBoards() { return new ArrayList<>(boards.values()); }
 
     @Override
     public void removeClientHandler(@Nonnull ClientHandler clientHandler) {
@@ -206,6 +205,7 @@ public class ServerImpl extends Server {
                     final Socket socket = serverSocket.accept();
 
                     logger.info("[waitForClientsAsync] New client connection request received: " + socket);
+                    System.out.println(ServerImpl.class+ "%New client connection request received: "+ socket);
 
                     new Thread( () -> {
 

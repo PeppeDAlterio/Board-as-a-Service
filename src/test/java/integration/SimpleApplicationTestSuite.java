@@ -35,10 +35,8 @@ class SimpleApplicationTestSuite {
 
         testBoard1 = new Board("board 1", "serialNumberBoard1");
         testBoard2 = new Board("board 2", "serialNumberBoard2");
-
         server.addBoards(testBoard1, testBoard2);
         server.start();
-
         assertTrue(server.isRunning());
 
         assertEquals(2, server.listBoards().size());
@@ -81,6 +79,9 @@ class SimpleApplicationTestSuite {
 
         client1 = new ClientImpl("Test client 1");
         client2 = new ClientImpl("Test client 2");
+
+        client1.getBoard();
+        client2.getBoard();
 
         client1.connect("127.0.0.1");
         client2.connect("127.0.0.1");

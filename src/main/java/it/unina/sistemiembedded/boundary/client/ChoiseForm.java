@@ -20,26 +20,26 @@ public class ChoiseForm extends  JFrame{
         this.labelLAB.setText(lab);
         this.labelBoard.setText(board);
         this.setContentPane(this.mainPanel);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         label_name.setText(client.getName());
         sendMessageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SendMessageForm sendMessageForm = new SendMessageForm();
+                SendMessageForm sendMessageForm = new SendMessageForm(client);
             }
         });
         remoteDegubButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RemoteDebugForm remoteDebugForm = new RemoteDebugForm();
+                RemoteDebugForm remoteDebugForm = new RemoteDebugForm(client);
             }
         });
         remoteFlashButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RemoteFlashForm remoteFlashForm = new RemoteFlashForm();
+                RemoteFlashForm remoteFlashForm = new RemoteFlashForm(client);
             }
         });
     }

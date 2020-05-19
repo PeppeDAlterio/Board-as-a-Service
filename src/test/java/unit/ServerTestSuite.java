@@ -73,7 +73,7 @@ public class ServerTestSuite {
             assertEquals(3, server.listBoards().size());
 
         });
-
+        System.out.println(server.listBoards());
         assertThrows(BoardAlreadyExistsException.class,
                 () -> server.addBoard(new Board( "mia scheda 3","seriale 123")));
 

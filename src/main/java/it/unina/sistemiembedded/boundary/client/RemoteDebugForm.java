@@ -1,21 +1,30 @@
 package it.unina.sistemiembedded.boundary.client;
 
+import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.utility.CustomOutputStream;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.PrintStream;
 
 public class RemoteDebugForm extends JFrame{
     private JPanel mainPanel;
     private JTextField textFieldgdbPort;
     private JButton debugButton;
     private JTextArea textAreaResponse;
-    int gdbPort;
 
-    public RemoteDebugForm() {
+    private PrintStream printStream;
+    private int gdbPort;
+
+
+    public RemoteDebugForm(Client client) {
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        printStream = new PrintStream(new CustomOutputStream(null,null,this.textAreaResponse,null,null));
+        System.setOut(printStream);
         debugButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -23,7 +32,8 @@ public class RemoteDebugForm extends JFrame{
                     JOptionPane.showMessageDialog(null,"Insert a valid GDB port number!","",JOptionPane.ERROR_MESSAGE);
                 }else{
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());
-                    textAreaResponse.append("Starting remote gdb debug session on port :" + Integer.toString(gdbPort) + " ...\n");
+                    System.out.println(RemoteDebugForm.class+"%Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
+                    client.debug(gdbPort);
                 }
             }
         });

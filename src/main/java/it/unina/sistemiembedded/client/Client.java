@@ -4,11 +4,12 @@ import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Getter
+@Getter @Setter
 public abstract class Client {
 
     /**
