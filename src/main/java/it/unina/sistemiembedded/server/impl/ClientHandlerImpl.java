@@ -75,9 +75,11 @@ public class ClientHandlerImpl extends ClientHandler {
                 this.socket.close();
             }
             logger.info("[stop] Client handler (" + this.id + ") has been stopped");
+            System.out.println(ClientHandlerImpl.class+"%[stop] Client handler ( " + this.id + " ) has been stopped");
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("[stop] There was an error while closing client handler (" + this.id +" socket");
+            System.out.println(ClientHandlerImpl.class+"%[stop] There was an error while closing client handler (" + this.id + ") socket");
         }
 
         server.removeClientHandler(this);
@@ -92,9 +94,11 @@ public class ClientHandlerImpl extends ClientHandler {
         this.running = socket.isConnected();
 
         logger.info("[run] Client handler (" + this.id + ") has been started");
+        System.out.println(ClientHandlerImpl.class+"%[run] Client handler ( " + this.id + " ) has been started");
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
+        System.out.println(ClientHandlerImpl.class+"%[run] Client connected: (" + this.id + ", " + this.name + ")");
 
         while(isAlive()) {
 
@@ -178,7 +182,7 @@ public class ClientHandlerImpl extends ClientHandler {
                 stringBuilder.append(" request a board: ");
                 Board board = attachOnBoardRequestCallback();
                 if(board!=null) {
-                    stringBuilder.append(board.getId());
+                    stringBuilder.append(this.board.toString());
                 } else {
                     stringBuilder.append("??");
                 }
@@ -186,7 +190,7 @@ public class ClientHandlerImpl extends ClientHandler {
                 break;
 
             case Commands.AttachOnBoard.SUCCESS:
-                stringBuilder.append("Successfully attached on Board: ").append(this.board.getSerialNumber());
+                stringBuilder.append("Successfully attached on Board: ").append(this.board.toString());
 
                 break;
 
@@ -237,6 +241,7 @@ public class ClientHandlerImpl extends ClientHandler {
         }
 
         logger.info("[parseReceivedMessage] " + stringBuilder.toString());
+        System.out.println(ClientHandlerImpl.class+"%[parseReceivedMessage] " + stringBuilder.toString());
 
         return stringBuilder.toString();
 
@@ -288,6 +293,7 @@ public class ClientHandlerImpl extends ClientHandler {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
+            System.out.println(ClientHandlerImpl.class+"%[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
             sendMessageToClient(Commands.Flash.ERROR);
         }
 
@@ -339,6 +345,7 @@ public class ClientHandlerImpl extends ClientHandler {
             } catch (IOException e) {
                 if(this.running) {
                     logger.error("[readMessageFromClient] Connection lost");
+                    System.out.println(ClientHandlerImpl.class+"%[readMessageFromClient] Connection lost");
                 }
                 this.stop();
             }
@@ -427,6 +434,8 @@ public class ClientHandlerImpl extends ClientHandler {
 
             if (endOfTx.equals(Constants.END_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
+                System.out.println(ClientHandlerImpl.class+"%[receiveFile] File transfer successfully completed.");
+
             }
 
             logger.info("[receiveFile] File " + filename

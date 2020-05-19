@@ -63,7 +63,6 @@ public class Board implements Serializable {
         this.serialNumber = data[2];
 
         this.comDriver = null;
-
     }
 
     /**

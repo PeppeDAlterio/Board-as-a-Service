@@ -27,7 +27,7 @@ public abstract class ServerProxy {
     /**
      * Blocking receive a message
      * @return String received message
-     * @throws IOException connection lost or something wen wrong reading the message
+     * @throws IOException connection lost or something went wrong reading the message
      */
     public abstract String receive() throws IOException;
 

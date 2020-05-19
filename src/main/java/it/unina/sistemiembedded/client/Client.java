@@ -4,11 +4,12 @@ import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Getter
+@Getter @Setter
 public abstract class Client {
 
     /**
@@ -84,4 +85,11 @@ public abstract class Client {
      * @return Optional connected board, if exists or empty otherwise
      */
     public abstract Optional<Board> board();
+
+    /**
+     * Sends a text message to the server
+     * @param message String message to be sent
+     */
+    public abstract void sendMessage(String message);
+
 }

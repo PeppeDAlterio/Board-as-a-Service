@@ -48,6 +48,7 @@ public abstract class Server {
         this.name = name.trim();
 
         this.port = port;
+
     }
 
     /**
@@ -91,8 +92,8 @@ public abstract class Server {
     abstract public boolean isRunning();
 
     /**
-     * Get all boards shared by the server
-     * @return List list of Boards
+     * Get a copy of all boards shared by the server
+     * @return List list copy of Boards
      */
     abstract public List<Board> listBoards();
 
