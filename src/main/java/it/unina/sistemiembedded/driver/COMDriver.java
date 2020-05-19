@@ -1,12 +1,15 @@
 package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter @Setter
 public class COMDriver {
 
     private SerialPort comPort;

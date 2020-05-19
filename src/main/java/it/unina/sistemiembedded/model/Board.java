@@ -63,7 +63,6 @@ public class Board implements Serializable {
         this.serialNumber = data[2];
 
         this.comDriver = null;
-
     }
 
     /**
@@ -177,6 +176,9 @@ public class Board implements Serializable {
     public Optional<COMDriver> getComDriver() {
         return Optional.ofNullable(comDriver);
     }
+
+
+    //public COMDriver getComDriver(){return comDriver;}
 
     @Override
     public boolean equals(Object o) {
