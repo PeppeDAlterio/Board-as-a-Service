@@ -38,8 +38,13 @@ public class ServerProxyImpl extends ServerProxy {
     }
 
     @Override
-    public String receive() throws IOException {
+    public String receiveString() throws IOException {
         return this.dis.readUTF();
+    }
+
+    @Override
+    public int receiveInteger() throws IOException {
+        return this.dis.readInt();
     }
 
     @Override

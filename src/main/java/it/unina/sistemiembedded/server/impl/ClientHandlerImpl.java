@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 @Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
@@ -99,6 +100,8 @@ public class ClientHandlerImpl extends ClientHandler {
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
         System.out.println(ClientHandlerImpl.class+"%[run] Client connected: (" + this.id + ", " + this.name + ")");
+
+        sendMessageToClient(this.server.getName());
 
         while(isAlive()) {
 
@@ -229,6 +232,15 @@ public class ClientHandlerImpl extends ClientHandler {
             case Commands.Debug.REQUEST_END:
                 stringBuilder.append("End debug on board request");
                 debugEndRequestCallback();
+
+                break;
+
+            //
+            // INFO.Board list
+
+            case Commands.Info.BOARD_LIST_REQUEST:
+                stringBuilder.append("Board list request");
+                boardListRequestCallback();
 
                 break;
 
@@ -451,6 +463,21 @@ public class ClientHandlerImpl extends ClientHandler {
 
         }
 
+
+    }
+
+    private void boardListRequestCallback() {
+
+        List<Board> boardList = this.server.listBoards();
+
+        String[] messages = new String[2+boardList.size()];
+        messages[0] = Commands.Info.BEGIN_OF_BOARD_LIST;
+        messages[1] = String.valueOf(boardList.size());
+        for (int i = 0; i < boardList.size(); i++) {
+            messages[i+2] = boardList.get(i).serialize();
+        }
+
+        sendMessagesToClient(messages);
 
     }
 

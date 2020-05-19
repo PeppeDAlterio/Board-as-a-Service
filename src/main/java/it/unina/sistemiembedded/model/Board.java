@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter @Setter
 public class Board implements Serializable {
 
-    public static String SERIALIZATION_SEPARATOR = "\\/";
+    public static String SERIALIZATION_SEPARATOR = "§§§";
     public static int SERIALIZATION_NUMBER_OF_FIELDS = 3;
 
     private String id = UUID.randomUUID().toString();
@@ -41,15 +41,21 @@ public class Board implements Serializable {
 
     private Process debuggingProcess;
 
-    /**
-     * Deserializer constructor
-     * @param serializedBoard String serialized board
-     */
-    public Board(@Nonnull String serializedBoard) {
+    public static Board deserialize(@Nonnull String serializedBoard) {
 
         if(StringUtils.isBlank(serializedBoard)) {
             throw new IllegalArgumentException("Data cannot be blank");
         }
+
+        return new Board(serializedBoard);
+
+    }
+
+    /**
+     * Deserializing constructor
+     * @param serializedBoard String serialized board
+     */
+    private Board(@Nonnull String serializedBoard) {
 
         String[] data = serializedBoard.split(SERIALIZATION_SEPARATOR);
 
@@ -63,6 +69,7 @@ public class Board implements Serializable {
         this.serialNumber = data[2];
 
         this.comDriver = null;
+
     }
 
     /**

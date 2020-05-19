@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Getter @Setter
@@ -90,6 +91,25 @@ public abstract class Client {
      * Sends a text message to the server
      * @param message String message to be sent
      */
-    public abstract void sendMessage(String message);
+    public abstract void sendTextMessage(String message);
+
+    /**
+     * Request connected server's board list
+     * @throws NotConnectedException client is not connected to any server
+     */
+    public abstract void listConnectedServerBoardsAsync() throws NotConnectedException;
+
+    /**
+     * Blocking requests connected server's board list.
+     * @throws NotConnectedException client is not connected to any server
+     * @return List list or server's boards
+     */
+    public abstract List<Board> listConnectedServerBoards() throws NotConnectedException;
+
+    /**
+     * Get server name
+     * @return String server name
+     */
+    public abstract String getServerName();
 
 }

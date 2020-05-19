@@ -104,6 +104,20 @@ public class Commands {
 
     }
 
+    public static class Info {
+
+        /**
+         * Sent by the client to request server's board list
+         */
+        public static final String BOARD_LIST_REQUEST          = "$--- INFO BOARD LIST REQUEST ---$";
+
+        /**
+         * Sent by the Server before sending board list
+         */
+        public static final String BEGIN_OF_BOARD_LIST         = "$--- INFO BEGIN OF BOARD LIST ---$";
+
+    }
+
     /**
      * BOARD COMMUNICATION
      */

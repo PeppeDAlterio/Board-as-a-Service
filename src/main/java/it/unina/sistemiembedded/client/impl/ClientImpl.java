@@ -7,6 +7,7 @@ import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -17,10 +18,19 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 @Getter @Setter
 public class ClientImpl extends Client {
+
+    @Getter(AccessLevel.PACKAGE) @Setter(AccessLevel.PACKAGE)
+    private static class Message {
+
+        private Object payload;
+
+    }
 
     private final Logger logger = LoggerFactory.getLogger(ClientImpl.class);
 
@@ -28,9 +38,20 @@ public class ClientImpl extends Client {
     private String serverIpAddress;
     private int serverPort;
 
+    private String serverName = "";
+
     private Board board;
 
     private Thread listeningThread;
+
+    private Semaphore blockingReceivingRequest = new Semaphore(1);
+    private Semaphore blockingReceivingBufferReady = new Semaphore(0);
+    private BlockingReceivingMethod blockingReceivingMethod = BlockingReceivingMethod.none;
+    private final Message blockingReceivingBuffer = new Message();
+
+    private enum BlockingReceivingMethod {
+        none, listConnectedServerBoards
+    }
 
 
     public ClientImpl(String name) {
@@ -56,6 +77,8 @@ public class ClientImpl extends Client {
             this.serverPort = serverPort;
 
             this.server.sendMessage(this.name);
+
+            this.serverName = this.server.receiveString();
 
             waitForMessagesAsync();
 
@@ -141,8 +164,62 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendTextMessage(String message) {
+
+        // Avoids commands
+        if(message.startsWith("$--- ") && message.endsWith(" ---$")) {
+            message += " ";
+        }
+
         this.server.sendMessage(message);
+    }
+
+    @Override
+    public List<Board> listConnectedServerBoards() throws NotConnectedException {
+
+        List<Board> boards = Collections.emptyList();
+
+        blockingReceivingRequest.acquireUninterruptibly();
+        blockingReceivingMethod = BlockingReceivingMethod.listConnectedServerBoards;
+        try {
+            this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
+        } catch (Exception e) {
+            blockingReceivingRequest.release();
+            blockingReceivingMethod = BlockingReceivingMethod.none;
+        }
+
+        try {
+            blockingReceivingBufferReady.tryAcquire(20, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+
+        if(blockingReceivingBuffer.getPayload() instanceof List) {
+
+            final LinkedList<Board> tmp = new LinkedList<>();
+            ((List<?>) blockingReceivingBuffer.getPayload()).forEach(e -> {
+                tmp.add((Board) e);
+            });
+
+            boards = Collections.unmodifiableList(tmp);
+
+        }
+
+        blockingReceivingRequest.release();
+        blockingReceivingMethod = BlockingReceivingMethod.none;
+
+        return boards;
+
+    }
+
+    @Override
+    public void listConnectedServerBoardsAsync() throws NotConnectedException {
+
+        if(!isConnected()) throw new NotConnectedException();
+
+        this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
+
     }
 
     /**
@@ -161,7 +238,7 @@ public class ClientImpl extends Client {
 
                 try {
 
-                    parseReceivedMessage(this.server.receive());
+                    parseReceivedMessage(this.server.receiveString());
 
                 } catch (IOException e) {
                     break;
@@ -220,6 +297,13 @@ public class ClientImpl extends Client {
                 break;
 
             //
+            // INFO.BOARD LIST
+
+            case Commands.Info.BEGIN_OF_BOARD_LIST:
+                receiveBoardListCallback();
+                break;
+
+            //
             // SIMPLE MESSAGE
 
             default:
@@ -238,11 +322,11 @@ public class ClientImpl extends Client {
      */
     private void receiveAndSetBoardCallback() throws IOException {
 
-        String serializedBoard = this.server.receive();
+        String serializedBoard = this.server.receiveString();
 
         try {
 
-            Board board = new Board(serializedBoard);
+            Board board = Board.deserialize(serializedBoard);
             board.setInUse(true);
             setBoard(board);
 
@@ -268,6 +352,42 @@ public class ClientImpl extends Client {
     private void flashCallback(String result) {
 
         logger.info("[flashCallback] Flash complete with result: " + result);
+
+    }
+
+    private void receiveBoardListCallback() {
+
+        List<Board> boards = null;
+
+        try {
+
+            int numberOfBoards = Integer.parseInt(this.server.receiveString());
+
+            boards = new ArrayList<>(numberOfBoards);
+
+            for(int i=0; i<numberOfBoards; i++) {
+
+                String serializedBoard = this.server.receiveString();
+                boards.add(Board.deserialize(serializedBoard));
+
+            }
+
+
+        } catch (IOException e) {
+            logger.error("[receiveBoardListCallback] There was an error while receiving board list");
+
+            if(boards==null) {
+                boards = Collections.emptyList();
+            }
+
+        } finally {
+
+            if(blockingReceivingMethod!=BlockingReceivingMethod.none) {
+                blockingReceivingBuffer.setPayload(boards);
+                blockingReceivingBufferReady.release();
+            }
+
+        }
 
     }
 
