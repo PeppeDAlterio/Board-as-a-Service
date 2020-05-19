@@ -143,11 +143,10 @@ public class SystemHelper {
         return list;
     }  
     
-    public void flashBoard(String nameC, String nameB){
-        ServerImpl server = new ServerImpl("Rosa", 1234);
-        ClientImpl client = new ClientImpl(nameC);
-        String boardId = server.listBoards().get(server.listBoards().indexOf(nameB)).getId();
-        client.requestBoard(boardId);         
+    
+    public void flashBoard(){
+
+
     }
 
     /**
