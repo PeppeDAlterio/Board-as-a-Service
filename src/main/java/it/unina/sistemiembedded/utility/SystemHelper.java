@@ -142,36 +142,5 @@ public class SystemHelper {
 
 
     }
-
-    /**
-     * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
-     * store the serial number and name
-     * 
-     * @param br Baudrate
-     * @param P parity
-     * @param db Bata Bit
-     * @param sb Stop Bit
-     * @param fc Flow Control
-     * @return none
-     * @throws IOException
-     */
-    public void com (String COM, int br, String P, int db, int sb, String fc){
-        try {
-            Process flashProcess = Runtime.getRuntime()
-                    .exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=" + COM
-                            + " br=" + br + " P=" + P + " db=" + db + " sb=" + sb + " fc=" + fc);
-            
-            flashProcess.waitFor();
-            int cnt = 0;
-            cnt = flashProcess.getInputStream().available();
-            byte[] buffer = new byte[cnt];
-            flashProcess.getInputStream().read(buffer, 0, cnt);
-            System.out.println(new String(buffer));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
    
 }
