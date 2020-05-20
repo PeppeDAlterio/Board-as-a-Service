@@ -2,6 +2,8 @@ package it.unina.sistemiembedded.boundary.server;
 
 import com.fazecast.jSerialComm.SerialPort;
 import it.unina.sistemiembedded.model.Board;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -14,36 +16,72 @@ public class SetSerialParamForm extends JFrame {
     private JButton applyButton;
     private JPanel mainPanel;
     private JTextField textFieldParity;
+    private JComboBox comboBoxParity ;
+    private JComboBox comboBoxStop;
+    private JComboBox comboBoxData;
+    private JComboBox comboBoxBoudRate;
+
+    private final Logger logger = LoggerFactory.getLogger(SetSerialParamForm.class);
+
+    private String[] boudRateValues = {"9600","115200","38400","19200","4800","2400"};
+    private String[] numDataBitValues = {"8","5","6","7","9"};
+    private String[] numStopBitValues = {"1","2"};
+    private String[] parityValues = {"None","Odd","Even"};
+    private int boudRate;
+    private int bitData;
+    private int bitStop;
+    private String parity;
+
+    private void initComboBox(){
+        for (int i=0;i<boudRateValues.length;i++){
+            comboBoxBoudRate.addItem(boudRateValues[i]);
+        }
+        for (int i=0;i<numDataBitValues.length;i++){
+            comboBoxData.addItem(numDataBitValues[i]);
+        }
+        for (int i=0;i<numStopBitValues.length;i++){
+            comboBoxStop.addItem(numStopBitValues[i]);
+        }
+        for (int i=0;i<parityValues.length;i++){
+            comboBoxParity.addItem(parityValues[i]);
+        }
+
+    }
 
     public SetSerialParamForm(Board board){
-        System.out.println("SetSerialParamForm");
+
+
+
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setTitle(board.getName()+" serial parameters");
-        textFieldBaudRate.setText("115200");
-        textFieldNumData.setText("8");
-        textFieldStopBit.setText("1");
-        textFieldParity.setText("NO_PARITY");
+        this.setTitle(board+" serial parameters");
+        initComboBox();
+
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                int boudRate = Integer.parseInt(textFieldBaudRate.getText());
-                int bitData = Integer.parseInt(textFieldNumData.getText());
-                int bitStop = Integer.parseInt(textFieldStopBit.getText());
-                String parity = textFieldParity.getText();
+                boudRate = Integer.parseInt(comboBoxBoudRate.getSelectedItem().toString());
+                bitData = Integer.parseInt(comboBoxData.getSelectedItem().toString());
+                bitStop = Integer.parseInt(comboBoxStop.getSelectedItem().toString());
+                parity = comboBoxParity.getSelectedItem().toString();
                 if (board.getComDriver().isPresent()) {
                     board.getComDriver().get().getComPort().setBaudRate(boudRate);
                     board.getComDriver().get().getComPort().setNumDataBits(bitData);
                     board.getComDriver().get().getComPort().setNumStopBits(bitStop);
-                    if (parity.compareTo("NO_PARITY") == 0)
+                    if (parity.compareTo("None") == 0) {
                         board.getComDriver().get().getComPort().setParity(SerialPort.NO_PARITY);
-                    else
+                    }else if(parity.compareTo("Even")==0) {
                         board.getComDriver().get().getComPort().setParity(SerialPort.EVEN_PARITY);
+                    }else{
+                        board.getComDriver().get().getComPort().setParity(SerialPort.ODD_PARITY);
+                    }
                 }
+                logger.info("Params set to : BoudRate : "+boudRate+" bitData : "+bitData+" bitStop : "+bitStop+" parity : "+parity);
             }
         });
+
     }
 }

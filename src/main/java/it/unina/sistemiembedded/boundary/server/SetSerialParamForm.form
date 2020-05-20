@@ -58,39 +58,37 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="e1790" class="javax.swing.JTextField" binding="textFieldStopBit">
+          <component id="c3708" class="javax.swing.JComboBox" binding="comboBoxParity">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="[0 -&gt; on , 1 -&gt; off]"/>
+              <background color="-983553"/>
             </properties>
           </component>
-          <component id="a2f32" class="javax.swing.JTextField" binding="textFieldBaudRate">
+          <component id="6eb7" class="javax.swing.JComboBox" binding="comboBoxStop">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-983553"/>
+            </properties>
           </component>
-          <component id="67b2f" class="javax.swing.JTextField" binding="textFieldNumData">
+          <component id="536a9" class="javax.swing.JComboBox" binding="comboBoxData">
             <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-917761"/>
+            </properties>
           </component>
-          <component id="1ef1e" class="javax.swing.JTextField" binding="textFieldParity">
+          <component id="42c10" class="javax.swing.JComboBox" binding="comboBoxBoudRate">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="9" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-983553"/>
+            </properties>
           </component>
         </children>
       </grid>

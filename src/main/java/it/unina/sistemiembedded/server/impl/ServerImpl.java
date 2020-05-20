@@ -189,6 +189,25 @@ public class ServerImpl extends Server {
         return this;
     }
 
+    //MIO CODICE
+
+    @Override
+    public Server removeBoards(List<Board> boards) throws BoardNotFoundException {
+        boardsRWLock.writeLock().lock();
+        try {
+            for(Board a : boards){
+             this.removeBoard(a.getId());
+            }
+        } finally {
+            boardsRWLock.writeLock().unlock();
+        }
+
+        return this;
+    }
+
+    //
+
+
     @Override
     public boolean isRunning() {
         return this.running;

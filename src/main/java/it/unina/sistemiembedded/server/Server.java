@@ -5,13 +5,14 @@ import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
-@Getter
+@Getter @Setter
 public abstract class Server {
 
     public static final int DEFAULT_PORT = 1234;
@@ -92,6 +93,10 @@ public abstract class Server {
      * @return Server this
      */
     abstract public Server removeBoards(String ... boardIds) throws BoardNotFoundException;
+
+    //MIO CODICE
+    abstract public Server removeBoards(List<Board> boards) throws BoardNotFoundException;
+    //
 
     /**
      * Get the server running state.

@@ -1,131 +1,73 @@
 package it.unina.sistemiembedded.main;
 
-import it.unina.sistemiembedded.boundary.client.ChoiseForm;
+import it.unina.sistemiembedded.boundary.client.AttachBoardForm;
+import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
-import it.unina.sistemiembedded.model.Board;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.SneakyThrows;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 
-@Getter @Setter
-public class MainClientGUIForm extends  JFrame{
+public class MainClientGUIForm extends JFrame{
     private JPanel mainPanel;
-    private JButton buttonStartConnection;
+    private JLabel labelName;
+    private JLabel labelIP;
+    private JLabel labelPort;
     private JTextField textFieldName;
-    private JList listBoard;
-    private JList listLab;
-    private JButton refreshButtonLab;
-    private JButton refreshButtonBoard;
+    private JTextField textFieldIP;
+    private JTextField textFieldPort;
+    private JPanel panel;
+    private JButton startConnectionButton;
 
-    private DefaultListModel modelLab = new DefaultListModel();
-    private DefaultListModel modelBoard = new DefaultListModel();
+    private String nameClient="Client"+ (int)(Math.random()*1000+1000);;
+    private String ipAddress;
+    private int portNumber;
+    private Client client;
 
-    private String name;
-    private final String ipAddress="localhost";
-    private ClientImpl client;
-
-    //SCOPE : avoid errors if the user doesn't select any items in the list
-    private void InitList(JList listLab , JList listBoard){
-        listLab.setSelectedIndex(0);
-        listBoard.setModel(modelBoard);
-        Lab lab_selected = (Lab) listLab.getSelectedValue();
-        for(int i=0 ;i<lab_selected.getBoard().size();i++)
-            modelBoard.addElement(lab_selected.getBoard().get(i));
-        listBoard.setSelectedIndex(0);
-    }
-
-
-    public MainClientGUIForm() throws IOException {
-        this.setContentPane(this.mainPanel);
+    public MainClientGUIForm(){
+        this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setTitle("Lab as a Service application Client");
-        listLab.setModel(modelLab);
-        modelLab.addElement(new Lab());
-        InitList(listLab,listBoard);
-        String default_name = "Client"+ Math.random()*100;
-        client = new ClientImpl(default_name);
-        client.connect(ipAddress);
-        listLab.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                modelBoard.clear();
-                Lab lab_selected = (Lab) listLab.getSelectedValue();
-                for(int i=0 ;i<lab_selected.getBoard().size();i++)
-                    modelBoard.addElement(lab_selected.getBoard().get(i));
-            }
-        });
-        buttonStartConnection.addActionListener(new ActionListener() {
+        this.textFieldName.setText(nameClient);
+        startConnectionButton.addActionListener(new ActionListener() {
+            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
-                name = textFieldName.getText();
-                if(name.compareTo("")==0){
-                    JOptionPane.showMessageDialog(null,"You'll start with name: "+default_name,"Field name is blank",JOptionPane.WARNING_MESSAGE);
-                }else {
-                    client.setName(name);
+                ipAddress = textFieldIP.getText();
+                portNumber = Integer.parseInt(textFieldPort.getText());
+                String name = textFieldName.getText();
+                if(name.compareTo("")==0) {
+                    name=nameClient;
                 }
-                Board selectedBoard = (Board) listBoard.getSelectedValue();
-                client.requestBoard(selectedBoard.getId());
-                new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString());
+                client = new ClientImpl(name);
+                try {
+                    client.connect(ipAddress,portNumber);
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Can't connect to "+ipAddress+":"+portNumber,"Connection error", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+                if(client.isConnected())
+                    new AttachBoardForm(client);
                 dispose();
             }
         });
 
-        refreshButtonLab.addActionListener(new ActionListener() {
+        textFieldName.addMouseListener(new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO : Refresh Lab list
-            }
-        });
-        refreshButtonBoard.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO : Refresh board list for each lab
-
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                textFieldName.setText("");
             }
         });
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new MainClientGUIForm();
     }
-    //STUB
-
-    public class Lab{
-        private String exampleLab[] = {"Claudio LAB1"};
-        private Board exampleBoard[] = {new Board("0","STM32F4x","XXXX",null,"1234"),
-                new Board("1","STM32F3x","YYYY",null,"1234")};
-
-        private String name;
-        private ArrayList<Board> board = new ArrayList<Board>();
-
-        public String getName() {
-            return name;
-        }
-
-        public ArrayList<Board> getBoard() {
-            return board;
-        }
-
-        public Lab(){
-                name = exampleLab[0];
-                board.add(exampleBoard[0]);
-                board.add(exampleBoard[1]);
-        }
-        @Override
-        public String toString() {
-            return "Lab{" +
-                    "name='" + name + '\'' +
-                    '}';
-        }
-    }
-
 }

@@ -1,6 +1,6 @@
 package it.unina.sistemiembedded.boundary.client;
 
-import it.unina.sistemiembedded.client.impl.ClientImpl;
+import it.unina.sistemiembedded.client.Client;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,7 +15,7 @@ public class ChoiseForm extends  JFrame{
     private JButton remoteDegubButton;
     private JLabel label_name;
 
-    public ChoiseForm(ClientImpl client, String lab , String board) {
+    public ChoiseForm(Client client, String lab , String board) {
         super();
         this.labelLAB.setText(lab);
         this.labelBoard.setText(board);
