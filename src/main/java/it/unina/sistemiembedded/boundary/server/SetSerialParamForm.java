@@ -70,15 +70,15 @@ public class SetSerialParamForm extends JFrame {
                 bitStop = Integer.parseInt(comboBoxStop.getSelectedItem().toString());
                 parity = comboBoxParity.getSelectedItem().toString();
                 if (board.getComDriver().isPresent()) {
-                    board.getComDriver().get().getComPort().setBaudRate(boudRate);
-                    board.getComDriver().get().getComPort().setNumDataBits(bitData);
-                    board.getComDriver().get().getComPort().setNumStopBits(bitStop);
+                    board.getComDriver().get().getSerialPort().setBaudRate(boudRate);
+                    board.getComDriver().get().getSerialPort().setNumDataBits(bitData);
+                    board.getComDriver().get().getSerialPort().setNumStopBits(bitStop);
                     if (parity.compareTo("None") == 0) {
-                        board.getComDriver().get().getComPort().setParity(SerialPort.NO_PARITY);
+                        board.getComDriver().get().getSerialPort().setParity(SerialPort.NO_PARITY);
                     }else if(parity.compareTo("Even")==0) {
-                        board.getComDriver().get().getComPort().setParity(SerialPort.EVEN_PARITY);
+                        board.getComDriver().get().getSerialPort().setParity(SerialPort.EVEN_PARITY);
                     }else{
-                        board.getComDriver().get().getComPort().setParity(SerialPort.ODD_PARITY);
+                        board.getComDriver().get().getSerialPort().setParity(SerialPort.ODD_PARITY);
                     }
                 }
                 logger.info("Params set to : BoudRate : "+boudRate+" bitData : "+bitData+" bitStop : "+bitStop+" parity : "+parity);

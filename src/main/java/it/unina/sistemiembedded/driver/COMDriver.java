@@ -11,7 +11,7 @@ import java.util.List;
 @Getter @Setter
 public class COMDriver {
 
-    private SerialPort comPort;
+    private SerialPort serialPort;
 
     private LinkedList<String> availableMessages = new LinkedList<>();
 
@@ -24,28 +24,28 @@ public class COMDriver {
     private int fc;
 
     //TODO: trovare un modo per creare un metodo pubblico
-    public COMDriver(SerialPort serialPort, int br, int P, int db, int sb, int fc) {
-        this.comPort = serialPort;
-        if(this.comPort == null || !serialPort.openPort()) {
+    public COMDriver(COMPort comPort, int br, int P, int db, int sb, int fc) {
+        this.serialPort = comPort.getSerialPort();
+        if(this.serialPort == null || !this.serialPort.openPort()) {
             throw new IllegalArgumentException();
         }
 
-        // comPort.setBaudRate(115200);
-        // comPort.setNumDataBits(8);
-        // comPort.setNumStopBits(1);
-        // comPort.setParity(SerialPort.NO_PARITY);
-        // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
+        // this.serialPort.setBaudRate(115200);
+        // this.serialPort.setNumDataBits(8);
+        // this.serialPort.setNumStopBits(1);
+        // this.serialPort.setParity(SerialPort.NO_PARITY);
+        // this.serialPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
 
-        serialPort.setBaudRate(br);
-        serialPort.setNumDataBits(db);
-        serialPort.setNumStopBits(sb);
-        serialPort.setParity(P);
-        serialPort.setFlowControl(fc);
+        this.serialPort.setBaudRate(br);
+        this.serialPort.setNumDataBits(db);
+        this.serialPort.setNumStopBits(sb);
+        this.serialPort.setParity(P);
+        this.serialPort.setFlowControl(fc);
 
 
-        serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
+        this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 
-        serialPort.addDataListener(new ReadingDataListener(this.comPort, this.availableMessages, outputBuffer));
+        this.serialPort.addDataListener(new ReadingDataListener(this.serialPort, this.availableMessages, outputBuffer));
 
     }
 
@@ -56,8 +56,8 @@ public class COMDriver {
     }
 
     public void closeCommunication() {
-        if(comPort != null) {
-            comPort.closePort();
+        if(serialPort != null) {
+            serialPort.closePort();
         }
     }
 
@@ -83,7 +83,7 @@ public class COMDriver {
 
             this.outputBuffer.setBusy(true);
 
-            this.comPort.writeBytes(str.getBytes(), str.getBytes().length);
+            this.serialPort.writeBytes(str.getBytes(), str.getBytes().length);
 
         }
 
@@ -107,7 +107,7 @@ public class COMDriver {
 
             this.outputBuffer.setBusy(true);
 
-            this.comPort.writeBytes(str.getBytes(), str.getBytes().length);
+            this.serialPort.writeBytes(str.getBytes(), str.getBytes().length);
 
         }
 
