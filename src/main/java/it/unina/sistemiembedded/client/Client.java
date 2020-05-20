@@ -50,7 +50,7 @@ public abstract class Client {
     public abstract void disconnect();
 
     /**
-     * Request a board from the connected server.
+     * Request a board from the connected server, async.
      * @param boardId String serial number of the requested board
      * @throws NotConnectedException client is not connected to a server
      */
@@ -62,14 +62,14 @@ public abstract class Client {
     public abstract void releaseBoard();
 
     /**
-     * Request a flash on the connected board
+     * Request a flash on the connected board, async.
      * @param file String path to the file to flash
      * @throws BoardNotAvailableException no board connected
      */
     public abstract void flash(String file) throws BoardNotAvailableException, IOException;
 
     /**
-     * Request a flash on the connected board
+     * Request a flash on the connected board, async.
      * @param port int port to listen of for debug session
      * @throws BoardNotAvailableException no board connected
      */
@@ -88,13 +88,13 @@ public abstract class Client {
     public abstract Optional<Board> board();
 
     /**
-     * Sends a text message to the server
+     * Sends a text message to the server, async
      * @param message String message to be sent
      */
     public abstract void sendTextMessage(String message);
 
     /**
-     * Request connected server's board list
+     * Request connected server's board list, async
      * @throws NotConnectedException client is not connected to any server
      */
     public abstract void listConnectedServerBoardsAsync() throws NotConnectedException;
