@@ -1,6 +1,5 @@
 package it.unina.sistemiembedded.server.impl;
 
-import com.fazecast.jSerialComm.SerialPort;
 import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
@@ -164,7 +163,7 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public void setBoardCOMPort(String boardSerialNumber, SerialPort serialPort) throws BoardNotFoundException {
+    public void setBoardCOMDriver(String boardSerialNumber, COMDriver comDriver) throws BoardNotFoundException {
 
         Board board = boards.get(boardSerialNumber);
 
@@ -173,8 +172,7 @@ public class ServerImpl extends Server {
         }
 
         synchronized (board) {
-            //TODO: Fixami con il corretto costruttore
-            board.setComDriver(new COMDriver(serialPort, 1,2,3,4,5));
+            board.setComDriver(comDriver);
         }
 
     }
