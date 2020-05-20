@@ -25,11 +25,18 @@ public abstract class ServerProxy {
     }
 
     /**
-     * Blocking receive a message
+     * Blocking receive a string message
      * @return String received message
      * @throws IOException connection lost or something went wrong reading the message
      */
-    public abstract String receive() throws IOException;
+    public abstract String receiveString() throws IOException;
+
+    /**
+     * Blocking receive a int message
+     * @return String received message
+     * @throws IOException connection lost or something went wrong reading the message
+     */
+    public abstract int receiveInteger() throws IOException;
 
     /**
      * Transfers a file to the server

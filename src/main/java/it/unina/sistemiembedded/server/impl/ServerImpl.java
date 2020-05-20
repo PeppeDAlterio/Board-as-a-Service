@@ -175,12 +175,27 @@ public class ServerImpl extends Server {
     }
 
     @Override
+    public Server removeBoards(String... boardIds) throws BoardNotFoundException {
+
+        boardsRWLock.writeLock().lock();
+        try {
+            for (String boardId : boardIds) {
+                this.removeBoard(boardId);
+            }
+        } finally {
+            boardsRWLock.writeLock().unlock();
+        }
+
+        return this;
+    }
+
+    @Override
     public boolean isRunning() {
         return this.running;
     }
 
     @Override
-    public List<Board> listBoards() { return new ArrayList<>(boards.values()); }
+    public List<Board> listBoards() { return Collections.unmodifiableList(new ArrayList<>(boards.values())); }
 
     @Override
     public void removeClientHandler(@Nonnull ClientHandler clientHandler) {

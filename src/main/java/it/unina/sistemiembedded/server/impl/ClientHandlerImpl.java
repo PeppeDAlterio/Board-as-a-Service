@@ -7,6 +7,7 @@ import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
 import it.unina.sistemiembedded.utility.Constants;
+import it.unina.sistemiembedded.utility.RedirectStream;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -16,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
@@ -75,11 +79,11 @@ public class ClientHandlerImpl extends ClientHandler {
                 this.socket.close();
             }
             logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-            System.out.println(ClientHandlerImpl.class+"%[stop] Client handler ( " + this.id + " ) has been stopped");
+            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER +"Client handler ( " + this.id + " ) has been stopped");
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("[stop] There was an error while closing client handler (" + this.id +" socket");
-            System.out.println(ClientHandlerImpl.class+"%[stop] There was an error while closing client handler (" + this.id + ") socket");
+            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"There was an error while closing client handler (" + this.id + ") socket");
         }
 
         server.removeClientHandler(this);
@@ -94,11 +98,13 @@ public class ClientHandlerImpl extends ClientHandler {
         this.running = socket.isConnected();
 
         logger.info("[run] Client handler (" + this.id + ") has been started");
-        System.out.println(ClientHandlerImpl.class+"%[run] Client handler ( " + this.id + " ) has been started");
+        System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[run] Client handler ( " + this.id + " ) has been started");
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
-        System.out.println(ClientHandlerImpl.class+"%[run] Client connected: (" + this.id + ", " + this.name + ")");
+        System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[run] Client connected: (" + this.id + ", " + this.name + ")");
+
+        sendMessageToClient(this.server.getName());
 
         while(isAlive()) {
 
@@ -127,7 +133,7 @@ public class ClientHandlerImpl extends ClientHandler {
             this.board.setInUse(true);
         }
 
-        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.toString());
+        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.serialize());
 
         return this.board;
 
@@ -232,17 +238,30 @@ public class ClientHandlerImpl extends ClientHandler {
 
                 break;
 
+            //
+            // INFO.Board list
+
+            case Commands.Info.BOARD_LIST_REQUEST:
+                stringBuilder.append("Board list request");
+                boardListRequestCallback();
+
+                break;
+
             default:
 
-                stringBuilder.append("Ricevuto: ").append(message);
+                stringBuilder.append("Received: ").append(message);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                System.out.println(RedirectStream.TEXT_AREA_COMUNICATION_SERVER+"[ "+formatter.format(date)+" ]   "+message);
 
                 break;
 
         }
 
-        logger.info("[parseReceivedMessage] " + stringBuilder.toString());
-        System.out.println(ClientHandlerImpl.class+"%[parseReceivedMessage] " + stringBuilder.toString());
-
+        if(!stringBuilder.toString().contains("Received")) {
+            logger.info("[parseReceivedMessage] " + stringBuilder.toString());
+            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + stringBuilder.toString());
+        }
         return stringBuilder.toString();
 
     }
@@ -293,7 +312,7 @@ public class ClientHandlerImpl extends ClientHandler {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
-            System.out.println(ClientHandlerImpl.class+"%[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
+            System.out.println("ClientAction%[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
             sendMessageToClient(Commands.Flash.ERROR);
         }
 
@@ -345,7 +364,7 @@ public class ClientHandlerImpl extends ClientHandler {
             } catch (IOException e) {
                 if(this.running) {
                     logger.error("[readMessageFromClient] Connection lost");
-                    System.out.println(ClientHandlerImpl.class+"%[readMessageFromClient] Connection lost");
+                    System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[readMessageFromClient] Connection lost");
                 }
                 this.stop();
             }
@@ -434,7 +453,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             if (endOfTx.equals(Constants.END_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
-                System.out.println(ClientHandlerImpl.class+"%[receiveFile] File transfer successfully completed.");
+                System.out.println("ClientAction%[receiveFile] File transfer successfully completed.");
 
             }
 
@@ -451,6 +470,21 @@ public class ClientHandlerImpl extends ClientHandler {
 
         }
 
+
+    }
+
+    private void boardListRequestCallback() {
+
+        List<Board> boardList = this.server.listBoards();
+
+        String[] messages = new String[2+boardList.size()];
+        messages[0] = Commands.Info.BEGIN_OF_BOARD_LIST;
+        messages[1] = String.valueOf(boardList.size());
+        for (int i = 0; i < boardList.size(); i++) {
+            messages[i+2] = boardList.get(i).serialize();
+        }
+
+        sendMessagesToClient(messages);
 
     }
 

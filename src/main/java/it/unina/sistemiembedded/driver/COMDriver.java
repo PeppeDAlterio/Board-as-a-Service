@@ -5,10 +5,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Getter @Setter
 public class COMDriver {
@@ -26,7 +23,7 @@ public class COMDriver {
     private int fc;
 
     public static List<SerialPort> listPorts() {
-        return Arrays.asList(SerialPort.getCommPorts());
+        return Collections.unmodifiableList(Arrays.asList(SerialPort.getCommPorts()));
     }
 
     //TODO: trovare un modo per creare un metodo pubblico

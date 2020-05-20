@@ -6,7 +6,6 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -288,7 +287,52 @@ class SimpleApplicationTestSuite {
 
         assertThrows( BoardNotAvailableException.class, () -> client.flash("src/main/resources/testfile.elf"));
 
-    }  
+    }
+
+    @Test
+    @DisplayName("Client request server's board list in blocking mode")
+    public void blockingBoardListRequestTest1() throws IOException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        assertEquals(server.listBoards(), client.listConnectedServerBoards());
+
+    }
+
+    @Test
+    @DisplayName("Client request server's board list in non-blocking mode")
+    public void boardListRequestTest2() throws IOException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        client.listConnectedServerBoardsAsync();
+
+        try {
+            Thread.sleep(1200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    @DisplayName("Server name post connect")
+    public void handshakeTest1() throws IOException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        try {
+            Thread.sleep(1200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(server.getName(), client.getServerName());
+
+    }
 
 }
 
