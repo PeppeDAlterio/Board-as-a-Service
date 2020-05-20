@@ -1,6 +1,6 @@
 package it.unina.sistemiembedded.server;
 
-import com.fazecast.jSerialComm.SerialPort;
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.exception.AlreadyConnectedException;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
@@ -145,8 +145,8 @@ public abstract class Server {
     /**
      * Set COM port to a board
      * @param boardSerialNumber String board serial number
-     * @param serialPort SerialPort serial port to be attached to the board
+     * @param comDriver SerialPort serial port to be attached to the board
      */
-    public abstract void setBoardCOMPort(String boardSerialNumber, SerialPort serialPort) throws BoardNotFoundException;
+    public abstract void setBoardCOMDriver(String boardSerialNumber, COMDriver comDriver) throws BoardNotFoundException;
 
 }
