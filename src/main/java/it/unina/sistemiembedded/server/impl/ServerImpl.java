@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
+import it.unina.sistemiembedded.utility.SystemHelper;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class ServerImpl extends Server {
     private boolean running = false;
 
     /**
-     * Server boards map: (id, board)
+     * Server boards map: (serialNumber, board)
      */
     private final Map<String, Board> boards = new HashMap<>();
 
@@ -137,14 +138,26 @@ public class ServerImpl extends Server {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (listBoards().contains(board) || boards.putIfAbsent(board.getId(), board) != null) {
-                throw new BoardAlreadyExistsException("Board '" + board.getId() + "' already exists");
+            if (listBoards().contains(board) || boards.putIfAbsent(board.getSerialNumber(), board) != null) {
+                throw new BoardAlreadyExistsException("Board '" + board.getSerialNumber() + "' already exists");
             }
         } finally {
             boardsRWLock.writeLock().unlock();
         }
 
         return this;
+
+    }
+
+    @Override
+    public List<Board> rebuildBoards() {
+
+        try {
+            this.removeBoards(listBoards());
+            this.addBoards(SystemHelper.listBoards().toArray(new Board[0]));
+        } catch (BoardNotFoundException | BoardAlreadyExistsException ignored) {}
+
+        return listBoards();
 
     }
 
@@ -159,12 +172,12 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public Server removeBoard(String boardId) throws BoardNotFoundException {
+    public Server removeBoard(String boardSerialNumber) throws BoardNotFoundException {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (!boards.remove(boardId, boards.get(boardId))) {
-                throw new BoardNotFoundException("Board '" + boardId + "' not found");
+            if (!boards.remove(boardSerialNumber, boards.get(boardSerialNumber))) {
+                throw new BoardNotFoundException("Board '" + boardSerialNumber + "' not found");
             }
         } finally {
             boardsRWLock.writeLock().unlock();
@@ -175,11 +188,11 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public Server removeBoards(String... boardIds) throws BoardNotFoundException {
+    public Server removeBoards(String... serialNumbers) throws BoardNotFoundException {
 
         boardsRWLock.writeLock().lock();
         try {
-            for (String boardId : boardIds) {
+            for (String boardId : serialNumbers) {
                 this.removeBoard(boardId);
             }
         } finally {
@@ -189,14 +202,12 @@ public class ServerImpl extends Server {
         return this;
     }
 
-    //MIO CODICE
 
-    @Override
-    public Server removeBoards(List<Board> boards) throws BoardNotFoundException {
+    private Server removeBoards(List<Board> boards) throws BoardNotFoundException {
         boardsRWLock.writeLock().lock();
         try {
             for(Board a : boards){
-             this.removeBoard(a.getId());
+             this.removeBoard(a.getSerialNumber());
             }
         } finally {
             boardsRWLock.writeLock().unlock();
@@ -204,8 +215,6 @@ public class ServerImpl extends Server {
 
         return this;
     }
-
-    //
 
 
     @Override
@@ -278,7 +287,7 @@ public class ServerImpl extends Server {
 
     @Override
     public boolean existsBoardBySerialNumber(String serialNumber) {
-        return boards.values().parallelStream().anyMatch(board -> board.getSerialNumber().equalsIgnoreCase(serialNumber));
+        return boards.get(serialNumber)!=null;
     }
 
     @Override
@@ -288,7 +297,7 @@ public class ServerImpl extends Server {
 
     @Override
     public @Nullable Board attachBoardOnClient(ClientHandler clientHandler,
-                                               String boardId)
+                                               String boardSerialNumber)
             throws BoardAlreadyInUseException, BoardNotFoundException {
 
         Board board;
@@ -296,7 +305,7 @@ public class ServerImpl extends Server {
         boardsRWLock.writeLock().lock();
         try {
 
-            board = boards.get(boardId);
+            board = boards.get(boardSerialNumber);
 
             if (board == null) {
                 throw new BoardNotFoundException();

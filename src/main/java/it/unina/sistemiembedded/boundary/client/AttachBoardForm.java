@@ -58,7 +58,7 @@ public class AttachBoardForm extends  JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
                     Board selectedBoard = (Board) listBoard.getSelectedValue();
-                    client.requestBoard(selectedBoard.getId());
+                    client.requestBoard(selectedBoard.getSerialNumber());
                     new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString());
                     dispose();
                 }

@@ -268,11 +268,10 @@ public class ClientHandlerImpl extends ClientHandler {
 
     private Board attachOnBoardRequestCallback() {
 
-
-        String serialNumber = readMessageFromClient();
+        String boardSerialNumber = readMessageFromClient();
 
         try {
-            server.attachBoardOnClient(this, serialNumber);
+            server.attachBoardOnClient(this, boardSerialNumber);
         } catch (BoardAlreadyInUseException e) {
             sendMessageToClient(Commands.AttachOnBoard.BOARD_BUSY);
         } catch (BoardNotFoundException e) {

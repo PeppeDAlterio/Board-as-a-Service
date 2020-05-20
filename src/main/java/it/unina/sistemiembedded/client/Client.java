@@ -51,10 +51,11 @@ public abstract class Client {
 
     /**
      * Request a board from the connected server, async.
-     * @param boardId String serial number of the requested board
+     *
+     * @param boardSerialNumber
      * @throws NotConnectedException client is not connected to a server
      */
-    public abstract void requestBoard(String boardId) throws NotConnectedException;
+    public abstract void requestBoard(String boardSerialNumber) throws NotConnectedException;
 
     /**
      * Release the connected board, if exists.

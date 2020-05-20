@@ -10,15 +10,14 @@ import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Getter @Setter
 public class Board implements Serializable {
 
     public static String SERIALIZATION_SEPARATOR = "§§§";
-    public static int SERIALIZATION_NUMBER_OF_FIELDS = 3;
+    public static int SERIALIZATION_NUMBER_OF_FIELDS = 2;
 
-    private String id = UUID.randomUUID().toString();
+    //private String id/* = UUID.randomUUID().toString()*/;
 
     /**
      * Board symbolic name
@@ -64,39 +63,11 @@ public class Board implements Serializable {
                     ", but is " + data.length);
         }
 
-        this.id = data[0];
-        this.name = data[1];
-        this.serialNumber = data[2];
+        //this.id = "";
+        this.name = data[0];
+        this.serialNumber = data[1];
 
         this.comDriver = null;
-
-    }
-
-    /**
-     * Create a new board with a given id, name, serial number, COM Driver, and password.
-     * @param id String board id
-     * @param name String board name
-     * @param serialNumber String board serial number, mandatory
-     * @param comDriver COMDriver serial com driver
-     * @param password String board password
-     * @throws IllegalArgumentException if the serial number is blank
-     */
-    public Board(@Nullable String id,
-                 @Nonnull String name,
-                 @Nonnull String serialNumber,
-                 COMDriver comDriver,
-                 String password) throws IllegalArgumentException {
-
-        if(StringUtils.isBlank(serialNumber)) throw new IllegalArgumentException("Serial number cannot be blank");
-
-        if(!StringUtils.isBlank(id)) {
-            this.id = id;
-        }
-
-        this.name = name.replace(SERIALIZATION_SEPARATOR, " ");
-        this.serialNumber = serialNumber.replace(SERIALIZATION_SEPARATOR, " ");
-        this.comDriver = comDriver;
-        this.password = password.replace(SERIALIZATION_SEPARATOR, " ");
 
     }
 
@@ -174,7 +145,9 @@ public class Board implements Serializable {
         this.comDriver = comDriver;
     }
 
-
+//    public String getId() {
+//        return this.name + "#" + this.serialNumber;
+//    }
 
     public void setName(String name) {
         this.name = name;
@@ -189,24 +162,21 @@ public class Board implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        return serialNumber.equals(board.serialNumber);
+        return serialNumber.equals(board.serialNumber) && name.equals(board.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, serialNumber);
+        return Objects.hash(name, serialNumber);
     }
 
     public String serialize() {
-        return  this.id + SERIALIZATION_SEPARATOR +
-                this.name + SERIALIZATION_SEPARATOR +
+        return  this.name + SERIALIZATION_SEPARATOR +
                 this.serialNumber ;
     }
 
     @Override
     public String toString() {
-        return "[  ID = " + this.id +
-                "  |  Name = " + this.name+
-                "  |  Serial Number = " + this.serialNumber+"  ] \n";
+        return "[  Name = " + this.name + "  |  Serial Number = " + this.serialNumber+"  ] \n";
     }
 }

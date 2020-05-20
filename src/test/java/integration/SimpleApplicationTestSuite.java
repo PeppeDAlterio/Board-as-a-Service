@@ -92,13 +92,13 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.requestBoard(testBoard1.getId());
-        client2.requestBoard(testBoard2.getId());
+        client1.requestBoard(testBoard1.getSerialNumber());
+        client2.requestBoard(testBoard2.getSerialNumber());
         ExecutorService executorService = Executors.newFixedThreadPool(4);
-        executorService.execute(() -> client2.requestBoard(testBoard1.getId()));
-        executorService.execute(() -> client1.requestBoard(testBoard2.getId()));
-        executorService.execute(() -> client1.requestBoard(testBoard2.getId()));
-        executorService.execute(() -> client2.requestBoard(testBoard1.getId()));
+        executorService.execute(() -> client2.requestBoard(testBoard1.getSerialNumber()));
+        executorService.execute(() -> client1.requestBoard(testBoard2.getSerialNumber()));
+        executorService.execute(() -> client1.requestBoard(testBoard2.getSerialNumber()));
+        executorService.execute(() -> client2.requestBoard(testBoard1.getSerialNumber()));
 
         executorService.shutdown();
 
@@ -130,7 +130,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.requestBoard(testBoard1.getId()+"bla bla");
+        client1.requestBoard(testBoard1.getSerialNumber()+"bla bla");
 
         try {
             Thread.sleep(3000);
@@ -160,7 +160,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.requestBoard(testBoard1.getId());
+        client1.requestBoard(testBoard1.getSerialNumber());
 
         try {
             Thread.sleep(3000);
@@ -176,7 +176,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client2.requestBoard(testBoard1.getId());
+        client2.requestBoard(testBoard1.getSerialNumber());
 
         try {
             Thread.sleep(3000);
@@ -205,7 +205,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.requestBoard(testBoard1.getId());
+        client1.requestBoard(testBoard1.getSerialNumber());
 
         try {
             Thread.sleep(3000);
@@ -221,7 +221,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.requestBoard(testBoard2.getId());
+        client1.requestBoard(testBoard2.getSerialNumber());
 
         try {
             Thread.sleep(3000);
@@ -252,7 +252,7 @@ class SimpleApplicationTestSuite {
 
         client.connect("127.0.0.1");
 
-        client.requestBoard(testBoard1.getId());
+        client.requestBoard(testBoard1.getSerialNumber());
 
         try {
             Thread.sleep(3000);

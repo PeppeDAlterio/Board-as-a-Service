@@ -108,13 +108,13 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void requestBoard(String boardId) throws NotConnectedException {
+    public void requestBoard(String boardSerialNumber) throws NotConnectedException {
 
         if(!this.isConnected()) {
             throw new NotConnectedException();
         }
 
-        this.server.sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardId);
+        this.server.sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardSerialNumber);
 
     }
 

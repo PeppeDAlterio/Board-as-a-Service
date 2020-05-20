@@ -6,7 +6,6 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
 import it.unina.sistemiembedded.utility.Constants;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,7 +99,7 @@ public class ServerTestSuite {
             assertEquals(testBoard,
             server.listBoards().iterator().next());
             
-            server.removeBoard(testBoard.getId());
+            server.removeBoard(testBoard.getSerialNumber());
             
             assertTrue(server.listBoards().isEmpty());
             
@@ -128,7 +127,7 @@ public class ServerTestSuite {
             assertEquals(testBoard,
             server.listBoards().iterator().next());
             
-            server.removeBoard(testBoard.getId());
+            server.removeBoard(testBoard.getSerialNumber());
             
             assertTrue(server.listBoards().isEmpty());
             

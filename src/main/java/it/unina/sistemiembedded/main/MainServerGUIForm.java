@@ -6,12 +6,9 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
-import it.unina.sistemiembedded.utility.SystemHelper;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -20,13 +17,13 @@ public class MainServerGUIForm extends JFrame {
 
     private JPanel MainPanel;
     private JTextField textFieldName;
-    private JList listBoard;
+    private JList<Object> listBoard;
     private JButton startServerButton;
     private JButton buttonRefresh;
 
 
     private List<Board> boardList;
-    private String nameServer="Server-"+((int) (Math.random()*1000+1000));
+    private String nameServer = "Server-"+((int) (Math.random()*1000+1000));
     private Server server;
 
     private void initGUI(){
@@ -40,14 +37,15 @@ public class MainServerGUIForm extends JFrame {
 
 
     private void initList() throws BoardAlreadyExistsException {
-        boardList =  SystemHelper.listBoards();
-        DefaultListModel defaultListModelBoard = new DefaultListModel();
-        if(boardList.size()!=0){
-            server.addBoards(boardList.toArray(new Board[0]));
-            for(int i=0;i<boardList.size();i++)
-                defaultListModelBoard.addElement(boardList.get(i));
-        }else
+        DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
+        List<Board> boardList = server.rebuildBoards();
+        if(boardList.size()!=0) {
+            for (Board board : boardList) {
+                defaultListModelBoard.addElement(board);
+            }
+        } else {
             defaultListModelBoard.addElement("No boards detected");
+        }
         listBoard.setModel(defaultListModelBoard);
     }
 
@@ -56,13 +54,11 @@ public class MainServerGUIForm extends JFrame {
         initGUI();
         server = new ServerImpl(nameServer);
         initList();
-        listBoard.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(listBoard.getSelectedValue().getClass().toString().contains("Board")){
-                    Board board = (Board) listBoard.getSelectedValue();
-                    new SetSerialParamForm(board);
-                }
+        listBoard.getSelectionModel().addListSelectionListener(e -> {
+            if(!e.getValueIsAdjusting() && listBoard.getSelectedValue()!=null && listBoard.getSelectedValue() instanceof Board) {
+                Board board = (Board) listBoard.getSelectedValue();
+                new SetSerialParamForm(this, board);
+                listBoard.clearSelection();
             }
         });
 
@@ -83,7 +79,6 @@ public class MainServerGUIForm extends JFrame {
             @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
-                server.removeBoards(boardList);
                 initList();
             }
         });

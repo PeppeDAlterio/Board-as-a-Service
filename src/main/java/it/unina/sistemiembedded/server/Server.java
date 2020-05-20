@@ -80,23 +80,19 @@ public abstract class Server {
 
     /**
      * Remove a board from the server board list
-     * @param boardId String board object id
+     * @param boardSerialNumber String board serial number
      * @throws BoardNotFoundException board not found on the server
      * @return Server this
      */
-    abstract public Server removeBoard(String boardId) throws BoardNotFoundException;
+    abstract public Server removeBoard(String boardSerialNumber) throws BoardNotFoundException;
 
     /**
      * Remove a board from the server board list
-     * @param boardIds String[] list of board object id
+     * @param serialNumbers String[] list of board serial numbers
      * @throws BoardNotFoundException board not found on the server
      * @return Server this
      */
-    abstract public Server removeBoards(String ... boardIds) throws BoardNotFoundException;
-
-    //MIO CODICE
-    abstract public Server removeBoards(List<Board> boards) throws BoardNotFoundException;
-    //
+    abstract public Server removeBoards(String ... serialNumbers) throws BoardNotFoundException;
 
     /**
      * Get the server running state.
@@ -114,7 +110,7 @@ public abstract class Server {
 
     abstract public boolean existsBoardById(String boardId);
 
-    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String boardId)
+    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String boardSerialNumber)
             throws BoardNotFoundException, BoardAlreadyInUseException;
 
     /**
@@ -138,5 +134,7 @@ public abstract class Server {
         this.name = name;
 
     }
+
+    public abstract List<Board> rebuildBoards();
 
 }
