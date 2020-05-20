@@ -179,38 +179,34 @@ public class ClientImpl extends Client {
 
         List<Board> boards = Collections.emptyList();
 
-        blockingReceivingRequest.acquireUninterruptibly();
-        blockingReceivingMethod = BlockingReceivingMethod.listConnectedServerBoards;
+        requestBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
         try {
             this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
         } catch (Exception e) {
-            blockingReceivingRequest.release();
-            blockingReceivingMethod = BlockingReceivingMethod.none;
+            releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
             return Collections.emptyList();
         }
 
         try {
+
             blockingReceivingBufferReady.tryAcquire(20, TimeUnit.SECONDS);
+
+            if(blockingReceivingBuffer.getPayload() instanceof List) {
+
+                final LinkedList<Board> tmp = new LinkedList<>();
+                ((List<?>) blockingReceivingBuffer.getPayload()).forEach(e -> {
+                    tmp.add((Board) e);
+                });
+
+                boards = Collections.unmodifiableList(tmp);
+
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
-            blockingReceivingRequest.release();
-            blockingReceivingMethod = BlockingReceivingMethod.none;
-            return Collections.emptyList();
         }
 
-        if(blockingReceivingBuffer.getPayload() instanceof List) {
-
-            final LinkedList<Board> tmp = new LinkedList<>();
-            ((List<?>) blockingReceivingBuffer.getPayload()).forEach(e -> {
-                tmp.add((Board) e);
-            });
-
-            boards = Collections.unmodifiableList(tmp);
-
-        }
-
-        blockingReceivingRequest.release();
-        blockingReceivingMethod = BlockingReceivingMethod.none;
+        releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
 
         return boards;
 
@@ -385,11 +381,44 @@ public class ClientImpl extends Client {
 
         } finally {
 
-            if(blockingReceivingMethod!=BlockingReceivingMethod.none) {
-                blockingReceivingBuffer.setPayload(boards);
-                blockingReceivingBufferReady.release();
-            }
+            fillBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards, boards);
 
+        }
+
+    }
+
+    /**
+     * Fill blocking receiving for given method, if any, with requested payload
+     * @param requestMethod BlockingReceivingMethod method that requested the data
+     * @param payload Object requested data
+     */
+    private void fillBlockingReceiving(BlockingReceivingMethod requestMethod, Object payload) {
+        if(blockingReceivingMethod==requestMethod) {
+            blockingReceivingBuffer.setPayload(payload);
+            blockingReceivingBufferReady.release();
+        }
+    }
+
+    /**
+     * Requests blocking receiving
+     * @param method BlockingReceivingMethod method that requests the blocking receive
+     */
+    private void requestBlockingReceiving(BlockingReceivingMethod method) {
+
+        blockingReceivingRequest.acquireUninterruptibly();
+        blockingReceivingMethod = method;
+
+    }
+
+    /**
+     * Release the blocking receiving lock requested by the method, if any
+     * @param method BlockingReceivingMethod method that requested the blocking receive
+     */
+    private void releaseBlockingReceiving(BlockingReceivingMethod method) {
+
+        if(blockingReceivingMethod == method) {
+            blockingReceivingRequest.release();
+            blockingReceivingMethod = BlockingReceivingMethod.none;
         }
 
     }
