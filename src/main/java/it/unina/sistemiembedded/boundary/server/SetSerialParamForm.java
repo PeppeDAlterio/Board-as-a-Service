@@ -2,7 +2,9 @@ package it.unina.sistemiembedded.boundary.server;
 
 import com.fazecast.jSerialComm.SerialPort;
 import it.unina.sistemiembedded.driver.COMDriver;
+import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +35,13 @@ public class SetSerialParamForm extends JFrame {
     private String[] numDataBitValues = {"8","5","6","7","9"};
     private String[] numStopBitValues = {"1","2"};
     private String[] parityValues = {"None","Odd","Even"};
-    private List<SerialPort> listComPort = COMDriver.listPorts();
+    private List<COMPort> listComPort = COMPort.listCOMPorts();
 
     private int boudRate;
     private int bitData;
     private int bitStop;
     private String parity;
+    private COMPort comPort;
 
     private void initComboBox(){
         for (int i=0;i<boudRateValues.length;i++){
@@ -65,7 +68,7 @@ public class SetSerialParamForm extends JFrame {
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    public SetSerialParamForm(JFrame parent, Board board){
+    public SetSerialParamForm(JFrame parent, Server server ,Board board){
         super();
         parent.setEnabled(false);
         setSize();
@@ -84,6 +87,7 @@ public class SetSerialParamForm extends JFrame {
                 boudRate = Integer.parseInt(comboBoxBoudRate.getSelectedItem().toString());
                 bitData = Integer.parseInt(comboBoxData.getSelectedItem().toString());
                 bitStop = Integer.parseInt(comboBoxStop.getSelectedItem().toString());
+                comPort = (COMPort)comboBoxlistComPort.getSelectedItem();
                 parity = comboBoxParity.getSelectedItem().toString();
                 if (board.getComDriver().isPresent()) {
                     board.getComDriver().get().getComPort().setBaudRate(boudRate);
@@ -97,6 +101,7 @@ public class SetSerialParamForm extends JFrame {
                         board.getComDriver().get().getComPort().setParity(SerialPort.ODD_PARITY);
                     }
                 }
+                server.setBoardCOMDriver(board.getSerialNumber(),new COMDriver());
                 logger.info("Params set to : BoudRate : "+boudRate+" bitData : "+bitData+" bitStop : "+bitStop+" parity : "+parity);
             }
         });

@@ -66,7 +66,7 @@ public class MainServerGUIForm extends JFrame {
         listBoard.getSelectionModel().addListSelectionListener(e -> {
             if(!e.getValueIsAdjusting() && listBoard.getSelectedValue()!=null && listBoard.getSelectedValue() instanceof Board) {
                 Board board = (Board) listBoard.getSelectedValue();
-                new SetSerialParamForm(this, board);
+                new SetSerialParamForm(this, server,board);
                 listBoard.clearSelection();
             }
         });
