@@ -186,6 +186,7 @@ public class ClientImpl extends Client {
         } catch (Exception e) {
             blockingReceivingRequest.release();
             blockingReceivingMethod = BlockingReceivingMethod.none;
+            return Collections.emptyList();
         }
 
         try {
