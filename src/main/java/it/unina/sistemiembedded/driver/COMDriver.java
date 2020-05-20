@@ -4,7 +4,9 @@ import com.fazecast.jSerialComm.SerialPort;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter @Setter
 public class COMDriver {
@@ -21,14 +23,10 @@ public class COMDriver {
     private int sb;
     private int fc;
 
-    public static List<SerialPort> listPorts() {
-        return Collections.unmodifiableList(Arrays.asList(SerialPort.getCommPorts()));
-    }
-
     //TODO: trovare un modo per creare un metodo pubblico
-    public COMDriver(SerialPort comPort, int br, int P, int db, int sb, int fc) {
-        this.comPort = comPort;
-        if(this.comPort == null || !comPort.openPort()) {
+    public COMDriver(SerialPort serialPort, int br, int P, int db, int sb, int fc) {
+        this.comPort = serialPort;
+        if(this.comPort == null || !serialPort.openPort()) {
             throw new IllegalArgumentException();
         }
 
@@ -38,15 +36,16 @@ public class COMDriver {
         // comPort.setParity(SerialPort.NO_PARITY);
         // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
 
-        comPort.setBaudRate(br);
-        comPort.setNumDataBits(db);
-        comPort.setNumStopBits(sb);
-        comPort.setParity(P);
-        comPort.setFlowControl(fc);
+        serialPort.setBaudRate(br);
+        serialPort.setNumDataBits(db);
+        serialPort.setNumStopBits(sb);
+        serialPort.setParity(P);
+        serialPort.setFlowControl(fc);
 
-        comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 
-        comPort.addDataListener(new ReadingDataListener(this.comPort, this.availableMessages, outputBuffer));
+        serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
+
+        serialPort.addDataListener(new ReadingDataListener(this.comPort, this.availableMessages, outputBuffer));
 
     }
 
