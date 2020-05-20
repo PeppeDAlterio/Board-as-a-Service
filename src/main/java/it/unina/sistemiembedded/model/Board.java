@@ -29,7 +29,7 @@ public class Board implements Serializable {
      */
     private final String serialNumber;
 
-    private final COMDriver comDriver;
+    private COMDriver comDriver;
 
     /**
      * Board password. Used to authorize the connection
