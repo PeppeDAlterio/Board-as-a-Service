@@ -86,6 +86,14 @@ public abstract class Server {
     abstract public Server removeBoard(String boardId) throws BoardNotFoundException;
 
     /**
+     * Remove a board from the server board list
+     * @param boardIds String[] list of board object id
+     * @throws BoardNotFoundException board not found on the server
+     * @return Server this
+     */
+    abstract public Server removeBoards(String ... boardIds) throws BoardNotFoundException;
+
+    /**
      * Get the server running state.
      * @return boolean true if running, false otherwise
      */
