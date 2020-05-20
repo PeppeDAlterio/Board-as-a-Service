@@ -1,15 +1,18 @@
 package it.unina.sistemiembedded.boundary.server;
 
 import com.fazecast.jSerialComm.SerialPort;
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.model.Board;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 public class SetSerialParamForm extends JFrame {
     private JTextField textFieldBaudRate;
@@ -22,6 +25,7 @@ public class SetSerialParamForm extends JFrame {
     private JComboBox comboBoxStop;
     private JComboBox comboBoxData;
     private JComboBox comboBoxBoudRate;
+    private JComboBox comboBoxlistComPort;
 
     private final Logger logger = LoggerFactory.getLogger(SetSerialParamForm.class);
 
@@ -29,6 +33,8 @@ public class SetSerialParamForm extends JFrame {
     private String[] numDataBitValues = {"8","5","6","7","9"};
     private String[] numStopBitValues = {"1","2"};
     private String[] parityValues = {"None","Odd","Even"};
+    private List<SerialPort> listComPort = COMDriver.listPorts();
+
     private int boudRate;
     private int bitData;
     private int bitStop;
@@ -47,17 +53,27 @@ public class SetSerialParamForm extends JFrame {
         for (int i=0;i<parityValues.length;i++){
             comboBoxParity.addItem(parityValues[i]);
         }
+        for(int i=0;i<listComPort.size();i++){
+            comboBoxlistComPort.addItem(listComPort.get(i));
+        }
+    }
 
+    private void setSize(){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *0.3);
+        int width = (int) (screenSize.width *0.3);
+        this.setPreferredSize(new Dimension(width, height));
     }
 
     public SetSerialParamForm(JFrame parent, Board board){
-
+        super();
         parent.setEnabled(false);
-
+        setSize();
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setTitle(board+" serial parameters");
         initComboBox();
 
@@ -95,8 +111,4 @@ public class SetSerialParamForm extends JFrame {
         });
 
     }
-
-
-
-
 }

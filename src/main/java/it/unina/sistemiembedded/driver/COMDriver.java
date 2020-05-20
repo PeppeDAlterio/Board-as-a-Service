@@ -1,7 +1,6 @@
 package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,7 +43,6 @@ public class COMDriver {
         comPort.setNumStopBits(sb);
         comPort.setParity(P);
         comPort.setFlowControl(fc);
-
 
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.PrintStream;
 
 @Getter @Setter
@@ -18,10 +19,16 @@ public class ServerStartedForm extends JFrame {
 
     public PrintStream printStream;
 
-    public void setTexArea(String string){textAreaClientAction.append(string+"\n");}
+    private void setSize(double height_inc,double weight_inc){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
+        this.setPreferredSize(new Dimension(width, height));
+    }
 
     public ServerStartedForm(Server server){
-
+        super();
+        setSize(0.7,0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);

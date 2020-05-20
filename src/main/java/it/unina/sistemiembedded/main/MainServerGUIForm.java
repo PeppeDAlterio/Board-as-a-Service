@@ -9,25 +9,27 @@ import it.unina.sistemiembedded.server.impl.ServerImpl;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class MainServerGUIForm extends JFrame {
 
-    private JPanel MainPanel;
+    private JPanel mainPanel;
     private JTextField textFieldName;
     private JList<Object> listBoard;
     private JButton startServerButton;
     private JButton buttonRefresh;
 
 
-    private List<Board> boardList;
     private String nameServer = "Server-"+((int) (Math.random()*1000+1000));
     private Server server;
 
     private void initGUI(){
-        this.setContentPane(MainPanel);
+        this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
@@ -35,8 +37,14 @@ public class MainServerGUIForm extends JFrame {
         this.textFieldName.setText(nameServer);
     }
 
+    private void setSize(double height_inc,double weight_inc){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
+        this.setPreferredSize(new Dimension(width, height));
+    }
 
-    private void initList() throws BoardAlreadyExistsException {
+    private void initList(){
         DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
         List<Board> boardList = server.rebuildBoards();
         if(boardList.size()!=0) {
@@ -49,8 +57,9 @@ public class MainServerGUIForm extends JFrame {
         listBoard.setModel(defaultListModelBoard);
     }
 
-    public MainServerGUIForm() throws BoardAlreadyExistsException {
+    public MainServerGUIForm() {
         super();
+        setSize(0.5,0.5);
         initGUI();
         server = new ServerImpl(nameServer);
         initList();
@@ -80,6 +89,14 @@ public class MainServerGUIForm extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 initList();
+            }
+        });
+
+        textFieldName.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                textFieldName.setText("");
             }
         });
     }
