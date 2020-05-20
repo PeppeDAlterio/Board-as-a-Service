@@ -192,6 +192,8 @@ public class ClientImpl extends Client {
             blockingReceivingBufferReady.tryAcquire(20, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            blockingReceivingRequest.release();
+            blockingReceivingMethod = BlockingReceivingMethod.none;
             return Collections.emptyList();
         }
 
