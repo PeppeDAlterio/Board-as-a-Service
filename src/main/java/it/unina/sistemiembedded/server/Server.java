@@ -1,18 +1,18 @@
 package it.unina.sistemiembedded.server;
 
+import it.unina.sistemiembedded.exception.AlreadyConnectedException;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
 
-@Getter @Setter
+@Getter
 public abstract class Server {
 
     public static final int DEFAULT_PORT = 1234;
@@ -122,5 +122,21 @@ public abstract class Server {
      * @param clientHandler ClientHandler client handler to be removed
      */
     abstract public void removeClientHandler(@Nonnull ClientHandler clientHandler);
+
+    /**
+     * Set server name, if the server is not already running.
+     * If the server is running AlreadyConnectedException will be thrown
+     * @param name String server name
+     * @throws AlreadyConnectedException if the server is already running
+     */
+    public void setName(String name) throws AlreadyConnectedException {
+
+        if(isRunning()) {
+            throw new AlreadyConnectedException();
+        }
+
+        this.name = name;
+
+    }
 
 }
