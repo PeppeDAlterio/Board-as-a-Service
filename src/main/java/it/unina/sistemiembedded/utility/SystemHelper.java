@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.model.Board;
-import it.unina.sistemiembedded.server.impl.ServerImpl;
 
 public class SystemHelper {
 
@@ -120,10 +118,10 @@ public class SystemHelper {
 
                     String serialNumber = buffer_str.substring(
                             buffer_str.indexOf("ST-LINK SN  : ") + "ST-LINK SN  : ".length(),
-                            buffer_str.indexOf("ST-LINK FW  : ") - 1);
+                            buffer_str.indexOf("ST-LINK FW  : ") - System.getProperty("line.separator").length());
 
                     String name = buffer_str.substring(buffer_str.indexOf("Device name : ") + "Device name : ".length(),
-                            buffer_str.indexOf("Flash size  : ") - 1);
+                            buffer_str.indexOf("Flash size  : ") - System.getProperty("line.separator").length());
 
                     list.add(new Board(name, serialNumber));
 
@@ -143,37 +141,6 @@ public class SystemHelper {
     public void flashBoard(){
 
 
-    }
-
-    /**
-     * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
-     * store the serial number and name
-     * 
-     * @param br Baudrate
-     * @param P parity
-     * @param db Bata Bit
-     * @param sb Stop Bit
-     * @param fc Flow Control
-     * @return none
-     * @throws IOException
-     */
-    public void com (String COM, int br, String P, int db, int sb, String fc){
-        try {
-            Process flashProcess = Runtime.getRuntime()
-                    .exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=" + COM
-                            + " br=" + br + " P=" + P + " db=" + db + " sb=" + sb + " fc=" + fc);
-            
-            flashProcess.waitFor();
-            int cnt = 0;
-            cnt = flashProcess.getInputStream().available();
-            byte[] buffer = new byte[cnt];
-            flashProcess.getInputStream().read(buffer, 0, cnt);
-            System.out.println(new String(buffer));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
    
 }
