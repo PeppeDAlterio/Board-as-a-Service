@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.model.Board;
-import it.unina.sistemiembedded.server.impl.ServerImpl;
 
 public class SystemHelper {
 
@@ -120,10 +118,10 @@ public class SystemHelper {
 
                     String serialNumber = buffer_str.substring(
                             buffer_str.indexOf("ST-LINK SN  : ") + "ST-LINK SN  : ".length(),
-                            buffer_str.indexOf("ST-LINK FW  : ") - 1);
+                            buffer_str.indexOf("ST-LINK FW  : ") - System.getProperty("line.separator").length());
 
                     String name = buffer_str.substring(buffer_str.indexOf("Device name : ") + "Device name : ".length(),
-                            buffer_str.indexOf("Flash size  : ") - 1);
+                            buffer_str.indexOf("Flash size  : ") - System.getProperty("line.separator").length());
 
                     list.add(new Board(name, serialNumber));
 

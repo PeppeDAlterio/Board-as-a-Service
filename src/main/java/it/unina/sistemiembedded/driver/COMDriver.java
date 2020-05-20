@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,21 +19,35 @@ public class COMDriver {
 
     private OutputBuffer outputBuffer = new OutputBuffer();
 
+    private int br;
+    private int P;
+    private int db;
+    private int sb;
+    private int fc;
+
     public static List<SerialPort> listPorts() {
         return Arrays.asList(SerialPort.getCommPorts());
     }
 
-    public COMDriver(SerialPort comPort) {
+    //TODO: trovare un modo per creare un metodo pubblico
+    public COMDriver(SerialPort comPort, int br, int P, int db, int sb, int fc) {
         this.comPort = comPort;
         if(this.comPort == null || !comPort.openPort()) {
             throw new IllegalArgumentException();
         }
 
-        comPort.setBaudRate(115200);
-        comPort.setNumDataBits(8);
-        comPort.setNumStopBits(1);
-        comPort.setParity(SerialPort.NO_PARITY);
-        comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
+        // comPort.setBaudRate(115200);
+        // comPort.setNumDataBits(8);
+        // comPort.setNumStopBits(1);
+        // comPort.setParity(SerialPort.NO_PARITY);
+        // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
+
+        comPort.setBaudRate(br);
+        comPort.setNumDataBits(db);
+        comPort.setNumStopBits(sb);
+        comPort.setParity(P);
+        comPort.setFlowControl(fc);
+
 
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 
