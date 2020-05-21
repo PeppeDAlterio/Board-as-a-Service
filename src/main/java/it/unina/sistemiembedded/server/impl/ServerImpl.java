@@ -165,7 +165,7 @@ public class ServerImpl extends Server {
 
     @Override
     public void setBoardCOMDriver(@Nonnull String boardSerialNumber, @Nullable COMPort comPort,
-                                  int baudRate, int numBitData, int bitStop, String parity, Set<String> flowControl)
+                                  int baudRate, int numBitData, int bitStop, String parity, Collection<String> flowControl)
             throws BoardNotFoundException {
 
         if(comPort==null) return;
@@ -190,8 +190,7 @@ public class ServerImpl extends Server {
 
             }
 
-            //TODO: no null
-            board.setComDriver(new COMDriver(comPort, baudRate, parity, numBitData, bitStop, null));
+            board.setComDriver(new COMDriver(comPort, baudRate, parity, numBitData, bitStop, flowControl));
 
         }
 
