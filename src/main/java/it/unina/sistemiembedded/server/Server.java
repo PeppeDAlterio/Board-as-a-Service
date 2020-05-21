@@ -12,6 +12,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public abstract class Server {
@@ -150,11 +151,11 @@ public abstract class Server {
      * @param numBitData int number of data bits
      * @param bitStop int bit stop
      * @param parity String parity
-     * @param flowControl String flow control
+     * @param flowControl Set flow control strings
      * @throws BoardNotFoundException if board not found by serial number
      */
     public abstract void setBoardCOMDriver(@Nonnull String boardSerialNumber, @Nullable COMPort comPort,
-                                           int baudRate, int numBitData, int bitStop, String parity, String flowControl)
+                                           int baudRate, int numBitData, int bitStop, String parity, Set<String> flowControl)
             throws BoardNotFoundException;
 
 }
