@@ -28,6 +28,8 @@ public class MainClientGUIForm extends JFrame{
     private int portNumber;
     private Client client;
 
+    private int clickedFistTime=0;
+
     public MainClientGUIForm(){
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,7 +64,10 @@ public class MainClientGUIForm extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                textFieldName.setText("");
+                if(clickedFistTime==0) {
+                    textFieldName.setText("");
+                    clickedFistTime++;
+                }
             }
         });
     }
