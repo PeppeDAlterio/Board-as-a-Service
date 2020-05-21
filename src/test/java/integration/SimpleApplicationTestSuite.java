@@ -334,5 +334,35 @@ class SimpleApplicationTestSuite {
 
     }
 
+    @Test
+    @DisplayName("dfd")
+    void debugTest1() throws IOException, BoardAlreadyExistsException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        Board myBoard = new Board("Nucleo 64", "066FFF494849887767185233");
+        server.addBoards(myBoard);
+
+        client.requestBoard(myBoard.getSerialNumber());
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        client.requestDebug(6789);
+
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 }
 

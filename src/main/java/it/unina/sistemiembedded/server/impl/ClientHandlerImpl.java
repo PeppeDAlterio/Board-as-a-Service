@@ -304,6 +304,8 @@ public class ClientHandlerImpl extends ClientHandler {
             return;
         }
 
+        stopActiveDebugSession();
+
         try {
             this.receiveFile(".elf", Commands.Flash.SUCCESS);
 
@@ -325,15 +327,36 @@ public class ClientHandlerImpl extends ClientHandler {
             return;
         }
 
+        stopActiveDebugSession();
+
         int debugPort = Integer.parseInt(this.readMessageFromClient());
 
         try {
-            SystemHelper.remoteDebug(debugPort, this);
+            this.board.setDebugging(true);
+            this.board.setDebuggingProcess(SystemHelper.remoteDebug(this.board.getSerialNumber(), debugPort, this));
         } catch (IOException e) {
             this.sendMessagesToClient(Commands.Debug.ERROR);
+            stopActiveDebugSession();
             logger.error("[debugRequestCallbak] There was an error while starting remote debug session on port: " + debugPort);
         }
 
+    }
+
+    private void stopActiveDebugSession() {
+        if(this.board!=null) {
+            synchronized (this.board.getSerialNumber().intern()) {
+                this.board.setDebugging(false);
+                if (this.board.getDebuggingProcess() != null) {
+                    try {
+                        this.board.getDebuggingProcess().destroyForcibly().waitFor();
+
+                    } catch (InterruptedException ignored) {
+                    } finally {
+                        this.board.setDebuggingProcess(null);
+                    }
+                }
+            }
+        }
     }
 
     private void debugEndRequestCallback() {
@@ -342,13 +365,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             synchronized (this.board.getSerialNumber().intern()) {
 
-                this.board.getDebuggingProcess().destroyForcibly();
-                try {
-                    this.board.getDebuggingProcess().waitFor();
-                } catch (InterruptedException ignored) {
-                }
-
-                this.board.setDebuggingProcess(null);
+                stopActiveDebugSession();
 
                 sendMessageToClient(Commands.Debug.FINISHED);
 
