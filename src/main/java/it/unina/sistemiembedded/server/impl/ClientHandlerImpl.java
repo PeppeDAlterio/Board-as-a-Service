@@ -129,7 +129,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         detachBoard();
         this.board = board;
-        synchronized (this.board) {
+        synchronized (this.board.getSerialNumber().intern()) {
             this.board.setInUse(true);
         }
 
@@ -151,7 +151,7 @@ public class ClientHandlerImpl extends ClientHandler {
     public Board detachBoard() {
 
         if(this.board!=null) {
-            synchronized (this.board) {
+            synchronized (this.board.getSerialNumber().intern()) {
                 this.board.setInUse(false);
             }
         }
@@ -335,7 +335,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         if(this.board!=null) {
 
-            synchronized (this.board) {
+            synchronized (this.board.getSerialNumber().intern()) {
 
                 this.board.getDebuggingProcess().destroyForcibly();
                 try {

@@ -176,7 +176,7 @@ public class ServerImpl extends Server {
             throw new BoardNotFoundException();
         }
 
-        synchronized (board) {
+        synchronized (board.getSerialNumber().intern()) {
 
             // Se la board ha già un COM port, la stacco e chiudo la connessione, se diversa dalla nuova
             if(board.getComDriver().isPresent() ) {
@@ -346,7 +346,7 @@ public class ServerImpl extends Server {
                 throw new BoardNotFoundException();
             }
 
-            synchronized (board) {
+            synchronized (board.getSerialNumber().intern()) {
 
                 if (board.isInUse()) {
                     throw new BoardAlreadyInUseException();
