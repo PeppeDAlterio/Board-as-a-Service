@@ -1,11 +1,11 @@
 package it.unina.sistemiembedded.utility;
 
+import it.unina.sistemiembedded.model.Board;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import it.unina.sistemiembedded.model.Board;
 
 public class SystemHelper {
 
@@ -56,7 +56,6 @@ public class SystemHelper {
                 + " -d -p " + port + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
 
         new Thread(() -> {
-
             try {
                 while (flashProcess.isAlive()) {
                     int cnt = 0;

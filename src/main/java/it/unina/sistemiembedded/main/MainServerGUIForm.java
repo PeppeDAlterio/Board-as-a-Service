@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MainServerGUIForm extends JFrame {
@@ -103,6 +105,11 @@ public class MainServerGUIForm extends JFrame {
     }
 
     public static void main(String[] args) throws BoardAlreadyExistsException {
+        System.setProperty("org.slf4j.simpleLogger.dateTimeFormat","dd/MM/yyyy HH:mm:ss");
+        System.setProperty("org.slf4j.simpleLogger.showDateTime","true");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
+        Date date = new Date();
+        System.setProperty("org.slf4j.simpleLogger.logFile", "./log/log[ "+formatter.format(date)+" ].txt");
         new MainServerGUIForm();
     }
 }

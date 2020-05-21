@@ -2,8 +2,10 @@ package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.utility.CustomOutputStream;
+import it.unina.sistemiembedded.utility.RedirectStream;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
@@ -17,9 +19,16 @@ public class SendMessageForm extends JFrame{
     private JTextArea textAreaComunication;
 
     private PrintStream printStream;
+    private void setSize(double height_inc,double weight_inc){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
+        this.setPreferredSize(new Dimension(width, height));
+    }
 
     public SendMessageForm(Client client){
         super();
+        setSize(0.5,0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
@@ -37,7 +46,7 @@ public class SendMessageForm extends JFrame{
                 }else {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
-                    System.out.println(SendMessageForm.class +"%"+"[ "+formatter.format(date)+" ]   "+message);
+                    System.out.println(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT+"[ "+formatter.format(date)+" ]   "+message);
                     textFieldMessage.setText("");
                     client.sendTextMessage(message);
                 }

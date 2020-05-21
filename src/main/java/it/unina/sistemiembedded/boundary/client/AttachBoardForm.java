@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -35,9 +36,15 @@ public class AttachBoardForm extends  JFrame {
         }
         listBoard.setSelectedIndex(0);
     }
-
+    private void setSize(double height_inc,double weight_inc){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
+        this.setPreferredSize(new Dimension(width, height));
+    }
 
     public AttachBoardForm(Client client){
+        setSize(0.5,0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
