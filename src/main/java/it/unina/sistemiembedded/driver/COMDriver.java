@@ -23,25 +23,53 @@ public class COMDriver {
     private int sb;
     private int fc;
 
+    /**
+     * Return the int value of the passed string
+     * @param string
+     * @return id
+     */
+    private int parser(String string){
+        int id=-1;
+        if(string.contains("PARITY")){
+            if(string.contains("NO")){
+                id=0;
+            }else if(string.contains("EVEN")){
+                id=2;
+            }else if(string.contains("ODD")){
+                id=1;
+            }
+        }else if(string.contains("FLOW_CONTROL")){
+            if(string.contains("XONXOFF_IN_ENABLED")){
+                id=65536;
+            }else if(string.contains("XONXOFF_OUT_ENABLED")){
+                id=1048576;
+            }else if(string.contains("DISABLED")){
+                id=0;
+            }else if(string.contains("CTS_ENABLED")){
+                id=16;
+            }else if(string.contains("DSR_ENABLED")){
+                id=256;
+            }else if(string.contains("DTR_ENABLED")){
+                id=4096;
+            }else if(string.contains("RTS_ENABLED")){
+                id=1;
+            }
+        }
+        return id;
+    }
+
     //TODO: trovare un modo per creare un metodo pubblico
-    public COMDriver(COMPort comPort, int br, int P, int db, int sb, int fc) {
+    public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop, String flowControl) {
         this.serialPort = comPort.getSerialPort();
         if(this.serialPort == null || !this.serialPort.openPort()) {
             throw new IllegalArgumentException();
         }
 
-        // this.serialPort.setBaudRate(115200);
-        // this.serialPort.setNumDataBits(8);
-        // this.serialPort.setNumStopBits(1);
-        // this.serialPort.setParity(SerialPort.NO_PARITY);
-        // this.serialPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED | SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
-
-        this.serialPort.setBaudRate(br);
-        this.serialPort.setNumDataBits(db);
-        this.serialPort.setNumStopBits(sb);
-        this.serialPort.setParity(P);
-        this.serialPort.setFlowControl(fc);
-
+        this.serialPort.setBaudRate(boudRate);
+        this.serialPort.setNumDataBits(numBitData);
+        this.serialPort.setNumStopBits(numBitStop);
+        this.serialPort.setParity(parser(parity));
+        this.serialPort.setFlowControl(parser(flowControl));
 
         this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 

@@ -1,10 +1,10 @@
 package it.unina.sistemiembedded.boundary.server;
 
-import com.fazecast.jSerialComm.SerialPort;
 import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,19 +28,25 @@ public class SetSerialParamForm extends JFrame {
     private JComboBox comboBoxData;
     private JComboBox comboBoxBoudRate;
     private JComboBox comboBoxlistComPort;
+    private JComboBox comboBoxFlowControl;
+    private JButton buttonInformation;
+
 
     private final Logger logger = LoggerFactory.getLogger(SetSerialParamForm.class);
 
     private String[] boudRateValues = {"9600","115200","38400","19200","4800","2400"};
     private String[] numDataBitValues = {"8","5","6","7","9"};
     private String[] numStopBitValues = {"1","2"};
-    private String[] parityValues = {"None","Odd","Even"};
+    private String[] parityValues = {"N0_PARITY","ODD_PARITY","EVEN_PARITY","MARK_PARITY","SPACE_PARITY"};
+    private String[] flowControlValues = {"FLOW_CONTROL_XONXOFF_IN_ENABLED","FLOW_CONTROL_XONXOFF_OUT_ENABLED","FLOW_CONTROL_DISABLED","FLOW_CONTROL_CTS_ENABLED",
+                                            "FLOW_CONTROL_DSR_ENABLED","FLOW_CONTROL_DTR_ENABLED","FLOW_CONTROL_RTS_ENABLED"};
     private List<COMPort> listComPort = COMPort.listCOMPorts();
 
     private int boudRate;
     private int bitData;
     private int bitStop;
     private String parity;
+    private String flowControl;
     private COMPort comPort;
 
     private void initComboBox(){
@@ -59,28 +65,33 @@ public class SetSerialParamForm extends JFrame {
         for(int i=0;i<listComPort.size();i++){
             comboBoxlistComPort.addItem(listComPort.get(i));
         }
+        for (int i=0;i<flowControlValues.length;i++){
+            comboBoxFlowControl.addItem(flowControlValues[i]);
+        }
     }
 
-    private void setSize(){
+    private void setSize(double height_inc,double weight_inc){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *0.3);
-        int width = (int) (screenSize.width *0.3);
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
     public SetSerialParamForm(JFrame parent, Server server ,Board board){
         super();
         parent.setEnabled(false);
-        setSize();
+        setSize(0.5,0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
         this.setTitle(board+" serial parameters");
+
         initComboBox();
 
         applyButton.addActionListener(new ActionListener() {
+            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
@@ -89,19 +100,9 @@ public class SetSerialParamForm extends JFrame {
                 bitStop = Integer.parseInt(comboBoxStop.getSelectedItem().toString());
                 comPort = (COMPort)comboBoxlistComPort.getSelectedItem();
                 parity = comboBoxParity.getSelectedItem().toString();
-                if (board.getComDriver().isPresent()) {
-                    board.getComDriver().get().getSerialPort().setBaudRate(boudRate);
-                    board.getComDriver().get().getSerialPort().setNumDataBits(bitData);
-                    board.getComDriver().get().getSerialPort().setNumStopBits(bitStop);
-                    if (parity.compareTo("None") == 0) {
-                        board.getComDriver().get().getSerialPort().setParity(SerialPort.NO_PARITY);
-                    }else if(parity.compareTo("Even")==0) {
-                        board.getComDriver().get().getSerialPort().setParity(SerialPort.EVEN_PARITY);
-                    }else{
-                        board.getComDriver().get().getSerialPort().setParity(SerialPort.ODD_PARITY);
-                    }
-                }
-                server.setBoardCOMDriver(board.getSerialNumber(),new COMDriver());
+                flowControl = comboBoxFlowControl.getSelectedItem().toString();
+                //TODO : risolvere il bug che non permette di selezionare la stessa comPort sulla stessa scheda
+                server.setBoardCOMDriver(board.getSerialNumber(),new COMDriver(comPort,boudRate,parity,bitData,bitStop,flowControl));
                 logger.info("Params set to : BoudRate : "+boudRate+" bitData : "+bitData+" bitStop : "+bitStop+" parity : "+parity);
             }
         });
@@ -115,5 +116,13 @@ public class SetSerialParamForm extends JFrame {
             }
         });
 
+
+        buttonInformation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null,"Before select a specific Com port:\n" +
+                        "check the correspondence to the selected board in the section \"Ports(COM and LPT)\" of your management device settings","Important!",JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
     }
 }

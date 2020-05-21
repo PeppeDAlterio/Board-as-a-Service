@@ -81,6 +81,7 @@ public class MainServerGUIForm extends JFrame {
                 }
                 server.setName(name);
                 server.start();
+                dispose();
                 new ServerStartedForm(server);
             }
         });
