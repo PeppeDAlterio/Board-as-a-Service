@@ -26,7 +26,7 @@ public class RemoteDebugForm extends JFrame{
     }
     public RemoteDebugForm(Client client) {
         super();
-        setSize(0.5,0.5);
+        setSize(0.5,0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
@@ -41,7 +41,7 @@ public class RemoteDebugForm extends JFrame{
                 }else{
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());
                     System.out.println(RemoteDebugForm.class+"%Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
-                    client.debug(gdbPort);
+                    client.requestDebug(gdbPort);
                 }
             }
         });

@@ -39,7 +39,7 @@ public class RemoteFlashForm extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 //TODO : Controlli su elf_file
                 try {
-                    client.flash(elf_file);
+                    client.requestFlash(elf_file);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
