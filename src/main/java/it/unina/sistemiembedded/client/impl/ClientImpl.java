@@ -129,7 +129,7 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void flash(String file) throws BoardNotAvailableException, IOException {
+    public void requestFlash(String file) throws BoardNotAvailableException, IOException {
 
         if(!board().isPresent()) {
             throw new BoardNotAvailableException();
@@ -143,7 +143,7 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void debug(int port) throws BoardNotAvailableException, IllegalArgumentException {
+    public void requestDebug(int port) throws BoardNotAvailableException, IllegalArgumentException {
 
         if(!board().isPresent()) {
             throw new BoardNotAvailableException();
@@ -296,6 +296,20 @@ public class ClientImpl extends Client {
                 break;
 
             //
+            // DEBUG
+
+            case Commands.Debug.STARTED:
+                stringBuilder.append("Debugging session started");
+                startedDebugCallback();
+                break;
+
+            case Commands.Debug.ERROR:
+            case Commands.Debug.FINISHED:
+                stringBuilder.append("Debugging session finished");
+                finishedDebugCallback();
+                break;
+
+            //
             // INFO.BOARD LIST
 
             case Commands.Info.BEGIN_OF_BOARD_LIST:
@@ -421,6 +435,22 @@ public class ClientImpl extends Client {
             blockingReceivingMethod = BlockingReceivingMethod.none;
         }
 
+    }
+
+    private void finishedDebugCallback() {
+        if(this.board!=null) {
+            synchronized (this.board.getSerialNumber().intern()) {
+                this.board.setDebugging(false);
+            }
+        }
+    }
+
+    private void startedDebugCallback() {
+        if(this.board!=null) {
+            synchronized (this.board.getSerialNumber().intern()) {
+                this.board.setDebugging(true);
+            }
+        }
     }
 
 }

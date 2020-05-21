@@ -182,6 +182,7 @@ public class ServerImpl extends Server {
             if(board.getComDriver().isPresent() ) {
 
                 if ( board.getComDriver().get().getSerialPort().equals(comPort.getSerialPort()) ) {
+                    //TODO and FIXME: Call the configure with the new settings
                     return;
                 } else {
                     board.getComDriver().get().closeCommunication();

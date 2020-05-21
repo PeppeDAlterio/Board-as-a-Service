@@ -260,7 +260,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        assertDoesNotThrow( () -> client.flash("src/main/resources/testfile.elf"));
+        assertDoesNotThrow( () -> client.requestFlash("src/main/resources/testfile.elf"));
 
         try {
             Thread.sleep(3000);
@@ -285,7 +285,7 @@ class SimpleApplicationTestSuite {
 
         client.connect("127.0.0.1");
 
-        assertThrows( BoardNotAvailableException.class, () -> client.flash("src/main/resources/testfile.elf"));
+        assertThrows( BoardNotAvailableException.class, () -> client.requestFlash("src/main/resources/testfile.elf"));
 
     }
 
