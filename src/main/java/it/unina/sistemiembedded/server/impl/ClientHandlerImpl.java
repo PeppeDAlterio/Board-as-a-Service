@@ -8,6 +8,7 @@ import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Commands;
 import it.unina.sistemiembedded.utility.Constants;
 import it.unina.sistemiembedded.utility.RedirectStream;
+import it.unina.sistemiembedded.utility.SystemHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -326,8 +327,12 @@ public class ClientHandlerImpl extends ClientHandler {
 
         int debugPort = Integer.parseInt(this.readMessageFromClient());
 
-        // TODO: Avvia debug ! Sync on board or something like this
-        // In un nuovo thread the manda un END OF DEBUG se si chiude il processo
+        try {
+            SystemHelper.remoteDebug(debugPort, this);
+        } catch (IOException e) {
+            this.sendMessagesToClient(Commands.Debug.ERROR);
+            logger.error("[debugRequestCallbak] There was an error while starting remote debug session on port: " + debugPort);
+        }
 
     }
 
@@ -373,7 +378,8 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private void sendMessageToClient(String message) {
+    @Override
+    public void sendMessageToClient(String message) {
 
         try {
             synchronized (dos) {

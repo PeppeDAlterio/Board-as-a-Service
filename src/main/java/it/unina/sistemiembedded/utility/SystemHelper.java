@@ -1,13 +1,21 @@
 package it.unina.sistemiembedded.utility;
 
-import java.io.DataOutputStream;
+import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.server.ClientHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import it.unina.sistemiembedded.model.Board;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class SystemHelper {
+
+    private static Logger logger = LoggerFactory.getLogger(SystemHelper.class);
+
+    private static Executor executor = Executors.newFixedThreadPool(10);
 
     public static void runCommandAndPrintOutputAsync(final String command) {
 
@@ -50,12 +58,12 @@ public class SystemHelper {
 
     }
 
-    public static Process remoteDebug(final int port, final DataOutputStream dos) throws IOException {
+    public static Process remoteDebug(final int port, final ClientHandler clientHandler) throws IOException {
 
         final Process flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
                 + " -d -p " + port + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
 
-        new Thread(() -> {
+        executor.execute(() -> {
 
             try {
                 while (flashProcess.isAlive()) {
@@ -63,27 +71,26 @@ public class SystemHelper {
                     if (((cnt = flashProcess.getInputStream().available()) > 0)) {
                         final byte[] buffer = new byte[cnt];
                         flashProcess.getInputStream().read(buffer, 0, cnt);
-                        System.out.println(new String(buffer));
+                        logger.debug("[remoteDebug]" + new String(buffer));
                     }
                 }
-                System.out.println();
-            } catch (final Exception ignored) {
-            }
+            } catch (final Exception ignored) { }
 
-        }).start();
+        });
 
-        new Thread(() -> {
+        executor.execute(() -> {
             try {
-                dos.writeUTF(Constants.DEBUG_STARTED);
-                System.out.println("Sessione di debug remoto avviata");
+                clientHandler.sendMessageToClient(Commands.Debug.STARTED);
+                logger.debug("[remoteDebug] Remote debug session has been started...");
                 flashProcess.waitFor();
-                System.out.println("Sessione di debug remoto terminata.");
-                synchronized (dos) {
-                    dos.writeUTF(Constants.END_OF_DEBUG);
-                }
-            } catch (InterruptedException | IOException ignored) {
+                logger.debug("[remoteDebug] Remote debug session finished.");
+                clientHandler.sendMessageToClient(Commands.Debug.FINISHED);
+            } catch (InterruptedException ignored) {
+                logger.debug("[remoteDebug] Remote debug session finished.");
+                clientHandler.sendMessageToClient(Commands.Debug.FINISHED);
+                flashProcess.destroyForcibly();
             }
-        }).start();
+        });
 
         return flashProcess;
 

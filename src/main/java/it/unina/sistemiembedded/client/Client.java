@@ -67,14 +67,14 @@ public abstract class Client {
      * @param file String path to the file to flash
      * @throws BoardNotAvailableException no board connected
      */
-    public abstract void flash(String file) throws BoardNotAvailableException, IOException;
+    public abstract void requestFlash(String file) throws BoardNotAvailableException, IOException;
 
     /**
      * Request a flash on the connected board, async.
      * @param port int port to listen of for debug session
      * @throws BoardNotAvailableException no board connected
      */
-    public abstract void debug(int port) throws BoardNotAvailableException, IllegalArgumentException;
+    public abstract void requestDebug(int port) throws BoardNotAvailableException, IllegalArgumentException;
 
     /**
      * Get client connected state

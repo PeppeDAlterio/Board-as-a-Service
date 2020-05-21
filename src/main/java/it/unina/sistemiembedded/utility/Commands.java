@@ -83,6 +83,16 @@ public class Commands {
         public static final String REQUEST          = "$--- DEBUG ON BOARD REQUEST ---$";
 
         /**
+         * Sent by the server when the debugging session has been started
+         */
+        public static final String STARTED         = "$--- DEBUG ON BOARD STARTED ---$";
+
+        /**
+         * Sent by the server when the debugging session finishes
+         */
+        public static final String FINISHED         = "$--- DEBUG ON BOARD FINISHED ---$";
+
+        /**
          * Sent by the Server as ready to debug
          */
         public static final String READY_TO_DEBUG   = "$--- DEBUG ON BOARD READY ---$";
@@ -96,11 +106,6 @@ public class Commands {
          * Sent by the client to request end of the debug
          */
         public static final String REQUEST_END      = "$--- DEBUG ON BOARD REQUEST END ---$";
-
-        /**
-         * Sent by the server when the debugging session finishes
-         */
-        public static final String FINISHED         = "$--- DEBUG ON BOARD FINISHED ---$";
 
     }
 

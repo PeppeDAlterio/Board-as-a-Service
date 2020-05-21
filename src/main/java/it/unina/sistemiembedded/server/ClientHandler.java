@@ -50,6 +50,8 @@ public abstract class ClientHandler implements Runnable {
 
     public abstract Board detachBoard();
 
+    public abstract void sendMessageToClient(String message);
+
     /**
      * Get client handler ID
      * @return long client handler id

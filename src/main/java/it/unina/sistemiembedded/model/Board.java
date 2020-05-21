@@ -40,6 +40,8 @@ public class Board implements Serializable {
 
     private Process debuggingProcess;
 
+    private boolean debugging = false;
+
     public static Board deserialize(@Nonnull String serializedBoard) {
 
         if(StringUtils.isBlank(serializedBoard)) {
