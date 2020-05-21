@@ -1,6 +1,6 @@
 package it.unina.sistemiembedded.server;
 
-import it.unina.sistemiembedded.driver.COMDriver;
+import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.exception.AlreadyConnectedException;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
@@ -145,8 +145,16 @@ public abstract class Server {
     /**
      * Set COM port to a board
      * @param boardSerialNumber String board serial number
-     * @param comDriver SerialPort serial port to be attached to the board
+     * @param comPort COMPort com port
+     * @param baudRate int baud rate
+     * @param numBitData int number of data bits
+     * @param bitStop int bit stop
+     * @param parity String parity
+     * @param flowControl String flow control
+     * @throws BoardNotFoundException if board not found by serial number
      */
-    public abstract void setBoardCOMDriver(String boardSerialNumber, COMDriver comDriver) throws BoardNotFoundException;
+    public abstract void setBoardCOMDriver(@Nonnull String boardSerialNumber, @Nullable COMPort comPort,
+                                           int baudRate, int numBitData, int bitStop, String parity, String flowControl)
+            throws BoardNotFoundException;
 
 }

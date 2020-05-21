@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.server.impl;
 
 import it.unina.sistemiembedded.driver.COMDriver;
+import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
@@ -163,7 +164,11 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public void setBoardCOMDriver(String boardSerialNumber, COMDriver comDriver) throws BoardNotFoundException {
+    public void setBoardCOMDriver(@Nonnull String boardSerialNumber, @Nullable COMPort comPort,
+                                  int baudRate, int numBitData, int bitStop, String parity, String flowControl)
+            throws BoardNotFoundException {
+
+        if(comPort==null) return;
 
         Board board = boards.get(boardSerialNumber);
 
@@ -172,7 +177,21 @@ public class ServerImpl extends Server {
         }
 
         synchronized (board) {
-            board.setComDriver(comDriver);
+
+            // Se la board ha già un COM port, la stacco e chiudo la connessione, se diversa dalla nuova
+            if(board.getComDriver().isPresent() ) {
+
+                if ( board.getComDriver().get().getSerialPort().equals(comPort.getSerialPort()) ) {
+                    return;
+                } else {
+                    board.getComDriver().get().closeCommunication();
+                    board.setComDriver(null);
+                }
+
+            }
+
+            board.setComDriver(new COMDriver(comPort, baudRate, parity, numBitData, bitStop, flowControl));
+
         }
 
     }

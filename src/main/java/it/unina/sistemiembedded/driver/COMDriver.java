@@ -29,33 +29,53 @@ public class COMDriver {
      * @return id
      */
     private int parser(String string){
-        int id=-1;
+
+        int id = 0;
+
         if(string.contains("PARITY")){
+
             if(string.contains("NO")){
-                id=0;
+                id=SerialPort.NO_PARITY;
             }else if(string.contains("EVEN")){
-                id=2;
+                id=SerialPort.EVEN_PARITY;
             }else if(string.contains("ODD")){
-                id=1;
+                id=SerialPort.ODD_PARITY;
             }
-        }else if(string.contains("FLOW_CONTROL")){
+
+        } else if(string.contains("FLOW_CONTROL")) {
+
             if(string.contains("XONXOFF_IN_ENABLED")){
-                id=65536;
-            }else if(string.contains("XONXOFF_OUT_ENABLED")){
-                id=1048576;
-            }else if(string.contains("DISABLED")){
-                id=0;
-            }else if(string.contains("CTS_ENABLED")){
-                id=16;
-            }else if(string.contains("DSR_ENABLED")){
-                id=256;
-            }else if(string.contains("DTR_ENABLED")){
-                id=4096;
-            }else if(string.contains("RTS_ENABLED")){
-                id=1;
+                id |= SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED;
             }
+
+            if(string.contains("XONXOFF_OUT_ENABLED")){
+                id |= SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED;
+            }
+
+            if(string.contains("DISABLED")){
+                id |= SerialPort.FLOW_CONTROL_DISABLED;
+            }
+
+            if(string.contains("CTS_ENABLED")){
+                id |= SerialPort.FLOW_CONTROL_CTS_ENABLED;
+            }
+
+            if(string.contains("DSR_ENABLED")){
+                id |= SerialPort.FLOW_CONTROL_DSR_ENABLED;
+            }
+
+            if(string.contains("DTR_ENABLED")){
+                id |= SerialPort.FLOW_CONTROL_DTR_ENABLED;
+            }
+
+            if(string.contains("RTS_ENABLED")){
+                id |= SerialPort.FLOW_CONTROL_RTS_ENABLED;
+            }
+
         }
+
         return id;
+
     }
 
     //TODO: trovare un modo per creare un metodo pubblico
