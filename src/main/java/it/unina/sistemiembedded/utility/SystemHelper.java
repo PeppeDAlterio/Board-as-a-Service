@@ -58,10 +58,10 @@ public class SystemHelper {
 
     }
 
-    public static Process remoteDebug(final int port, final ClientHandler clientHandler) throws IOException {
+    public static Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) throws IOException {
 
         final Process flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
-                + " -d -p " + port + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
+                + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
 
         executor.execute(() -> {
 
