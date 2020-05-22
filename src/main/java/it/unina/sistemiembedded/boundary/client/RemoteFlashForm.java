@@ -31,7 +31,8 @@ public class RemoteFlashForm extends JFrame{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-
+        this.textAreaFlash.setEditable(false);
+        this.textAreaFlash.setFont(new Font("courier",Font.BOLD,12));
         printStream = new PrintStream(new CustomOutputStream(null,null,null,this.textAreaFlash,null));
 
         startFlashButton.addActionListener(new ActionListener() {

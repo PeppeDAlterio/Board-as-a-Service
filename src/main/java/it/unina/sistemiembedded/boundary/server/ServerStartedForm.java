@@ -36,6 +36,8 @@ public class ServerStartedForm extends JFrame {
         this.pack();
         this.textAreaClientAction.setEditable(false);
         this.textAreaClientComunication.setEditable(false);
+        this.textAreaClientComunication.setFont(new Font("courier",Font.BOLD,12));
+        this.textAreaClientAction.setFont(new Font("courier",Font.BOLD,12));
         labelPortNumber.setText(Integer.toString(server.getPort()));
         labelStartedOnPort.setText(labelStartedOnPort.getText().replace("#SERVER#",server.getName()));
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication,null,null,null));

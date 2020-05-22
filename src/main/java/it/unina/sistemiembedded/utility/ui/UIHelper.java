@@ -55,7 +55,7 @@ public class UIHelper {
         write(TextArea.CLIENT_MESSAGE, msg);
     }
 
-    public static void cleintDebug(String msg) {
+    public static void clientDebug(String msg) {
         write(TextArea.CLIENT_DEBUG, msg);
     }
 

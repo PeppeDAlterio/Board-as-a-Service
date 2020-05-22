@@ -58,8 +58,8 @@ public class MainClientGUIForm extends JFrame{
                 try {
                     client.connect(ipAddress,portNumber);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Can't connect to "+ipAddress+":"+portNumber,"Connection error", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Can't connect to "+ipAddress+":"+portNumber,"Connection error", JOptionPane.ERROR_MESSAGE);
                 }
                 if(client.isConnected())
                     new AttachBoardForm(client,ipAddress,portNumber);
