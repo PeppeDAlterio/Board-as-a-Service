@@ -40,7 +40,7 @@ public class UIHelper {
     }
 
     private static void write(TextArea textArea, String msg) {
-        System.out.println(textArea.getValue() + "Remote debug session finished");
+        System.out.println(textArea.getValue() + msg);
     }
 
     public static void serverCommunicationPrint(String msg) {

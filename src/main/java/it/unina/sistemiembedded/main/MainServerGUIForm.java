@@ -106,6 +106,7 @@ public class MainServerGUIForm extends JFrame {
     public static void main(String[] args) {
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat","dd/MM/yyyy HH:mm:ss");
         System.setProperty("org.slf4j.simpleLogger.showDateTime","true");
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
         Date date = new Date();
         System.setProperty("org.slf4j.simpleLogger.logFile", "./log/log[ "+formatter.format(date)+" ].txt");
