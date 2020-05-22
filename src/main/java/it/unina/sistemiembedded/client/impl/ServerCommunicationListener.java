@@ -45,6 +45,10 @@ public class ServerCommunicationListener {
         this.client = client;
     }
 
+    void serverDisconnectedCallback() {
+        this.client.disconnect();
+    }
+
     /*
      *  BEGIN OF ASYNC CALLBACKS
      */
