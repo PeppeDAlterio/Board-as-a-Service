@@ -87,7 +87,7 @@ public class ServerImpl extends Server {
             serverSocket = new ServerSocket(port);
 
             logger.info("[start] Server successfully started");
-            UIHelper.serverActionPrint("[start] Server successfully started");
+            UIHelper.serverActionPrint("Welcome " + getName() + " :)");
 
             this.running = true;
 
@@ -297,7 +297,7 @@ public class ServerImpl extends Server {
                     final Socket socket = serverSocket.accept();
 
                     logger.info("[waitForClientsAsync] New client connection request received: " + socket);
-                    UIHelper.serverActionPrint("New client connection request received: "+ socket);
+                    UIHelper.serverActionPrint("New client connection request received from "+ socket.getInetAddress());
 
                     new Thread( () -> {
 

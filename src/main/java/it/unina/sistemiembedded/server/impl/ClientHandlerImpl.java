@@ -74,7 +74,7 @@ public class ClientHandlerImpl extends ClientHandler {
         synchronized (this) {
             if (this.running) {
                 logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-                UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been stopped");
+                UIHelper.serverActionPrint("Client '" + this.name + "' disconnected");
             }
 
             this.running = false;
@@ -89,7 +89,6 @@ public class ClientHandlerImpl extends ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("[stop] There was an error while closing client handler (" + this.id +" socket");
-            UIHelper.serverActionPrint("There was an error while closing client handler (" + this.id + ") socket");
         }
 
         server.removeClientHandler(this);
@@ -104,11 +103,10 @@ public class ClientHandlerImpl extends ClientHandler {
         this.running = socket.isConnected();
 
         logger.info("[run] Client handler (" + this.id + ") has been started");
-        UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been started");
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
-        UIHelper.serverActionPrint("Client connected: (" + this.id + ", " + this.name + ")");
+        UIHelper.serverActionPrint("New client connected. Hello '" + this.name + "'");
 
 
         sendTextMessage(this.server.getName());
@@ -275,7 +273,6 @@ public class ClientHandlerImpl extends ClientHandler {
             } catch (IOException e) {
                 if(this.running) {
                     logger.error("[readMessageFromClient] Connection lost");
-                    UIHelper.serverActionPrint("[readMessageFromClient] Connection lost");
                 }
                 this.stop();
             }
@@ -365,7 +362,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             if (endOfTx.equals(Constants.END_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
-                UIHelper.serverActionPrint("[receiveFile] File transfer successfully completed.");
+                UIHelper.serverActionPrint("File transfer successfully completed.");
 
             }
 
