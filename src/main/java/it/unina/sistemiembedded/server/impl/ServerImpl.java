@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -212,9 +210,23 @@ public class ServerImpl extends Server {
 
         boardsRWLock.writeLock().lock();
         try {
-            if (!boards.remove(boardSerialNumber, boards.get(boardSerialNumber))) {
+
+            Board removedBoard = boards.get(boardSerialNumber);
+
+            if(removedBoard != null) {
+                synchronized (removedBoard.getSerialNumber().intern()) {
+
+                    if (boards.remove(boardSerialNumber, removedBoard)) {
+                        removedBoard.getComDriver().ifPresent(COMDriver::closeCommunication);
+                    } else {
+                        throw new BoardNotFoundException("Board '" + boardSerialNumber + "' not found");
+                    }
+
+                }
+            } else {
                 throw new BoardNotFoundException("Board '" + boardSerialNumber + "' not found");
             }
+
         } finally {
             boardsRWLock.writeLock().unlock();
         }
@@ -291,9 +303,6 @@ public class ServerImpl extends Server {
                         // obtain input and output streams
                         try {
 
-                            DataInputStream dis = new DataInputStream(socket.getInputStream());
-                            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-
                             // Create a new handler object for handling this request.
                             ClientHandler clientHandler = new ClientHandlerImpl(clientSequencer.getAndIncrement(),
                                     this, socket);
@@ -319,16 +328,6 @@ public class ServerImpl extends Server {
 
         serverMainThread.start();
 
-    }
-
-    @Override
-    public boolean existsBoardBySerialNumber(String serialNumber) {
-        return boards.get(serialNumber)!=null;
-    }
-
-    @Override
-    public boolean existsBoardById(String boardId) {
-        return false;
     }
 
     @Override

@@ -1,13 +1,11 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.client.ServerProxy;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
-import it.unina.sistemiembedded.utility.Commands;
-import lombok.AccessLevel;
+import it.unina.sistemiembedded.utility.communication.Commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -18,40 +16,23 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Optional;
 
 @Getter @Setter
 public class ClientImpl extends Client {
 
-    @Getter(AccessLevel.PACKAGE) @Setter(AccessLevel.PACKAGE)
-    private static class Message {
-
-        private Object payload;
-
-    }
-
     private final Logger logger = LoggerFactory.getLogger(ClientImpl.class);
 
-    private ServerProxy server;
+    private String serverName = "";
     private String serverIpAddress;
     private int serverPort;
-
-    private String serverName = "";
 
     private Board board;
 
     private Thread listeningThread;
 
-    private Semaphore blockingReceivingRequest = new Semaphore(1);
-    private Semaphore blockingReceivingBufferReady = new Semaphore(0);
-    private BlockingReceivingMethod blockingReceivingMethod = BlockingReceivingMethod.none;
-    private final Message blockingReceivingBuffer = new Message();
-
-    private enum BlockingReceivingMethod {
-        none, listConnectedServerBoards
-    }
+    private ServerCommunicationListener serverCommunicationListener;
 
 
     public ClientImpl(String name) {
@@ -80,6 +61,8 @@ public class ClientImpl extends Client {
 
             this.serverName = this.server.receiveString();
 
+            serverCommunicationListener = new ServerCommunicationListener(this);
+
             waitForMessagesAsync();
 
             logger.info("[connected] Proxy to: "  + serverIp+":"+serverPort + " successfully created" );
@@ -96,7 +79,7 @@ public class ClientImpl extends Client {
     @Override
     public void disconnect() {
 
-        this.releaseBoard();
+        this.requestReleaseBoard();
         this.board = null;
 
         this.server.disconnect();
@@ -110,16 +93,17 @@ public class ClientImpl extends Client {
     @Override
     public void requestBoard(String boardSerialNumber) throws NotConnectedException {
 
-        if(!this.isConnected()) {
-            throw new NotConnectedException();
-        }
+        checkConnection();
 
         this.server.sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardSerialNumber);
 
     }
 
     @Override
-    public void releaseBoard() {
+    public void requestReleaseBoard() throws NotConnectedException {
+
+        checkConnection();
+
         this.server.sendMessage(Commands.DetachFromBoard.REQUEST);
     }
 
@@ -129,7 +113,9 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void requestFlash(String file) throws BoardNotAvailableException, IOException {
+    public void requestFlash(String file) throws NotConnectedException, BoardNotAvailableException, IOException {
+
+        checkConnection();
 
         if(!board().isPresent()) {
             throw new BoardNotAvailableException();
@@ -143,7 +129,9 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void requestDebug(int port) throws BoardNotAvailableException, IllegalArgumentException {
+    public void requestDebug(int port) throws NotConnectedException, BoardNotAvailableException, IllegalArgumentException {
+
+        checkConnection();
 
         if(!board().isPresent()) {
             throw new BoardNotAvailableException();
@@ -159,12 +147,19 @@ public class ClientImpl extends Client {
     }
 
     @Override
+    public void requestStopDebug() {
+        this.server.sendMessage(Commands.Debug.REQUEST_END);
+    }
+
+    @Override
     public Optional<Board> board() {
         return Optional.ofNullable(this.board);
     }
 
     @Override
-    public void sendTextMessage(String message) {
+    public void sendTextMessage(String message) throws NotConnectedException {
+
+        checkConnection();
 
         // Avoids commands
         if(message.startsWith("$--- ") && message.endsWith(" ---$")) {
@@ -175,50 +170,26 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public List<Board> listConnectedServerBoards() throws NotConnectedException {
+    public List<Board> requestBlockingServerBoardList() throws NotConnectedException {
 
-        List<Board> boards = Collections.emptyList();
+        checkConnection();
 
-        requestBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
-        try {
-            this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
-        } catch (Exception e) {
-            releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
-            return Collections.emptyList();
-        }
-
-        try {
-
-            blockingReceivingBufferReady.tryAcquire(20, TimeUnit.SECONDS);
-
-            if(blockingReceivingBuffer.getPayload() instanceof List) {
-
-                final LinkedList<Board> tmp = new LinkedList<>();
-                ((List<?>) blockingReceivingBuffer.getPayload()).forEach(e -> {
-                    tmp.add((Board) e);
-                });
-
-                boards = Collections.unmodifiableList(tmp);
-
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
-
-        return boards;
-
+        return serverCommunicationListener.blockingReceiveServerBoardList();
     }
 
     @Override
-    public void listConnectedServerBoardsAsync() throws NotConnectedException {
+    public void requestServerBoardList() throws NotConnectedException {
 
-        if(!isConnected()) throw new NotConnectedException();
+        checkConnection();
 
         this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
 
+    }
+
+    private void checkConnection() {
+        if (!isConnected()) {
+            throw new NotConnectedException();
+        }
     }
 
     /**
@@ -271,7 +242,7 @@ public class ClientImpl extends Client {
 
             case Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD:
                 stringBuilder.append("Transfer board message received");
-                receiveAndSetBoardCallback();
+                serverCommunicationListener.receiveAndSetBoardCallback();
                 break;
 
             //
@@ -279,7 +250,7 @@ public class ClientImpl extends Client {
 
             case Commands.DetachFromBoard.SUCCESS:
                 stringBuilder.append("Detach from board ack received");
-                detachBoardCallback();
+                serverCommunicationListener.detachBoardCallback();
                 break;
 
             //
@@ -287,12 +258,12 @@ public class ClientImpl extends Client {
 
             case Commands.Flash.SUCCESS:
                 stringBuilder.append("Detach from board success ack received");
-                flashCallback("success");
+                serverCommunicationListener.flashCallback("success");
                 break;
 
             case Commands.Flash.ERROR:
                 stringBuilder.append("Detach from board error ack received");
-                flashCallback("error");
+                serverCommunicationListener.flashCallback("error");
                 break;
 
             //
@@ -300,20 +271,20 @@ public class ClientImpl extends Client {
 
             case Commands.Debug.STARTED:
                 stringBuilder.append("Debugging session started");
-                startedDebugCallback();
+                serverCommunicationListener.startedDebugCallback();
                 break;
 
             case Commands.Debug.ERROR:
             case Commands.Debug.FINISHED:
                 stringBuilder.append("Debugging session finished");
-                finishedDebugCallback();
+                serverCommunicationListener.finishedDebugCallback();
                 break;
 
             //
             // INFO.BOARD LIST
 
             case Commands.Info.BEGIN_OF_BOARD_LIST:
-                receiveBoardListCallback();
+                serverCommunicationListener.receiveBoardListCallback();
                 break;
 
             //
@@ -327,130 +298,6 @@ public class ClientImpl extends Client {
 
         logger.debug(stringBuilder.toString());
 
-    }
-
-    /**
-     * Receives a serialized board and set it.
-     * @throws IOException error while receiving the board
-     */
-    private void receiveAndSetBoardCallback() throws IOException {
-
-        String serializedBoard = this.server.receiveString();
-
-        try {
-
-            Board board = Board.deserialize(serializedBoard);
-            board.setInUse(true);
-            setBoard(board);
-
-            this.server.sendMessage(Commands.AttachOnBoard.SUCCESS);
-
-        } catch (Exception e) {
-            logger.error("[parseReceivedMessage] Bad Board received: " + serializedBoard);
-            this.server.sendMessage(Commands.AttachOnBoard.ERROR);
-        }
-
-    }
-
-    /**
-     * Concrete detaches the board
-     */
-    private void detachBoardCallback() {
-        this.board = null;
-    }
-
-    /**
-     *
-     */
-    private void flashCallback(String result) {
-
-        logger.info("[flashCallback] Flash complete with result: " + result);
-
-    }
-
-    private void receiveBoardListCallback() {
-
-        List<Board> boards = null;
-
-        try {
-
-            int numberOfBoards = Integer.parseInt(this.server.receiveString());
-
-            boards = new ArrayList<>(numberOfBoards);
-
-            for(int i=0; i<numberOfBoards; i++) {
-
-                String serializedBoard = this.server.receiveString();
-                boards.add(Board.deserialize(serializedBoard));
-
-            }
-
-
-        } catch (IOException e) {
-            logger.error("[receiveBoardListCallback] There was an error while receiving board list");
-
-            if(boards==null) {
-                boards = Collections.emptyList();
-            }
-
-        } finally {
-
-            fillBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards, boards);
-
-        }
-
-    }
-
-    /**
-     * Fill blocking receiving for given method, if any, with requested payload
-     * @param requestMethod BlockingReceivingMethod method that requested the data
-     * @param payload Object requested data
-     */
-    private void fillBlockingReceiving(BlockingReceivingMethod requestMethod, Object payload) {
-        if(blockingReceivingMethod==requestMethod) {
-            blockingReceivingBuffer.setPayload(payload);
-            blockingReceivingBufferReady.release();
-        }
-    }
-
-    /**
-     * Requests blocking receiving
-     * @param method BlockingReceivingMethod method that requests the blocking receive
-     */
-    private void requestBlockingReceiving(BlockingReceivingMethod method) {
-
-        blockingReceivingRequest.acquireUninterruptibly();
-        blockingReceivingMethod = method;
-
-    }
-
-    /**
-     * Release the blocking receiving lock requested by the method, if any
-     * @param method BlockingReceivingMethod method that requested the blocking receive
-     */
-    private void releaseBlockingReceiving(BlockingReceivingMethod method) {
-
-        if(blockingReceivingMethod == method) {
-            blockingReceivingRequest.release();
-            blockingReceivingMethod = BlockingReceivingMethod.none;
-        }
-
-    }
-
-    private void finishedDebugCallback() {
-        if(this.board!=null) {
-            synchronized (this.board.getSerialNumber().intern()) {
-                this.board.setDebugging(false);
-            }
-        }
-    }
-
-    private void startedDebugCallback() {
-        if(this.board!=null) {
-            synchronized (this.board.getSerialNumber().intern()) {
-                this.board.setDebugging(true);
-            }
-        }
     }
 
 }

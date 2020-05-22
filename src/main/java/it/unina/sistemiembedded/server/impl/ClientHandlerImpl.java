@@ -1,14 +1,11 @@
 package it.unina.sistemiembedded.server.impl;
 
-import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
-import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
-import it.unina.sistemiembedded.utility.Commands;
 import it.unina.sistemiembedded.utility.Constants;
 import it.unina.sistemiembedded.utility.RedirectStream;
-import it.unina.sistemiembedded.utility.SystemHelper;
+import it.unina.sistemiembedded.utility.communication.Commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -20,7 +17,6 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
@@ -36,6 +32,8 @@ public class ClientHandlerImpl extends ClientHandler {
      * Output stream of the client
      */
     private final DataOutputStream dos;
+
+    private final ClientHandlerCommunicationListener communicationListener;
 
     /**
      * Client name
@@ -65,6 +63,8 @@ public class ClientHandlerImpl extends ClientHandler {
 
         this.dis = new DataInputStream(socket.getInputStream());
         this.dos = new DataOutputStream(socket.getOutputStream());
+
+        this.communicationListener = new ClientHandlerCommunicationListener(this);
 
     }
 
@@ -105,7 +105,7 @@ public class ClientHandlerImpl extends ClientHandler {
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
         System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[run] Client connected: (" + this.id + ", " + this.name + ")");
 
-        sendMessageToClient(this.server.getName());
+        sendTextMessage(this.server.getName());
 
         while(isAlive()) {
 
@@ -141,14 +141,6 @@ public class ClientHandlerImpl extends ClientHandler {
     }
 
     @Override
-    public Board detachBoard(Board board) {
-        if(this.board == board) {
-            return detachBoard();
-        }
-        return null;
-    }
-
-    @Override
     public Board detachBoard() {
 
         if(this.board!=null) {
@@ -164,7 +156,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         synchronized (dos) {
             for (String m : messages) {
-                sendMessageToClient(m);
+                sendTextMessage(m);
             }
         }
 
@@ -187,7 +179,7 @@ public class ClientHandlerImpl extends ClientHandler {
             case Commands.AttachOnBoard.REQUEST_BOARD:
 
                 stringBuilder.append(" request a board: ");
-                Board board = attachOnBoardRequestCallback();
+                Board board = communicationListener.attachOnBoardRequestCallback();
                 if(board!=null) {
                     stringBuilder.append(this.board.toString());
                 } else {
@@ -203,7 +195,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             case Commands.AttachOnBoard.ERROR:
                 stringBuilder.append("There was an error attaching on board: ").append(this.board.getSerialNumber());
-                detachBoard();
+                communicationListener.attachOnBoardErrorCallback();
 
                 break;
 
@@ -212,7 +204,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             case Commands.DetachFromBoard.REQUEST:
                 stringBuilder.append("Detach board request");
-                detachBoardRequestCallback();
+                communicationListener.detachBoardRequestCallback();
 
                 break;
 
@@ -221,7 +213,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             case Commands.Flash.REQUEST:
                 stringBuilder.append("Flash on board request");
-                flashRequestCallback();
+                communicationListener.flashRequestCallback();
 
                 break;
 
@@ -229,13 +221,13 @@ public class ClientHandlerImpl extends ClientHandler {
             // DEBUG
             case Commands.Debug.REQUEST:
                 stringBuilder.append("Debug on board request");
-                debugRequestCallback();
+                communicationListener.debugRequestCallback();
 
                 break;
 
             case Commands.Debug.REQUEST_END:
                 stringBuilder.append("End debug on board request");
-                debugEndRequestCallback();
+                communicationListener.debugEndRequestCallback();
 
                 break;
 
@@ -244,7 +236,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             case Commands.Info.BOARD_LIST_REQUEST:
                 stringBuilder.append("Board list request");
-                boardListRequestCallback();
+                communicationListener.boardListRequestCallback();
 
                 break;
 
@@ -267,115 +259,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private Board attachOnBoardRequestCallback() {
-
-        String boardSerialNumber = readMessageFromClient();
-
-        try {
-            server.attachBoardOnClient(this, boardSerialNumber);
-        } catch (BoardAlreadyInUseException e) {
-            sendMessageToClient(Commands.AttachOnBoard.BOARD_BUSY);
-        } catch (BoardNotFoundException e) {
-            sendMessageToClient(Commands.AttachOnBoard.BOARD_NOT_FOUND);
-        }
-
-
-        return this.board;
-
-    }
-
-    private void detachBoardRequestCallback() {
-
-        if(this.getBoard()!=null) {
-            synchronized (this.getBoard()) {
-                this.getBoard().setInUse(false);
-            }
-            this.setBoard(null);
-        }
-
-        sendMessageToClient(Commands.DetachFromBoard.SUCCESS);
-
-    }
-
-    private void flashRequestCallback() {
-
-        if(this.board==null) {
-            sendMessageToClient(Commands.Flash.ERROR);
-            return;
-        }
-
-        stopActiveDebugSession();
-
-        try {
-            this.receiveFile(".elf", Commands.Flash.SUCCESS);
-
-            // TODO: Avvia flash e applicazione !
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
-            System.out.println("ClientAction%[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
-            sendMessageToClient(Commands.Flash.ERROR);
-        }
-
-    }
-
-    private void debugRequestCallback() {
-
-        if(this.board==null) {
-            sendMessageToClient(Commands.Debug.ERROR);
-            return;
-        }
-
-        stopActiveDebugSession();
-
-        int debugPort = Integer.parseInt(this.readMessageFromClient());
-
-        try {
-            this.board.setDebugging(true);
-            this.board.setDebuggingProcess(SystemHelper.remoteDebug(this.board.getSerialNumber(), debugPort, this));
-        } catch (IOException e) {
-            this.sendMessagesToClient(Commands.Debug.ERROR);
-            stopActiveDebugSession();
-            logger.error("[debugRequestCallbak] There was an error while starting remote debug session on port: " + debugPort);
-        }
-
-    }
-
-    private void stopActiveDebugSession() {
-        if(this.board!=null) {
-            synchronized (this.board.getSerialNumber().intern()) {
-                this.board.setDebugging(false);
-                if (this.board.getDebuggingProcess() != null) {
-                    try {
-                        this.board.getDebuggingProcess().destroyForcibly().waitFor();
-
-                    } catch (InterruptedException ignored) {
-                    } finally {
-                        this.board.setDebuggingProcess(null);
-                    }
-                }
-            }
-        }
-    }
-
-    private void debugEndRequestCallback() {
-
-        if(this.board!=null) {
-
-            synchronized (this.board.getSerialNumber().intern()) {
-
-                stopActiveDebugSession();
-
-                sendMessageToClient(Commands.Debug.FINISHED);
-
-            }
-
-        }
-
-    }
-
-    private String readMessageFromClient() {
+    String readMessageFromClient() {
 
         String message = "";
 
@@ -396,7 +280,7 @@ public class ClientHandlerImpl extends ClientHandler {
     }
 
     @Override
-    public void sendMessageToClient(String message) {
+    public void sendTextMessage(String message) {
 
         try {
             synchronized (dos) {
@@ -416,7 +300,7 @@ public class ClientHandlerImpl extends ClientHandler {
      * @return Received file path
      * @throws IOException error while receiving file
      */
-    private String receiveFile(String fileExtension, String postMessage) throws IOException {
+    String receiveFile(String fileExtension, String postMessage) throws IOException {
 
         synchronized (dis) {
 
@@ -485,7 +369,7 @@ public class ClientHandlerImpl extends ClientHandler {
             bos.close();
 
             if(!StringUtils.isBlank(postMessage)) {
-                sendMessageToClient(postMessage);
+                sendTextMessage(postMessage);
             }
 
             return "received/" + board.getSerialNumber() + "/" + filename;
@@ -495,19 +379,6 @@ public class ClientHandlerImpl extends ClientHandler {
 
     }
 
-    private void boardListRequestCallback() {
-
-        List<Board> boardList = this.server.listBoards();
-
-        String[] messages = new String[2+boardList.size()];
-        messages[0] = Commands.Info.BEGIN_OF_BOARD_LIST;
-        messages[1] = String.valueOf(boardList.size());
-        for (int i = 0; i < boardList.size(); i++) {
-            messages[i+2] = boardList.get(i).serialize();
-        }
-
-        sendMessagesToClient(messages);
-
-    }
+    Server getServer() {return this.server;}
 
 }

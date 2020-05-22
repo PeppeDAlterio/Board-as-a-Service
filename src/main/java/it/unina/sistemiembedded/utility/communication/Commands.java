@@ -1,4 +1,4 @@
-package it.unina.sistemiembedded.utility;
+package it.unina.sistemiembedded.utility.communication;
 
 public class Commands {
 
