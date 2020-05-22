@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.client.impl.ClientImpl;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -28,7 +29,15 @@ public class MainClientGUIForm extends JFrame{
     private int portNumber;
     private Client client;
 
+    private int clickedFistTime=0;
+    private void setSize(double height_inc,double weight_inc){
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int height = (int) (screenSize.height *height_inc);
+        int width = (int) (screenSize.width *weight_inc);
+        this.setPreferredSize(new Dimension(width, height));
+    }
     public MainClientGUIForm(){
+        setSize(0.3,0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -62,7 +71,10 @@ public class MainClientGUIForm extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                textFieldName.setText("");
+                if(clickedFistTime==0) {
+                    textFieldName.setText("");
+                    clickedFistTime++;
+                }
             }
         });
     }

@@ -29,7 +29,7 @@ public class COMDriver {
      * @param string String
      * @return int integer parity value as SerialPort enum
      */
-    private int parser(String string){
+    private int parseParity(String string){
 
         int id = 0;
 
@@ -100,7 +100,7 @@ public class COMDriver {
         this.serialPort.setBaudRate(boudRate);
         this.serialPort.setNumDataBits(numBitData);
         this.serialPort.setNumStopBits(numBitStop);
-        this.serialPort.setParity(parser(parity));
+        this.serialPort.setParity(parseParity(parity));
         this.serialPort.setFlowControl(parseFlowControl(flowControl));
 
         this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
