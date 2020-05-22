@@ -12,49 +12,49 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SendMessageForm extends JFrame{
+public class SendMessageForm extends JFrame {
     private JPanel mainPanel;
     private JTextField textFieldMessage;
     private JButton sendButton;
     private JTextArea textAreaComunication;
 
     private PrintStream printStream;
-    private void setSize(double height_inc,double weight_inc){
+
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    public SendMessageForm(Client client){
+    public SendMessageForm(Client client) {
         super();
-        setSize(0.5,0.5);
+        setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.textAreaComunication.setEditable(false);
-        this.textAreaComunication.setFont(new Font("courier",Font.BOLD,12));
+        this.textAreaComunication.setFont(new Font("courier", Font.BOLD, 12));
 
-        printStream = new PrintStream(new CustomOutputStream(null,null,null,null,this.textAreaComunication));
+        printStream = new PrintStream(new CustomOutputStream(null, null, null, null, this.textAreaComunication));
         UIHelper.setPrintStream(printStream);
 
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String message = textFieldMessage.getText();
-                if(message.compareTo("")==0) {
+                if (message.compareTo("") == 0) {
                     JOptionPane.showMessageDialog(null, "There are no message", "", JOptionPane.WARNING_MESSAGE);
-                }else {
+                } else {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
-                    UIHelper.clientMessage("[ "+formatter.format(date)+" ]   "+message);
+                    UIHelper.clientMessage("[ " + formatter.format(date) + " ]   " + message);
                     textFieldMessage.setText("");
                     client.sendTextMessage(message);
                 }
             }
         });
-
 
 
     }

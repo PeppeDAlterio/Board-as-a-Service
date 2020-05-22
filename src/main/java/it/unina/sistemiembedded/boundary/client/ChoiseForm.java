@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ChoiseForm extends  JFrame{
+public class ChoiseForm extends JFrame {
     private JPanel mainPanel;
     private JLabel labelLAB;
     private JLabel labelBoard;
@@ -16,12 +16,12 @@ public class ChoiseForm extends  JFrame{
     private JLabel label_name;
 
 
-    public ChoiseForm(Client client, String lab , String board ,String ip ,int port) {
+    public ChoiseForm(Client client, String lab, String board, String ip, int port) {
         super();
         String s = labelLAB.getText();
-        s=s.replace("[IP]",ip);
-        s=s.replace("[PORT]",Integer.toString(port));
-        s=s.replace("[LAB]",lab);
+        s = s.replace("[IP]", ip);
+        s = s.replace("[PORT]", Integer.toString(port));
+        s = s.replace("[LAB]", lab);
         this.labelLAB.setText(lab);
         this.labelBoard.setText(board);
         this.setContentPane(this.mainPanel);
@@ -48,4 +48,5 @@ public class ChoiseForm extends  JFrame{
             }
         });
     }
+
 }

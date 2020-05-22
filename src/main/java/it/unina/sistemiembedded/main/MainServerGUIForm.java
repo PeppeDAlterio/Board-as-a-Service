@@ -5,6 +5,7 @@ import it.unina.sistemiembedded.boundary.server.SetSerialParamForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
@@ -47,15 +48,21 @@ public class MainServerGUIForm extends JFrame {
 
     private void initList(){
         DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
-        List<Board> boardList = server.rebuildBoards();
-        if(boardList.size()!=0) {
-            for (Board board : boardList) {
-                defaultListModelBoard.addElement(board);
+
+        UILongRunningHelper.runAsync(this, "Messaggio di esempio di attesa...", () -> {
+
+            List<Board> boardList = server.rebuildBoards();
+            if(boardList.size()!=0) {
+                for (Board board : boardList) {
+                    defaultListModelBoard.addElement(board);
+                }
+            } else {
+                defaultListModelBoard.addElement("No boards detected");
             }
-        } else {
-            defaultListModelBoard.addElement("No boards detected");
-        }
-        listBoard.setModel(defaultListModelBoard);
+            listBoard.setModel(defaultListModelBoard);
+
+        });
+
     }
 
     public MainServerGUIForm() {

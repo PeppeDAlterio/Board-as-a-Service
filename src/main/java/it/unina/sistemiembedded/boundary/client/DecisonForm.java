@@ -7,26 +7,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class DecisonForm extends JFrame{
-    public static class Choise{
-        public static int choise=0;
+public class DecisonForm extends JFrame {
+
+    public static class Choise {
+        public static int choise = 0;
     }
 
     private JPanel mainPanel;
     private JButton discardButton;
     private JButton continueButton;
 
-    private void setSize(double height_inc,double weight_inc){
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
     public DecisonForm(JFrame parent) {
         super();
         parent.setEnabled(false);
-        setSize(0.2,0.2);
+        setSize(0.2, 0.2);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
@@ -35,14 +36,14 @@ public class DecisonForm extends JFrame{
         discardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Choise.choise=0;
+                Choise.choise = 0;
                 dispose();
             }
         });
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Choise.choise=1;
+                Choise.choise = 1;
                 dispose();
             }
         });

@@ -11,32 +11,35 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class RemoteFlashForm extends JFrame{
+public class RemoteFlashForm extends JFrame {
     private JPanel mainPanel;
     private JTextField textField1;
     private JButton startFlashButton;
     private JTextArea textAreaFlash;
 
     private PrintStream printStream;
-    private void setSize(double height_inc,double weight_inc){
+
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
-    public RemoteFlashForm(Client client){
+
+    public RemoteFlashForm(Client client) {
         super();
-        setSize(0.5,0.5);
+        setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.textAreaFlash.setEditable(false);
-        this.textAreaFlash.setFont(new Font("courier",Font.BOLD,12));
-        printStream = new PrintStream(new CustomOutputStream(null,null,null,this.textAreaFlash,null));
+        this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
+        printStream = new PrintStream(new CustomOutputStream(null, null, null, this.textAreaFlash, null));
 
         startFlashButton.addActionListener(new ActionListener() {
             String elf_file = textAreaFlash.getText();
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO : Controlli su elf_file

@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
-public class RemoteDebugForm extends JFrame{
+public class RemoteDebugForm extends JFrame {
     private JPanel mainPanel;
     private JTextField textFieldgdbPort;
     private JButton debugButton;
@@ -26,15 +26,16 @@ public class RemoteDebugForm extends JFrame{
 
     //private int debugStartedFirstTime=0;
 
-    private void setSize(double height_inc,double weight_inc){
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
+
     public RemoteDebugForm(Client client) {
         super();
-        setSize(0.5,0.7);
+        setSize(0.5, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
@@ -42,8 +43,8 @@ public class RemoteDebugForm extends JFrame{
 
         scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaResponse.setEditable(false);
-        textAreaResponse.setFont(new Font("courier",Font.BOLD,12));
-        printStream = new PrintStream(new CustomOutputStream(null,null,this.textAreaResponse,null,null));
+        textAreaResponse.setFont(new Font("courier", Font.BOLD, 12));
+        printStream = new PrintStream(new CustomOutputStream(null, null, this.textAreaResponse, null, null));
         UIHelper.setPrintStream(printStream);
 
         debugButton.addActionListener(e -> {

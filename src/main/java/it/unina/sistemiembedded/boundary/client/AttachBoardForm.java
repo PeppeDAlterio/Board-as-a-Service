@@ -11,8 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-@Getter @Setter
-public class AttachBoardForm extends  JFrame {
+@Getter
+@Setter
+public class AttachBoardForm extends JFrame {
     private JPanel mainPanel;
     private JButton buttonRequestSelectedBoard;
     private JList listBoard;
@@ -28,23 +29,24 @@ public class AttachBoardForm extends  JFrame {
         List<Board> boards = client.requestBlockingServerBoardList();
         listLab.setSelectedIndex(0);
         listBoard.setModel(modelBoard);
-        if(!boards.isEmpty()) {
+        if (!boards.isEmpty()) {
             for (int i = 0; i < boards.size(); i++)
                 modelBoard.addElement(boards.get(i));
-        }else{
-                modelBoard.addElement("No avaible boards");
+        } else {
+            modelBoard.addElement("No avaible boards");
         }
         listBoard.setSelectedIndex(0);
     }
-    private void setSize(double height_inc,double weight_inc){
+
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    public AttachBoardForm(Client client,String ip,int port){
-        setSize(0.5,0.5);
+    public AttachBoardForm(Client client, String ip, int port) {
+        setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -66,10 +68,10 @@ public class AttachBoardForm extends  JFrame {
                 if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
                     Board selectedBoard = (Board) listBoard.getSelectedValue();
                     client.requestBoard(selectedBoard.getSerialNumber());
-                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(),ip,port);
+                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port);
                     dispose();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Unable to make the request.","No boards available.",JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Unable to make the request.", "No boards available.", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -82,4 +84,5 @@ public class AttachBoardForm extends  JFrame {
             }
         });
     }
+
 }
