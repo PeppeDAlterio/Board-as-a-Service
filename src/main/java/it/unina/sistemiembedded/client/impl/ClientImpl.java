@@ -198,7 +198,10 @@ public class ClientImpl extends Client {
      */
     private void waitForMessagesAsync() {
 
-        listeningExecutor.shutdownNow();
+        if (!listeningExecutor.isTerminated()) {
+            listeningExecutor.shutdownNow();
+            listeningExecutor = Executors.newSingleThreadExecutor();
+        }
 
         listeningExecutor.execute( () -> {
 
