@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
 public class RemoteDebugForm extends JFrame{
@@ -40,11 +42,25 @@ public class RemoteDebugForm extends JFrame{
                 if(textFieldgdbPort.getText().compareTo("")==0) {
                     JOptionPane.showMessageDialog(null,"Insert a valid GDB port number!","",JOptionPane.ERROR_MESSAGE);
                 }else{
-                    gdbPort = Integer.parseInt(textFieldgdbPort.getText());
-                    UIHelper.cleintDebug("Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
-                    client.requestDebug(gdbPort);
-                    //TODO : INFO AL CLIENT PER L'USO DEL DEGUB REMOTO
+                    try {
+                        gdbPort = Integer.parseInt(textFieldgdbPort.getText());
+                        UIHelper.cleintDebug("Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
+                        client.requestDebug(gdbPort);
+                    }catch (NumberFormatException n){
+                        n.getMessage();
+                        JOptionPane.showMessageDialog(null,"Port number must be an integer in the range of valid port values [ 0 , 65535 ]","Porto non valido",JOptionPane.ERROR_MESSAGE);
+                    }
+                    UIHelper.cleintDebug("To correctly use the remote debbugger:\n\t1) Open your STM32CubeIDE\n\t2) In the 'degub configuration' setting enable ");
                 }
+            }
+        });
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
+                super.windowClosed(e);
+                client.requestStopDebug();
             }
         });
     }

@@ -63,7 +63,7 @@
             </constraints>
             <properties>
               <background color="-983553"/>
-              <text value="localhost"/>
+              <text value="25.101.212.143"/>
             </properties>
           </component>
           <component id="dc195" class="javax.swing.JTextField" binding="textFieldPort">
