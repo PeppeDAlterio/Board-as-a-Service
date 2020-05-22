@@ -6,10 +6,7 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -213,7 +210,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.releaseBoard();
+        client1.requestReleaseBoard();
 
         try {
             Thread.sleep(3000);
@@ -229,7 +226,7 @@ class SimpleApplicationTestSuite {
             e.printStackTrace();
         }
 
-        client1.releaseBoard();
+        client1.requestReleaseBoard();
 
         try {
             Thread.sleep(3000);
@@ -296,7 +293,7 @@ class SimpleApplicationTestSuite {
         Client client = new ClientImpl("Client");
         client.connect("127.0.0.1");
 
-        assertEquals(server.listBoards(), client.listConnectedServerBoards());
+        assertEquals(server.listBoards(), client.requestBlockingServerBoardList());
 
     }
 
@@ -307,7 +304,7 @@ class SimpleApplicationTestSuite {
         Client client = new ClientImpl("Client");
         client.connect("127.0.0.1");
 
-        client.listConnectedServerBoardsAsync();
+        client.requestServerBoardList();
 
         try {
             Thread.sleep(1200);
@@ -334,8 +331,8 @@ class SimpleApplicationTestSuite {
 
     }
 
-    @Test
-    @DisplayName("dfd")
+    @Test @Disabled
+    @DisplayName("Test manuale per debug su scheda di Giuseppe")
     void debugTest1() throws IOException, BoardAlreadyExistsException {
 
         Client client = new ClientImpl("Client");

@@ -89,12 +89,29 @@ public abstract class Server {
     abstract public Server removeBoard(String boardSerialNumber) throws BoardNotFoundException;
 
     /**
-     * Remove a board from the server board list
+     * Remove boards from the server board list
      * @param serialNumbers String[] list of board serial numbers
      * @throws BoardNotFoundException board not found on the server
      * @return Server this
      */
     abstract public Server removeBoards(String ... serialNumbers) throws BoardNotFoundException;
+
+    /**
+     * Attaches a board on client
+     * @param clientHandler ClientHandler client receiving the board
+     * @param boardSerialNumber String serial number of the board to attach
+     * @return Board attached board or null
+     * @throws BoardNotFoundException if no board was found with given serial number
+     * @throws BoardAlreadyInUseException if the requested board is already in use
+     */
+    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String boardSerialNumber)
+            throws BoardNotFoundException, BoardAlreadyInUseException;
+
+    /**
+     * Removes a client handler for the server
+     * @param clientHandler ClientHandler client handler to be removed
+     */
+    abstract public void removeClientHandler(@Nonnull ClientHandler clientHandler);
 
     /**
      * Get the server running state.
@@ -107,19 +124,6 @@ public abstract class Server {
      * @return List list copy of Boards
      */
     abstract public List<Board> listBoards();
-
-    abstract public boolean existsBoardBySerialNumber(String serialNumber);
-
-    abstract public boolean existsBoardById(String boardId);
-
-    abstract public @Nullable Board attachBoardOnClient(ClientHandler clientHandler, String boardSerialNumber)
-            throws BoardNotFoundException, BoardAlreadyInUseException;
-
-    /**
-     * Removes a client handler for the server
-     * @param clientHandler ClientHandler client handler to be removed
-     */
-    abstract public void removeClientHandler(@Nonnull ClientHandler clientHandler);
 
     /**
      * Set server name, if the server is not already running.

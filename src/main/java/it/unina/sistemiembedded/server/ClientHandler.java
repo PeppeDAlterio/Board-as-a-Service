@@ -2,6 +2,8 @@ package it.unina.sistemiembedded.server;
 
 import it.unina.sistemiembedded.model.Board;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.net.Socket;
 
 public abstract class ClientHandler implements Runnable {
@@ -44,13 +46,24 @@ public abstract class ClientHandler implements Runnable {
      */
     public abstract boolean isAlive();
 
-    public abstract Board attachBoard(Board board);
+    /**
+     * Attach board on client handler
+     * @param board Board board to attach client on
+     * @return Board attached board, null if error
+     */
+    public abstract @Nullable Board attachBoard(@Nonnull Board board);
 
-    public abstract Board detachBoard(Board board);
+    /**
+     * Detach board from client handler
+     * @return Board detached board, null if error
+     */
+    public abstract @Nullable Board detachBoard();
 
-    public abstract Board detachBoard();
-
-    public abstract void sendMessageToClient(String message);
+    /**
+     * Sends text message to client
+     * @param message String text message to send
+     */
+    public abstract void sendTextMessage(String message);
 
     /**
      * Get client handler ID
