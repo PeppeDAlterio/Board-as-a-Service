@@ -123,25 +123,12 @@ public class Commands {
 
     }
 
-    /**
-     * BOARD COMMUNICATION
-     */
-    public static class BoardCommunication {
-
-        public static class Request {
-            public static final String FLASH_REQUEST    = "$--- BOARD FLASH REQUEST ---$";
-            public static final String DEBUG_REQUEST    = "$--- BOARD DEBUG REQUEST ---$";
-        }
-
-        public static class Response {
-
-            public static final String FLASH_SUCCESS    = "$--- BOARD FLASH SUCCESS ---$";
-            public static final String FLASH_ERROR      = "$--- BOARD FLASH ERROR ---$";
-
-            public static final String DEBUG_SUCCESS    = "$--- BOARD DEBUG SUCCESS ---$";
-            public static final String DEBUG_ERROR      = "$--- BOARD DEBUG ERROR ---$";
-
-        }
+    public static class Interrupt {
+        
+        /**
+         * Send by Server to all connected clients on disconnect
+         */
+        public static final String SERVER_DISCONNECTED         = "$--- INTERRUPT SERVER DISCONNECTED ---$";
 
     }
 

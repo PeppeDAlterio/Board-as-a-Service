@@ -84,6 +84,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         try {
             if(this.socket.isConnected()) {
+                this.sendMessagesToClient(Commands.Interrupt.SERVER_DISCONNECTED);
                 this.socket.close();
             }
         } catch (IOException e) {

@@ -17,6 +17,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Getter @Setter
 public class ClientImpl extends Client {
@@ -29,7 +31,7 @@ public class ClientImpl extends Client {
 
     private Board board;
 
-    private Thread listeningThread;
+    private ExecutorService listeningExecutor = Executors.newSingleThreadExecutor();
 
     private ServerCommunicationListener serverCommunicationListener;
 
@@ -81,9 +83,11 @@ public class ClientImpl extends Client {
 
         this.server.disconnect();
 
-        this.listeningThread.interrupt();
+        this.listeningExecutor.shutdownNow();
 
         logger.info("[disconnect] Client disconnected");
+
+        //TODO: Informa la UI
 
     }
 
@@ -194,12 +198,9 @@ public class ClientImpl extends Client {
      */
     private void waitForMessagesAsync() {
 
-        if(listeningThread!=null && listeningThread.isAlive()) {
-            logger.info("[waitForMessagesAsync] Thread already started and running");
-            return;
-        }
+        listeningExecutor.shutdownNow();
 
-        listeningThread = new Thread( () -> {
+        listeningExecutor.execute( () -> {
 
             while (server.isConnected()) {
 
@@ -216,8 +217,6 @@ public class ClientImpl extends Client {
             logger.error("[waitForMessagesAsync] Server disconnected");
 
         });
-
-        listeningThread.start();
 
     }
 
@@ -282,6 +281,13 @@ public class ClientImpl extends Client {
 
             case Commands.Info.BEGIN_OF_BOARD_LIST:
                 serverCommunicationListener.receiveBoardListCallback();
+                break;
+
+            //
+            // Interrupt.SERVER DISCONNECTED
+
+            case Commands.Interrupt.SERVER_DISCONNECTED:
+                serverCommunicationListener.serverDisconnectedCallback();
                 break;
 
             //
