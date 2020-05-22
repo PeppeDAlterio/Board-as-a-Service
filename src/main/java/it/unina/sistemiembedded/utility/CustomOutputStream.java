@@ -3,7 +3,6 @@ package it.unina.sistemiembedded.utility;
 import it.unina.sistemiembedded.utility.ui.UIHelper;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.io.OutputStream;
 
 public class CustomOutputStream extends OutputStream {
@@ -27,7 +26,7 @@ public class CustomOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(int b){
 
         buffer.append((char)b);
 

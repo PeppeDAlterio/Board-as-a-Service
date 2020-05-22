@@ -22,7 +22,7 @@ public class UIHelper {
         /**
          *
          */
-        CLIENT_DEBUG("TEXT_AREA_SENDMESSAGE_CLIENT"),
+        CLIENT_DEBUG("TEXT_AREA_DEGUB_CLIENT"),
         /**
          *
          */
