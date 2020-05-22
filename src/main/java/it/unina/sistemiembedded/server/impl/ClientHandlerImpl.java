@@ -3,7 +3,6 @@ package it.unina.sistemiembedded.server.impl;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
-import it.unina.sistemiembedded.utility.Constants;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.UIHelper;
 import lombok.Getter;
@@ -310,7 +309,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             String beginOfTx = dis.readUTF();
 
-            if (!beginOfTx.equals(Constants.BEGIN_FILE_TX)) {
+            if (!beginOfTx.equals(Commands.FileTransfer.BEGIN_FILE_TX)) {
                 throw new IllegalStateException("Begin of file transmission expected!");
             }
 
@@ -361,7 +360,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             String endOfTx = dis.readUTF();
 
-            if (endOfTx.equals(Constants.END_FILE_TX)) {
+            if (endOfTx.equals(Commands.FileTransfer.END_OF_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
                 UIHelper.serverActionPrint("File transfer successfully completed.");
 

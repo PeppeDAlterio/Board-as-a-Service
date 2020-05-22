@@ -1,7 +1,7 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.ServerProxy;
-import it.unina.sistemiembedded.utility.Constants;
+import it.unina.sistemiembedded.utility.communication.Commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -65,7 +65,8 @@ public class ServerProxyImpl extends ServerProxy {
                 dos.writeUTF(preMessage);
             }
 
-            dos.writeUTF(Constants.BEGIN_FILE_TX);
+            //FIXME
+//            dos.writeUTF(Constants.BEGIN_FILE_TX);
 
             dos.writeUTF(myFile.getName());
 
@@ -82,7 +83,7 @@ public class ServerProxyImpl extends ServerProxy {
 
             assert totalCount == myFile.length();
 
-            dos.writeUTF(Constants.END_FILE_TX);
+            dos.writeUTF(Commands.FileTransfer.END_OF_FILE_TX);
 
             fis.close();
 

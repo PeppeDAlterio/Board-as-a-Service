@@ -1,7 +1,7 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.utility.CustomOutputStream;
+import it.unina.sistemiembedded.utility.ui.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.UIHelper;
 
 import javax.swing.*;

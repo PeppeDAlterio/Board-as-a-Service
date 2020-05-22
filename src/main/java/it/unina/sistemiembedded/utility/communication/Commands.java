@@ -132,4 +132,16 @@ public class Commands {
 
     }
 
+    public static class FileTransfer {
+        /**
+         * Sent by Client at the beginning of file transfer
+         */
+        public static final String BEGIN_FILE_TX  = "$--- FLASH ON BOARD BEGIN FILE TX ---$";
+
+        /**
+         * Sent by Client on file transfer completed
+         */
+        public static final String END_OF_FILE_TX  = "$--- FLASH ON BOARD END OF FILE TX ---$";
+    }
+
 }

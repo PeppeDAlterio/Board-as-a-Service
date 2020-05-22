@@ -92,6 +92,7 @@ public class COMDriver {
 
     //TODO: trovare un modo per creare un metodo pubblico
     public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop, Collection<String> flowControl) {
+
         this.serialPort = comPort.getSerialPort();
         if(this.serialPort == null || !this.serialPort.openPort()) {
             throw new IllegalArgumentException();
@@ -121,7 +122,7 @@ public class COMDriver {
         }
     }
 
-    public void writeLn(String str) {
+    public void writeln(String str) {
 
         if(str == null || str.length() == 0) return;
 

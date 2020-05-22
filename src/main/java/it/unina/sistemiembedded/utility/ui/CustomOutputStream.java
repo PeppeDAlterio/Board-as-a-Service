@@ -1,6 +1,4 @@
-package it.unina.sistemiembedded.utility;
-
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+package it.unina.sistemiembedded.utility.ui;
 
 import javax.swing.*;
 import java.io.OutputStream;

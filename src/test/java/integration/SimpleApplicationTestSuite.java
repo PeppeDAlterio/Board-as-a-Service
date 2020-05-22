@@ -360,5 +360,11 @@ class SimpleApplicationTestSuite {
 
     }
 
+    @Test
+    @DisplayName("File transfer simple case")
+    void fileTransferTest1() {
+        // TODO
+    }
+
 }
 
