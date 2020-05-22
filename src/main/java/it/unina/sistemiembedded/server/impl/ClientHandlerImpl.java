@@ -71,7 +71,14 @@ public class ClientHandlerImpl extends ClientHandler {
     @Override
     public void stop() {
 
-        this.running = false;
+        synchronized (this) {
+            if (this.running) {
+                logger.info("[stop] Client handler (" + this.id + ") has been stopped");
+                UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been stopped");
+            }
+
+            this.running = false;
+        }
 
         this.detachBoard();
 
@@ -79,8 +86,6 @@ public class ClientHandlerImpl extends ClientHandler {
             if(this.socket.isConnected()) {
                 this.socket.close();
             }
-            logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-            UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been stopped");
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("[stop] There was an error while closing client handler (" + this.id +" socket");
