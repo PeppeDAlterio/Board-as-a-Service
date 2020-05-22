@@ -71,4 +71,6 @@ public abstract class ClientHandler implements Runnable {
      */
     public long getId() {return this.id;}
 
+    public abstract String getName();
+
 }
