@@ -7,7 +7,6 @@ import java.io.OutputStream;
 public class CustomOutputStream extends OutputStream {
 
     private StringBuilder buffer = new StringBuilder();
-    private String subBuffer;
 
     private final JTextArea textAreaServerStartedFromClientAction;
     private final JTextArea textAreaServerStartedFromClientComunication;
@@ -27,26 +26,26 @@ public class CustomOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
+
         buffer.append((char)b);
-        if ( buffer.toString().endsWith("\r") || buffer.toString().endsWith("\n") ) {
-            if(buffer.toString().contains(RedirectStream.TEXT_AREA_FLASH_CLIENT)){
-                subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
-                textAreaRemoteFlash.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_DEGUB_CLEINT)){
-                subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
-                textAreaRemoteDegubFormDebug.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT)) {
-                subBuffer = buffer.toString().substring(buffer.indexOf("%") + 1, buffer.length());
-                textAreaSendMessage.append(subBuffer+"\n");
-            }else if(buffer.toString().contains(RedirectStream.TEXT_AREA_ACTION_SERVER)) {
-                subBuffer = buffer.toString().substring(buffer.indexOf("%")+1,buffer.length());
-                textAreaServerStartedFromClientAction.append(subBuffer+"\n");
-            } else if(buffer.toString().contains(RedirectStream.TEXT_AREA_COMUNICATION_SERVER)){
-                subBuffer = buffer.toString().substring(buffer.indexOf("%")+1,buffer.length());
-                textAreaServerStartedFromClientComunication.append(subBuffer+"\n");
+
+        final String stringBuffer = buffer.toString();
+
+        if ( stringBuffer.endsWith("\r") || stringBuffer.endsWith("\n") ) {
+            if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_FLASH_CLIENT)){
+                textAreaRemoteFlash.append(stringBuffer.substring(RedirectStream.TEXT_AREA_FLASH_CLIENT.length())+"\n");
+            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_DEGUB_CLEINT)){
+                textAreaRemoteDegubFormDebug.append(stringBuffer.substring(RedirectStream.TEXT_AREA_DEGUB_CLEINT.length())+"\n");
+            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT)) {
+                textAreaSendMessage.append(stringBuffer.substring(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT.length())+"\n");
+            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_ACTION_SERVER)) {
+                textAreaServerStartedFromClientAction.append(stringBuffer.substring(RedirectStream.TEXT_AREA_ACTION_SERVER.length())+"\n");
+            } else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_COMUNICATION_SERVER)){
+                textAreaServerStartedFromClientComunication.append(stringBuffer.substring(RedirectStream.TEXT_AREA_COMUNICATION_SERVER.length())+"\n");
             }
+
             buffer = new StringBuilder();
-            subBuffer = "";
+
         }
     }
 

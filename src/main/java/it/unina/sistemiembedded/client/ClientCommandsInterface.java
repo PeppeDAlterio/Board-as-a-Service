@@ -40,7 +40,7 @@ public interface ClientCommandsInterface {
     /**
      * Request end of debug process.
      */
-    void requestStopDebug();
+    void requestStopDebug() throws NotConnectedException;
 
     /**
      * Request a board from the connected server, async.
