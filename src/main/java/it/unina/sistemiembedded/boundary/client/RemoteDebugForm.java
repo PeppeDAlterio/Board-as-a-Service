@@ -17,9 +17,14 @@ public class RemoteDebugForm extends JFrame{
     private JTextField textFieldgdbPort;
     private JButton debugButton;
     private JTextArea textAreaResponse;
+    private JButton finishDebugSessionButton;
+    private JScrollPane scrollTextArea;
 
     private PrintStream printStream;
     private int gdbPort;
+
+
+    //private int debugStartedFirstTime=0;
 
     private void setSize(double height_inc,double weight_inc){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -34,23 +39,32 @@ public class RemoteDebugForm extends JFrame{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+
+        scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.textAreaResponse.setEditable(false);
+        textAreaResponse.setFont(new Font("courier",Font.BOLD,12));
         printStream = new PrintStream(new CustomOutputStream(null,null,this.textAreaResponse,null,null));
         UIHelper.setPrintStream(printStream);
-        debugButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(textFieldgdbPort.getText().compareTo("")==0) {
-                    JOptionPane.showMessageDialog(null,"Insert a valid GDB port number!","",JOptionPane.ERROR_MESSAGE);
-                }else{
-                    try {
-                        gdbPort = Integer.parseInt(textFieldgdbPort.getText());
-                        UIHelper.cleintDebug("Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
-                        client.requestDebug(gdbPort);
-                    }catch (NumberFormatException n){
-                        n.getMessage();
-                        JOptionPane.showMessageDialog(null,"Port number must be an integer in the range of valid port values [ 0 , 65535 ]","Porto non valido",JOptionPane.ERROR_MESSAGE);
-                    }
-                    UIHelper.cleintDebug("To correctly use the remote debbugger:\n\t1) Open your STM32CubeIDE\n\t2) In the 'degub configuration' setting enable ");
+
+        debugButton.addActionListener(e -> {
+            if (textFieldgdbPort.getText().compareTo("") == 0) {
+                //TODO : Maggiori informazioni nel JoptionPane
+                JOptionPane.showMessageDialog(null, "Insert a valid GDB port number!", "", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    gdbPort = Integer.parseInt(textFieldgdbPort.getText());
+                    UIHelper.clientDebug("Starting remote GDB debug session on port : " + gdbPort + "\n");
+                    client.requestDebug(gdbPort);
+                    UIHelper.clientDebug("To correctly use the remote debbugger :");
+                    UIHelper.clientDebug("\t1)  Open your STM32CubeIDE");
+                    UIHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");
+                    UIHelper.clientDebug("\t3)  In the 'Debbugger' section enable 'Connect to remote GDB server");
+                    UIHelper.clientDebug("\t4)  Insert the server ip and the port specified above");
+                    UIHelper.clientDebug("\t5)  Click on 'Apply' and then 'Degub' buttons");
+                    UIHelper.clientDebug("\t6)  Start debbugging!\n ");
+                } catch (NumberFormatException n) {
+                    n.getMessage();
+                    JOptionPane.showMessageDialog(null, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -60,6 +74,12 @@ public class RemoteDebugForm extends JFrame{
             public void windowClosed(WindowEvent e) {
                 //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
                 super.windowClosed(e);
+                client.requestStopDebug();
+            }
+        });
+        finishDebugSessionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 client.requestStopDebug();
             }
         });

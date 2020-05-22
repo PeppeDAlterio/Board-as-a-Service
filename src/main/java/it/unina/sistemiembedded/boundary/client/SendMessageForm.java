@@ -33,6 +33,8 @@ public class SendMessageForm extends JFrame{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        this.textAreaComunication.setEditable(false);
+        this.textAreaComunication.setFont(new Font("courier",Font.BOLD,12));
 
         printStream = new PrintStream(new CustomOutputStream(null,null,null,null,this.textAreaComunication));
         UIHelper.setPrintStream(printStream);

@@ -12,7 +12,6 @@ import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -69,8 +68,6 @@ public class ClientImpl extends Client {
 
         } catch (IOException e){
             logger.error("[connect] there was a problem during the connection to: " + serverIp + ":" + serverPort);
-            JOptionPane.showMessageDialog(null,"[connect] there was a problem during the connection to: " + serverIp + ":" + serverPort
-            ,"Error",JOptionPane.ERROR_MESSAGE);
             throw e;
         }
 
