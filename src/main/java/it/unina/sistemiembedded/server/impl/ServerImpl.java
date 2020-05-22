@@ -9,6 +9,7 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.SystemHelper;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class ServerImpl extends Server {
             serverSocket = new ServerSocket(port);
 
             logger.info("[start] Server successfully started");
-            System.out.println(ServerImpl.class+"[start] Server successfully started");
+            UIHelper.serverActionPrint("[start] Server successfully started");
 
             this.running = true;
 
@@ -296,7 +297,7 @@ public class ServerImpl extends Server {
                     final Socket socket = serverSocket.accept();
 
                     logger.info("[waitForClientsAsync] New client connection request received: " + socket);
-                    System.out.println(ServerImpl.class+ "%New client connection request received: "+ socket);
+                    UIHelper.serverActionPrint("New client connection request received: "+ socket);
 
                     new Thread( () -> {
 

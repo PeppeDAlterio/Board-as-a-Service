@@ -1,5 +1,7 @@
 package it.unina.sistemiembedded.utility;
 
+import it.unina.sistemiembedded.utility.ui.UIHelper;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,16 +34,16 @@ public class CustomOutputStream extends OutputStream {
         final String stringBuffer = buffer.toString();
 
         if ( stringBuffer.endsWith("\r") || stringBuffer.endsWith("\n") ) {
-            if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_FLASH_CLIENT)){
-                textAreaRemoteFlash.append(stringBuffer.substring(RedirectStream.TEXT_AREA_FLASH_CLIENT.length())+"\n");
-            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_DEGUB_CLEINT)){
-                textAreaRemoteDegubFormDebug.append(stringBuffer.substring(RedirectStream.TEXT_AREA_DEGUB_CLEINT.length())+"\n");
-            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT)) {
-                textAreaSendMessage.append(stringBuffer.substring(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT.length())+"\n");
-            }else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_ACTION_SERVER)) {
-                textAreaServerStartedFromClientAction.append(stringBuffer.substring(RedirectStream.TEXT_AREA_ACTION_SERVER.length())+"\n");
-            } else if(stringBuffer.startsWith(RedirectStream.TEXT_AREA_COMUNICATION_SERVER)){
-                textAreaServerStartedFromClientComunication.append(stringBuffer.substring(RedirectStream.TEXT_AREA_COMUNICATION_SERVER.length())+"\n");
+            if(stringBuffer.startsWith(UIHelper.TextArea.CLIENT_FLASH.getValue())){
+                textAreaRemoteFlash.append(stringBuffer.substring(UIHelper.TextArea.CLIENT_FLASH.getValue().length())+"\n");
+            }else if(stringBuffer.startsWith(UIHelper.TextArea.CLIENT_DEBUG.getValue())){
+                textAreaRemoteDegubFormDebug.append(stringBuffer.substring(UIHelper.TextArea.CLIENT_DEBUG.getValue().length())+"\n");
+            }else if(stringBuffer.startsWith(UIHelper.TextArea.CLIENT_MESSAGE.getValue())) {
+                textAreaSendMessage.append(stringBuffer.substring(UIHelper.TextArea.CLIENT_MESSAGE.getValue().length())+"\n");
+            }else if(stringBuffer.startsWith(UIHelper.TextArea.SERVER_ACTION.getValue())) {
+                textAreaServerStartedFromClientAction.append(stringBuffer.substring(UIHelper.TextArea.SERVER_ACTION.getValue().length())+"\n");
+            } else if(stringBuffer.startsWith(UIHelper.TextArea.SERVER_COMMUNICATION.getValue())){
+                textAreaServerStartedFromClientComunication.append(stringBuffer.substring(UIHelper.TextArea.SERVER_COMMUNICATION.getValue().length())+"\n");
             }
 
             buffer = new StringBuilder();

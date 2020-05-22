@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.utility.file;
 
 import it.unina.sistemiembedded.utility.Constants;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 
 import java.io.*;
 
@@ -106,11 +107,13 @@ public class FileTransferHelper {
 
         if(endOfTx.equals(Constants.END_FILE_TX)) {
             System.out.println("Ricezione completata con successo.");
+            UIHelper.serverActionPrint("Ricezione del file completata con successo.");
         }
 
         System.out.println("File " + filename
                 + " downloaded (" + currentBytes + " bytes read)");
-
+        UIHelper.serverActionPrint("File " + filename
+                + " downloaded (" + currentBytes + " bytes read)");
         bos.close();
 
         return "received/" + filename;

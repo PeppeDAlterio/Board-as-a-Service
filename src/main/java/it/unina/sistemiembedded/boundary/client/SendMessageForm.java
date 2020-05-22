@@ -2,7 +2,7 @@ package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.utility.CustomOutputStream;
-import it.unina.sistemiembedded.utility.RedirectStream;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +35,7 @@ public class SendMessageForm extends JFrame{
         this.pack();
 
         printStream = new PrintStream(new CustomOutputStream(null,null,null,null,this.textAreaComunication));
-        System.setOut(printStream);
+        UIHelper.setPrintStream(printStream);
 
         sendButton.addActionListener(new ActionListener() {
             @Override
@@ -46,7 +46,7 @@ public class SendMessageForm extends JFrame{
                 }else {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
-                    System.out.println(RedirectStream.TEXT_AREA_SENDMESSAGE_CLIENT+"[ "+formatter.format(date)+" ]   "+message);
+                    UIHelper.clientMessage("[ "+formatter.format(date)+" ]   "+message);
                     textFieldMessage.setText("");
                     client.sendTextMessage(message);
                 }

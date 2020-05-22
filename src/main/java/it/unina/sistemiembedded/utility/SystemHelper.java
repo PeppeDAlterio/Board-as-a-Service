@@ -3,6 +3,7 @@ package it.unina.sistemiembedded.utility;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.utility.communication.Commands;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,10 +83,10 @@ public class SystemHelper {
         executor.execute(() -> {
             try {
                 clientHandler.sendTextMessage(Commands.Debug.STARTED);
-                System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + "Remote debug session has been started...");
+                UIHelper.serverActionPrint("Remote debug session has been started...");
                 logger.info("[remoteDebug] Remote debug session has been started...");
                 flashProcess.waitFor();
-                System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + "Remote debug session finished");
+                UIHelper.serverActionPrint("Remote debug session finished");
                 logger.info("[remoteDebug] Remote debug session finished.");
                 clientHandler.sendTextMessage(Commands.Debug.FINISHED);
             } catch (InterruptedException ignored) {

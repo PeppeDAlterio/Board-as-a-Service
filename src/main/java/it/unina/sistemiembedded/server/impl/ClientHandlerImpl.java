@@ -4,8 +4,8 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.Constants;
-import it.unina.sistemiembedded.utility.RedirectStream;
 import it.unina.sistemiembedded.utility.communication.Commands;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -80,11 +80,11 @@ public class ClientHandlerImpl extends ClientHandler {
                 this.socket.close();
             }
             logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER +"Client handler ( " + this.id + " ) has been stopped");
+            UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been stopped");
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("[stop] There was an error while closing client handler (" + this.id +" socket");
-            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"There was an error while closing client handler (" + this.id + ") socket");
+            UIHelper.serverActionPrint("There was an error while closing client handler (" + this.id + ") socket");
         }
 
         server.removeClientHandler(this);
@@ -99,11 +99,12 @@ public class ClientHandlerImpl extends ClientHandler {
         this.running = socket.isConnected();
 
         logger.info("[run] Client handler (" + this.id + ") has been started");
-        System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[run] Client handler ( " + this.id + " ) has been started");
+        UIHelper.serverActionPrint("Client handler ( " + this.id + " ) has been started");
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
-        System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[run] Client connected: (" + this.id + ", " + this.name + ")");
+        UIHelper.serverActionPrint("Client connected: (" + this.id + ", " + this.name + ")");
+
 
         sendTextMessage(this.server.getName());
 
@@ -245,7 +246,7 @@ public class ClientHandlerImpl extends ClientHandler {
                 stringBuilder.append("Received: ").append(message);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
-                System.out.println(RedirectStream.TEXT_AREA_COMUNICATION_SERVER+"[ "+formatter.format(date)+" ]   "+message);
+                UIHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
 
                 break;
 
@@ -253,7 +254,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         if(!stringBuilder.toString().contains("Received")) {
             logger.info("[parseReceivedMessage] " + stringBuilder.toString());
-            System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + stringBuilder.toString());
+            UIHelper.serverActionPrint(stringBuilder.toString());
         }
         return stringBuilder.toString();
 
@@ -269,7 +270,7 @@ public class ClientHandlerImpl extends ClientHandler {
             } catch (IOException e) {
                 if(this.running) {
                     logger.error("[readMessageFromClient] Connection lost");
-                    System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER+"[readMessageFromClient] Connection lost");
+                    UIHelper.serverActionPrint("[readMessageFromClient] Connection lost");
                 }
                 this.stop();
             }
@@ -359,7 +360,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             if (endOfTx.equals(Constants.END_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
-                System.out.println("ClientAction%[receiveFile] File transfer successfully completed.");
+                UIHelper.serverActionPrint("[receiveFile] File transfer successfully completed.");
 
             }
 

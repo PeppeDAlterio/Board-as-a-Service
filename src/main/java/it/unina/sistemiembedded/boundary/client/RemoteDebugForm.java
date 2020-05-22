@@ -2,6 +2,7 @@ package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.utility.CustomOutputStream;
+import it.unina.sistemiembedded.utility.ui.UIHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,7 @@ public class RemoteDebugForm extends JFrame{
         this.setVisible(true);
         this.pack();
         printStream = new PrintStream(new CustomOutputStream(null,null,this.textAreaResponse,null,null));
-        System.setOut(printStream);
+        UIHelper.setPrintStream(printStream);
         debugButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,8 +41,9 @@ public class RemoteDebugForm extends JFrame{
                     JOptionPane.showMessageDialog(null,"Insert a valid GDB port number!","",JOptionPane.ERROR_MESSAGE);
                 }else{
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());
-                    System.out.println(RemoteDebugForm.class+"%Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
+                    UIHelper.cleintDebug("Starting remote gdb debug session on port :" + Integer.toString(gdbPort));
                     client.requestDebug(gdbPort);
+                    //TODO : INFO AL CLIENT PER L'USO DEL DEGUB REMOTO
                 }
             }
         });

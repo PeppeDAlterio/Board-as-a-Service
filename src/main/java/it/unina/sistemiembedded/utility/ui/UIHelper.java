@@ -5,13 +5,6 @@ import lombok.Getter;
 import java.io.PrintStream;
 
 public class UIHelper {
-
-    public static final String TEXT_AREA_COMUNICATION_SERVER = "TEXT_AREA_COMUNICATION_SERVER";
-    public static final String TEXT_AREA_ACTION_SERVER = "TEXT_AREA_ACTION_SERVER";
-    public static final String TEXT_AREA_SENDMESSAGE_CLIENT ="TEXT_AREA_SENDMESSAGE_CLIENT";
-    public static final String TEXT_AREA_DEGUB_CLEINT ="TEXT_AREA_DEGUB_CLEINT";
-    public static final String TEXT_AREA_FLASH_CLIENT ="TEXT_AREA_FLASH_CLIENT";
-
     @Getter
     public enum TextArea {
         /**
@@ -21,7 +14,19 @@ public class UIHelper {
         /**
          * Descrizione
          */
-        SERVER_ACTION("TEXT_AREA_ACTION_SERVER");
+        SERVER_ACTION("TEXT_AREA_ACTION_SERVER"),
+        /**
+         *
+         */
+        CLIENT_MESSAGE("TEXT_AREA_SENDMESSAGE_CLIENT"),
+        /**
+         *
+         */
+        CLIENT_DEBUG("TEXT_AREA_SENDMESSAGE_CLIENT"),
+        /**
+         *
+         */
+        CLIENT_FLASH("TEXT_AREA_FLASH_CLIENT");
 
         private String value;
 
@@ -34,12 +39,28 @@ public class UIHelper {
         System.setOut(printStream);
     }
 
+    private static void write(TextArea textArea, String msg) {
+        System.out.println(textArea.getValue() + "Remote debug session finished");
+    }
+
     public static void serverCommunicationPrint(String msg) {
         write(TextArea.SERVER_COMMUNICATION, msg);
     }
 
-    private static void write(TextArea textArea, String msg) {
-        System.out.println(textArea.getValue() + "Remote debug session finished");
+    public static void serverActionPrint(String msg) {
+        write(TextArea.SERVER_ACTION, msg);
+    }
+
+    public static void clientMessage(String msg) {
+        write(TextArea.CLIENT_MESSAGE, msg);
+    }
+
+    public static void cleintDebug(String msg) {
+        write(TextArea.CLIENT_DEBUG, msg);
+    }
+
+    public static void clientFlash(String msg) {
+        write(TextArea.CLIENT_FLASH, msg);
     }
 
     /*

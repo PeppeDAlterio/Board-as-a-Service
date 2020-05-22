@@ -25,7 +25,7 @@ public class AttachBoardForm extends  JFrame {
 
 
     private void initLists(Client client) {
-        List<Board> boards = client.listConnectedServerBoards();
+        List<Board> boards = client.requestBlockingServerBoardList();
         listLab.setSelectedIndex(0);
         listBoard.setModel(modelBoard);
         if(!boards.isEmpty()) {
