@@ -97,7 +97,7 @@ public class ClientHandlerCommunicationListener {
             this.clientHandler.getBoard().setDebugging(true);
             this.clientHandler.getBoard().setDebuggingProcess(SystemHelper.remoteDebug(this.clientHandler.getBoard().getSerialNumber(), debugPort, this.clientHandler));
         } catch (IOException e) {
-            this.clientHandler.sendMessagesToClient(Commands.Debug.ERROR);
+            this.clientHandler.sendTextMessages(Commands.Debug.ERROR);
             stopActiveDebugSession();
             logger.error("[debugRequestCallbak] There was an error while starting remote debug session on port: " + debugPort);
         }
@@ -132,7 +132,7 @@ public class ClientHandlerCommunicationListener {
             messages[i+2] = boardList.get(i).serialize();
         }
 
-        this.clientHandler.sendMessagesToClient(messages);
+        this.clientHandler.sendTextMessages(messages);
 
     }
 

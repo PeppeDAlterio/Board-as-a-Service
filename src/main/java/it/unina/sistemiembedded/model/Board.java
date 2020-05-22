@@ -17,7 +17,11 @@ public class Board implements Serializable {
     public static String SERIALIZATION_SEPARATOR = "§§§";
     public static int SERIALIZATION_NUMBER_OF_FIELDS = 2;
 
-    //private String id/* = UUID.randomUUID().toString()*/;
+    public static Board busyEmptyBoard() {
+        Board board = new Board();
+        board.setInUse(true);
+        return board;
+    }
 
     /**
      * Board symbolic name
@@ -50,6 +54,10 @@ public class Board implements Serializable {
 
         return new Board(serializedBoard);
 
+    }
+
+    private Board() {
+        this.serialNumber = "";
     }
 
     /**

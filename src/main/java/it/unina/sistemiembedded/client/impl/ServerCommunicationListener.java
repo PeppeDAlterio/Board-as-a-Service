@@ -1,5 +1,7 @@
 package it.unina.sistemiembedded.client.impl;
 
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import lombok.AccessLevel;
@@ -38,7 +40,7 @@ public class ServerCommunicationListener {
     private final Message blockingReceivingBuffer = new Message();
 
     private enum BlockingReceivingMethod {
-        none, listConnectedServerBoards
+        none, listConnectedServerBoards, requestBoard
     }
 
     ServerCommunicationListener(ClientImpl client) {
@@ -53,7 +55,23 @@ public class ServerCommunicationListener {
      *  BEGIN OF ASYNC CALLBACKS
      */
 
-    void receiveAndSetBoardCallback() throws IOException {
+    void receiveBoardBusyCallback() {
+
+        fillBlockingReceiving(BlockingReceivingMethod.requestBoard, Board.busyEmptyBoard());
+
+        logger.debug("[receiveBoardBusyBoardCallback] Requested a busy board");
+
+    }
+
+    void receiveBoardNotFoundCallback() {
+
+        fillBlockingReceiving(BlockingReceivingMethod.requestBoard, null);
+
+        logger.debug("[receiveBoardNotFoundCallback] Requested a non-existing board");
+
+    }
+
+    void receiveBoardBeginTransferCallback() throws IOException {
 
         String serializedBoard = this.client.getServer().receiveString();
 
@@ -64,6 +82,8 @@ public class ServerCommunicationListener {
             this.client.setBoard(board);
 
             this.client.getServer().sendMessage(Commands.AttachOnBoard.SUCCESS);
+
+            fillBlockingReceiving(BlockingReceivingMethod.requestBoard, board);
 
         } catch (Exception e) {
             logger.error("[parseReceivedMessage] Bad Board received: " + serializedBoard);
@@ -139,7 +159,12 @@ public class ServerCommunicationListener {
      * BEGIN OF BLOCKING REQUESTS
      */
 
-    List<Board> blockingReceiveServerBoardList() {
+    /**
+     * Blocking receives server's board list
+     * @param timeout int timeout in seconds
+     * @return List of server's board or empty in case of errors
+     */
+    List<Board> blockingReceiveServerBoardList(int timeout) {
 
         List<Board> boards = Collections.emptyList();
 
@@ -153,7 +178,7 @@ public class ServerCommunicationListener {
 
         try {
 
-            blockingReceivingBufferReady.tryAcquire(20, TimeUnit.SECONDS);
+            blockingReceivingBufferReady.tryAcquire(timeout, TimeUnit.SECONDS);
 
             if(blockingReceivingBuffer.getPayload() instanceof List) {
 
@@ -168,11 +193,49 @@ public class ServerCommunicationListener {
 
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
         }
 
-        releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
-
         return boards;
+
+    }
+
+    Board blockingRequestBoard(String boardSerialNumber, int timeout) throws BoardNotFoundException, BoardAlreadyInUseException {
+
+        Board receivedBoard;
+
+        requestBlockingReceiving(BlockingReceivingMethod.requestBoard);
+        try {
+            this.client.getServer().sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardSerialNumber);
+        } catch (Exception e) {
+            releaseBlockingReceiving(BlockingReceivingMethod.requestBoard);
+            throw e;
+        }
+
+        try {
+
+            blockingReceivingBufferReady.tryAcquire(timeout, TimeUnit.SECONDS);
+
+            if(blockingReceivingBuffer.getPayload() instanceof Board) {
+
+                receivedBoard = (Board) blockingReceivingBuffer.getPayload();
+
+                if(!receivedBoard.equals(this.client.getBoard()) && receivedBoard.isInUse()) {
+                    throw new BoardAlreadyInUseException();
+                }
+
+            } else {
+                throw new BoardNotFoundException();
+            }
+
+        } catch (InterruptedException e) {
+            throw new BoardNotFoundException();
+        } finally {
+            releaseBlockingReceiving(BlockingReceivingMethod.requestBoard);
+        }
+
+        return receivedBoard;
 
     }
 
@@ -212,6 +275,7 @@ public class ServerCommunicationListener {
         if(blockingReceivingMethod == method) {
             blockingReceivingRequest.release();
             blockingReceivingMethod = BlockingReceivingMethod.none;
+            blockingReceivingBuffer.setPayload(null);
         }
 
     }

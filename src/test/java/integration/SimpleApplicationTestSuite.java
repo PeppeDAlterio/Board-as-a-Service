@@ -3,13 +3,16 @@ package integration;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +24,8 @@ class SimpleApplicationTestSuite {
     private ServerImpl server;
 
     private Board testBoard1, testBoard2;
+    private String serialNumberBoard1;
+    private String serialNumberBoard2;
 
     @BeforeEach
     void init() throws IOException, BoardAlreadyExistsException {
@@ -30,8 +35,10 @@ class SimpleApplicationTestSuite {
 
         server = new ServerImpl("Mio server");
 
-        testBoard1 = new Board("board 1", "serialNumberBoard1");
-        testBoard2 = new Board("board 2", "serialNumberBoard2");
+        serialNumberBoard1 = "serialNumberBoard1";
+        testBoard1 = new Board("board 1", serialNumberBoard1);
+        serialNumberBoard2 = "serialNumberBoard2";
+        testBoard2 = new Board("board 2", serialNumberBoard2);
         server.addBoards(testBoard1, testBoard2);
         server.start();
         assertTrue(server.isRunning());
@@ -39,9 +46,9 @@ class SimpleApplicationTestSuite {
         assertEquals(2, server.listBoards().size());
 
         server.getBoards().forEach((k, v) -> {
-            if(k.equals("serialNumberBoard1")) {
+            if(k.equals(serialNumberBoard1)) {
                 assertSame(v, testBoard1);
-            } else if(k.equals("serialNumberBoard2")) {
+            } else if(k.equals(serialNumberBoard2)) {
                 assertSame(v, testBoard2);
             }
         });
@@ -360,10 +367,56 @@ class SimpleApplicationTestSuite {
 
     }
 
-    @Test
+    @Test @Disabled
     @DisplayName("File transfer simple case")
-    void fileTransferTest1() {
-        // TODO
+    void fileTransferTest1() throws ExecutionException, InterruptedException {
+        //TODO
+    }
+
+    @Test
+    @DisplayName("Request board blocking version: board not found")
+    void requestBoardBlockingTest1() throws IOException {
+
+        Client client = new ClientImpl("Client name");
+        client.connect("127.0.0.1");
+
+        assertThrows(BoardNotFoundException.class, () -> client.requestBlockingBoard("we"));
+
+    }
+
+    @Test
+    @DisplayName("Request board blocking version: board is busy")
+    void requestBoardBlockingTest2() throws IOException {
+
+        Client client = new ClientImpl("Client name");
+        client.connect("127.0.0.1");
+
+        Client client2 = new ClientImpl("Client 2 name");
+        client2.connect("127.0.0.1");
+
+        client2.requestBoard(serialNumberBoard1);
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        assertThrows(BoardAlreadyInUseException.class, () -> client.requestBlockingBoard(serialNumberBoard1));
+
+    }
+
+    @Test
+    @DisplayName("Request board blocking version: board exists and is not busy")
+    void requestBoardBlockingTest3() throws IOException {
+
+        Client client = new ClientImpl("Client name");
+        client.connect("127.0.0.1");
+
+        assertDoesNotThrow(() -> {
+            System.out.println(client.requestBlockingBoard(serialNumberBoard1));
+        });
+
     }
 
 }

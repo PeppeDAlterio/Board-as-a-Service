@@ -140,11 +140,12 @@ public class SystemHelper {
 
                     list.add(new Board(name, serialNumber));
 
-                    System.out.println();
                     i++;
+
                 }
             } catch (IOException|InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
+                break;
             }
 
         } while (!finish);

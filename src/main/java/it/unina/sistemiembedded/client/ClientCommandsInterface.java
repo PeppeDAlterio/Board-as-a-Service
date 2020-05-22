@@ -1,6 +1,8 @@
 package it.unina.sistemiembedded.client;
 
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 
@@ -67,5 +69,14 @@ public interface ClientCommandsInterface {
      * @return List list or server's boards
      */
     List<Board> requestBlockingServerBoardList() throws NotConnectedException;
+
+    /**
+     * Request a board from the connected server, blocking
+     * @param boardSerialNumber String board serial number
+     * @return Optional requested board, empty if busy or not found
+     * @throws NotConnectedException client is not connected to a server
+     * @throws BoardNotAvailableException the board is attached to another client
+     */
+    Board requestBlockingBoard(String boardSerialNumber) throws NotConnectedException, BoardNotAvailableException, BoardNotFoundException, BoardAlreadyInUseException;
 
 }

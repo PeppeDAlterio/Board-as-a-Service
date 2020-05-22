@@ -16,6 +16,7 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
@@ -51,6 +52,11 @@ public class ClientHandlerImpl extends ClientHandler {
     private boolean running;
 
     /**
+     * If true means that's already been stopped
+     */
+    private AtomicBoolean stopped = new AtomicBoolean(false);
+
+    /**
      * Create a new Client Handler
      *
      * @param id     long client id
@@ -70,20 +76,20 @@ public class ClientHandlerImpl extends ClientHandler {
     @Override
     public void stop() {
 
-        synchronized (this) {
-            if (this.running) {
-                logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-                UIHelper.serverActionPrint("Client '" + this.name + "' disconnected");
-            }
+        if(!stopped.compareAndSet(false, true)) return;
 
-            this.running = false;
+        if (this.running) {
+            logger.info("[stop] Client handler (" + this.id + ") has been stopped");
+            UIHelper.serverActionPrint("Client '" + this.name + "' disconnected");
         }
+
+        this.running = false;
 
         this.detachBoard();
 
         try {
             if(this.socket.isConnected()) {
-                this.sendMessagesToClient(Commands.Interrupt.SERVER_DISCONNECTED);
+                this.sendTextMessage(Commands.Interrupt.SERVER_DISCONNECTED);
                 this.socket.close();
             }
         } catch (IOException e) {
@@ -99,6 +105,8 @@ public class ClientHandlerImpl extends ClientHandler {
     public void run() {
 
         if(socket.isClosed()) return;
+
+        this.stopped.set(false);
 
         this.running = socket.isConnected();
 
@@ -138,7 +146,7 @@ public class ClientHandlerImpl extends ClientHandler {
             this.board.setInUse(true);
         }
 
-        sendMessagesToClient(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.serialize());
+        sendTextMessages(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.serialize());
 
         return this.board;
 
@@ -156,7 +164,7 @@ public class ClientHandlerImpl extends ClientHandler {
         return this.board;
     }
 
-    public void sendMessagesToClient(String ... messages) {
+    public void sendTextMessages(String ... messages) {
 
         synchronized (dos) {
             for (String m : messages) {
@@ -182,12 +190,10 @@ public class ClientHandlerImpl extends ClientHandler {
 
             case Commands.AttachOnBoard.REQUEST_BOARD:
 
-                stringBuilder.append(" request a board: ");
                 Board board = communicationListener.attachOnBoardRequestCallback();
                 if(board!=null) {
+                    stringBuilder.append(" request a board: ");
                     stringBuilder.append(this.board.toString());
-                } else {
-                    stringBuilder.append("??");
                 }
 
                 break;
@@ -271,9 +277,6 @@ public class ClientHandlerImpl extends ClientHandler {
             try {
                 message = this.dis.readUTF();
             } catch (IOException e) {
-                if(this.running) {
-                    logger.error("[readMessageFromClient] Connection lost");
-                }
                 this.stop();
             }
         }
@@ -287,11 +290,10 @@ public class ClientHandlerImpl extends ClientHandler {
 
         try {
             synchronized (dos) {
-                logger.debug("[sendMessageToClient] Sending message: '" + message + "' to: " + this.id);
+                logger.debug("[sendTextMessage] Sending message: '" + message + "' to: " + this.id);
                 this.dos.writeUTF(message);
             }
         } catch (IOException e) {
-            logger.error("[sendMessageToClient] Connectino lost");
             this.stop();
         }
     }
