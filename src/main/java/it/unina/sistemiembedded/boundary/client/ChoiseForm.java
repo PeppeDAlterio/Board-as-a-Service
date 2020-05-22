@@ -15,8 +15,13 @@ public class ChoiseForm extends  JFrame{
     private JButton remoteDegubButton;
     private JLabel label_name;
 
-    public ChoiseForm(Client client, String lab , String board) {
+
+    public ChoiseForm(Client client, String lab , String board ,String ip ,int port) {
         super();
+        String s = labelLAB.getText();
+        s=s.replace("[IP]",ip);
+        s=s.replace("[PORT]",Integer.toString(port));
+        s=s.replace("[LAB]",lab);
         this.labelLAB.setText(lab);
         this.labelBoard.setText(board);
         this.setContentPane(this.mainPanel);

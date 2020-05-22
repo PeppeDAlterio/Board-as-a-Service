@@ -43,7 +43,7 @@ public class AttachBoardForm extends  JFrame {
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    public AttachBoardForm(Client client){
+    public AttachBoardForm(Client client,String ip,int port){
         setSize(0.5,0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,8 +66,10 @@ public class AttachBoardForm extends  JFrame {
                 if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
                     Board selectedBoard = (Board) listBoard.getSelectedValue();
                     client.requestBoard(selectedBoard.getSerialNumber());
-                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString());
+                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(),ip,port);
                     dispose();
+                }else{
+                    JOptionPane.showMessageDialog(null,"Unable to make the request.","No boards available.",JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

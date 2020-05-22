@@ -26,7 +26,7 @@
         </properties>
         <border type="line"/>
         <children>
-          <grid id="7e9e" layout-manager="GridLayoutManager" row-count="9" column-count="13" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="7e9e" layout-manager="GridLayoutManager" row-count="4" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="8" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -36,11 +36,52 @@
             </properties>
             <border type="none"/>
             <children>
-              <vspacer id="7187">
+              <component id="9b620" class="javax.swing.JLabel" binding="labelBoard">
                 <constraints>
-                  <grid row="3" column="4" row-span="6" col-span="9" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
-              </vspacer>
+                <properties>
+                  <foreground color="-16777216"/>
+                  <text value="[BOARD]"/>
+                </properties>
+              </component>
+              <component id="ebfd7" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <foreground color="-16777216"/>
+                  <text value="to use board :"/>
+                </properties>
+              </component>
+              <component id="78460" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <foreground color="-16777216"/>
+                  <text value="Connected whit lab :"/>
+                </properties>
+              </component>
+              <component id="b98e7" class="javax.swing.JLabel" binding="labelLAB">
+                <constraints>
+                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <foreground color="-16777216"/>
+                  <text value="[LAB]   [IP]:[PORT]"/>
+                </properties>
+              </component>
+              <component id="86ae7" class="javax.swing.JLabel" binding="label_name">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <background color="-16777216"/>
+                  <foreground color="-16777216"/>
+                  <text value="[NAME]"/>
+                </properties>
+              </component>
               <grid id="aabbb" layout-manager="GridLayoutManager" row-count="3" column-count="40" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
@@ -104,52 +145,6 @@
                   </component>
                 </children>
               </grid>
-              <component id="9b620" class="javax.swing.JLabel" binding="labelBoard">
-                <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <foreground color="-16777216"/>
-                  <text value="[BOARD]"/>
-                </properties>
-              </component>
-              <component id="ebfd7" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <foreground color="-16777216"/>
-                  <text value="to use board :"/>
-                </properties>
-              </component>
-              <component id="78460" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <foreground color="-16777216"/>
-                  <text value="Connected whit lab :"/>
-                </properties>
-              </component>
-              <component id="b98e7" class="javax.swing.JLabel" binding="labelLAB">
-                <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <foreground color="-16777216"/>
-                  <text value="[LAB]"/>
-                </properties>
-              </component>
-              <component id="86ae7" class="javax.swing.JLabel" binding="label_name">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <background color="-16777216"/>
-                  <foreground color="-16777216"/>
-                  <text value="[NAME]"/>
-                </properties>
-              </component>
             </children>
           </grid>
         </children>

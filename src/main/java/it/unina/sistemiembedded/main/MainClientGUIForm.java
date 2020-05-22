@@ -62,7 +62,7 @@ public class MainClientGUIForm extends JFrame{
                     ex.printStackTrace();
                 }
                 if(client.isConnected())
-                    new AttachBoardForm(client);
+                    new AttachBoardForm(client,ipAddress,portNumber);
                 dispose();
             }
         });
