@@ -81,12 +81,14 @@ public class SystemHelper {
         executor.execute(() -> {
             try {
                 clientHandler.sendMessageToClient(Commands.Debug.STARTED);
-                logger.debug("[remoteDebug] Remote debug session has been started...");
+                System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + "Remote debug session has been started...");
+                logger.info("[remoteDebug] Remote debug session has been started...");
                 flashProcess.waitFor();
-                logger.debug("[remoteDebug] Remote debug session finished.");
+                System.out.println(RedirectStream.TEXT_AREA_ACTION_SERVER + "Remote debug session finished");
+                logger.info("[remoteDebug] Remote debug session finished.");
                 clientHandler.sendMessageToClient(Commands.Debug.FINISHED);
             } catch (InterruptedException ignored) {
-                logger.debug("[remoteDebug] Remote debug session finished.");
+                logger.info("[remoteDebug] Remote debug session finished.");
                 clientHandler.sendMessageToClient(Commands.Debug.FINISHED);
                 flashProcess.destroyForcibly();
             }
