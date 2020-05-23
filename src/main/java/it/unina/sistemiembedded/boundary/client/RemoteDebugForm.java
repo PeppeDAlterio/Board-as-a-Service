@@ -72,9 +72,9 @@ public class RemoteDebugForm extends ActiveJFrame {
 
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
+            public void windowClosing(WindowEvent e) {
                 //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
-                super.windowClosed(e);
+                super.windowClosing(e);
                 client.requestStopDebug();
             }
         });

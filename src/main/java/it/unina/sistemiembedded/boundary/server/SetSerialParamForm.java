@@ -119,8 +119,8 @@ public class SetSerialParamForm extends JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
                 parent.setEnabled(true);
                 parent.requestFocus();
             }

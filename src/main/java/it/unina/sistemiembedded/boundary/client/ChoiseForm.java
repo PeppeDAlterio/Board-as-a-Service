@@ -65,8 +65,8 @@ public class ChoiseForm extends ActiveJFrame {
         });
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
                 if(closeForm == 1) {
                     JOptionPane.showMessageDialog(null, "This operation will detach you from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
                     client.requestReleaseBoard();

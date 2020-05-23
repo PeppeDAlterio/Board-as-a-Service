@@ -4,6 +4,8 @@ import it.unina.sistemiembedded.boundary.dialog.LongRunningDialog;
 
 import javax.swing.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class UILongRunningHelper {
 
@@ -28,13 +30,19 @@ public class UILongRunningHelper {
      * @param message String message to be displayed while the operation is in progress
      * @param runnable Runnable long running code to execute async
      */
-    public static void runAsync(JFrame parent, String message, Runnable runnable) throws InterruptedException {
+    public static void runAsync(JFrame parent, String message, Runnable runnable) {
 
         LongRunningDialog longRunningDialog = new LongRunningDialog(message, parent);
         longRunningDialog.setVisible(true);
         CompletableFuture.runAsync(runnable).thenRun(longRunningDialog::dispose);
 
+
     }
 
+     public static<T> void clientSupplyAync(JFrame parent,String message,Supplier<T> supplier, Consumer<T> consumer) {
+         LongRunningDialog longRunningDialog = new LongRunningDialog(message, parent);
+         longRunningDialog.setVisible(true);
+        CompletableFuture.<T>supplyAsync(supplier).thenAccept(consumer).thenRun(longRunningDialog::dispose);
+     }
 
 }

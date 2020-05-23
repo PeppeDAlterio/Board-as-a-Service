@@ -12,10 +12,11 @@ public class LongRunningDialog extends ActiveJFrame {
     private JLabel messageLabel;
     private JProgressBar progressBar;
 
-    public LongRunningDialog(String message, JFrame parent) throws InterruptedException {
+    public LongRunningDialog(String message, JFrame parent) {
         super("LongRunningDialog");
         this.constructor(message, parent);
-        this.progressBar.setValue(100);
+        this.progressBar.setIndeterminate(true);
+       // this.progressBar.setValue(100);
     }
 
     private void constructor(String message, JFrame parent) {

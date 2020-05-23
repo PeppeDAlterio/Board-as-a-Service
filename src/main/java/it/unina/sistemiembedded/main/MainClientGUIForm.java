@@ -4,6 +4,7 @@ import it.unina.sistemiembedded.boundary.client.ActiveJFrame;
 import it.unina.sistemiembedded.boundary.client.AttachBoardForm;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,14 +56,22 @@ public class MainClientGUIForm extends ActiveJFrame {
                     name = nameClient;
                 }
                 client = new ClientImpl(name);
-                try {
-                    client.connect(ipAddress, portNumber);
-                    new AttachBoardForm(client, ipAddress, portNumber);
-                    dispose();
-                } catch (IOException ex) {
-                    //ex.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
-                }
+                UILongRunningHelper.<Boolean>clientSupplyAync(this,"Connecting...",()-> {
+                    try {
+                        client.connect(ipAddress,portNumber);
+                        return true;
+                    } catch (IOException ignored) {
+                        return false;
+                    }
+                },result ->{
+                    if(result){
+                        new AttachBoardForm(client, ipAddress, portNumber);
+                        dispose();
+                    }else{
+                        JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+
         });
 
         textFieldName.addMouseListener(new MouseAdapter() {

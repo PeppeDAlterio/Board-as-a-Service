@@ -2,7 +2,6 @@ package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
-import it.unina.sistemiembedded.main.MainClientGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.UIHelperServerDisconnected;
@@ -56,7 +55,6 @@ public class ServerCommunicationListener {
         this.client.disconnect();
         UIHelperServerDisconnected.serverDisconnected();
         JOptionPane.showMessageDialog(null,"The server was stopped","Error",JOptionPane.ERROR_MESSAGE);
-        new MainClientGUIForm();
     }
 
     /*
