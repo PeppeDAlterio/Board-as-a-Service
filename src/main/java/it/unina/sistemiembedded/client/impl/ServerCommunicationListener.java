@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +53,6 @@ public class ServerCommunicationListener {
     void serverDisconnectedCallback() {
         this.client.disconnect();
         UIServerDisconnectedHelper.uiServerDisconnectedCallback();
-        JOptionPane.showMessageDialog(null,"Connection to server lost","Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /*
