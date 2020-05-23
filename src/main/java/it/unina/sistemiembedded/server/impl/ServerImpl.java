@@ -175,7 +175,7 @@ public class ServerImpl extends Server {
             if(board.getComDriver().isPresent() ) {
 
                 if ( board.getComDriver().get().getSerialPort().equals(comPort.getSerialPort()) ) {
-                    //TODO and FIXME: Call the configure with the new settings
+                    board.getComDriver().get().changeParameters(baudRate, parity, numBitData, bitStop, flowControl);
                     return;
                 } else {
                     board.getComDriver().get().closeCommunication();
