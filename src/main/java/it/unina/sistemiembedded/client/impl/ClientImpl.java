@@ -236,6 +236,7 @@ public class ClientImpl extends Client {
             }
 
             logger.error("[waitForMessagesAsync] Server disconnected");
+            serverCommunicationListener.serverDisconnectedCallback();
 
         });
 
