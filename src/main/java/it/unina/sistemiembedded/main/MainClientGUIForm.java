@@ -3,7 +3,6 @@ package it.unina.sistemiembedded.main;
 import it.unina.sistemiembedded.boundary.client.AttachBoardForm;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
-import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +47,6 @@ public class MainClientGUIForm extends JFrame {
         this.setTitle("Lab as a Service application Client");
         this.textFieldName.setText(nameClient);
         startConnectionButton.addActionListener(new ActionListener() {
-            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
                 ipAddress = textFieldIP.getText();

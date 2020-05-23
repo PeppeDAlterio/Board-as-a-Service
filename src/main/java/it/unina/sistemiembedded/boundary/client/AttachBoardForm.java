@@ -1,6 +1,8 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,18 +64,23 @@ public class AttachBoardForm extends JFrame {
         initLists(client);
 
 
-        buttonRequestSelectedBoard.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        buttonRequestSelectedBoard.addActionListener(e -> {
                 if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
                     Board selectedBoard = (Board) listBoard.getSelectedValue();
-                    client.requestBoard(selectedBoard.getSerialNumber());
-                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port);
-                    dispose();
+                    try {
+                        client.requestBlockingBoard(selectedBoard.getSerialNumber());
+                        new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port,this);
+                        dispose();
+                    } catch (BoardNotFoundException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null,"The selected board doesn't exists","Board not found",JOptionPane.ERROR_MESSAGE);
+                    } catch (BoardAlreadyInUseException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null,"The selected board is already in used by another client","Board already in use",JOptionPane.ERROR_MESSAGE);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "Unable to make the request.", "No boards available.", JOptionPane.ERROR_MESSAGE);
                 }
-            }
         });
 
         refreshButtonBoard.addActionListener(new ActionListener() {
