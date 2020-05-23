@@ -1,45 +1,28 @@
 package it.unina.sistemiembedded.main;
 
-import it.unina.sistemiembedded.boundary.server.ServerStartedForm;
-import it.unina.sistemiembedded.boundary.server.SetSerialParamForm;
-import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.boundary.server.ServerListBoardGUIForm;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
-import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
-import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
-public class MainServerGUIForm extends JFrame {
+public class MainServerGUIForm extends JFrame{
 
     private JPanel mainPanel;
-    private JTextField textFieldName;
-    private JList<Object> listBoard;
+    private JTextField textFieldname;
+    private JTextField textFieldportnumber;
     private JButton startServerButton;
-    private JButton buttonRefresh;
-
 
     private String nameServer = "Server-"+((int) (Math.random()*1000+1000));
-    private Server server;
+    private int portNumber = 1234;
 
-    private void initGUI(){
-        this.setContentPane(mainPanel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setVisible(true);
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setTitle("Server - Board as a Service");
-        this.textFieldName.setText(nameServer);
-    }
+    private Server server;
 
     private void setSize(double height_inc,double weight_inc){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -48,68 +31,43 @@ public class MainServerGUIForm extends JFrame {
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    private void initList() throws InterruptedException {
-        DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
-
-        UILongRunningHelper.runAsync(this, "Messaggio di esempio di attesa...", () -> {
-
-            List<Board> boardList = server.rebuildBoards();
-            if(boardList.size()!=0) {
-                for (Board board : boardList) {
-                    defaultListModelBoard.addElement(board);
-                }
-            } else {
-                defaultListModelBoard.addElement("No boards detected");
-            }
-            listBoard.setModel(defaultListModelBoard);
-
-        });
-
-    }
-
-    public MainServerGUIForm() {
+    public MainServerGUIForm(){
         super();
-        setSize(0.5,0.5);
-        initGUI();
-        server = new ServerImpl(nameServer);
-        try {
-            initList();
-        } catch (InterruptedException ignored) { }
-        listBoard.getSelectionModel().addListSelectionListener(e -> {
-            if(!e.getValueIsAdjusting() && listBoard.getSelectedValue()!=null && listBoard.getSelectedValue() instanceof Board) {
-                Board board = (Board) listBoard.getSelectedValue();
-                new SetSerialParamForm(this, server,board);
-                listBoard.clearSelection();
+        setSize(0.2,0.2);
+        this.setContentPane(mainPanel);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Server - Board as a Service");
+        this.textFieldname.setText(nameServer);
+        this.textFieldportnumber.setText(Integer.toString(portNumber));
+        startServerButton.addActionListener(e -> {
+            String name = textFieldname.getText();
+            if(name.compareTo("")==0){
+                name = nameServer;
             }
-        });
-
-        startServerButton.addActionListener(new ActionListener() {
-            @SneakyThrows
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = textFieldName.getText();
-                if(name.compareTo("")==0){
-                    name = nameServer;
-                }
-                server.setName(name);
-                server.start();
+            if (textFieldportnumber.getText().compareTo("") == 0) {
+                JOptionPane.showMessageDialog(this, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
+            } else {
+                portNumber = Integer.parseInt(textFieldportnumber.getText());
+                server = new ServerImpl(name,portNumber);
                 dispose();
-                new ServerStartedForm(server);
+                new ServerListBoardGUIForm(server);
             }
         });
-        buttonRefresh.addActionListener(new ActionListener() {
-            @SneakyThrows
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                initList();
-            }
-        });
-
-        textFieldName.addMouseListener(new MouseAdapter() {
+        textFieldname.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                textFieldName.setText("");
+                textFieldname.setText("");
+            }
+        });
+        textFieldportnumber.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                textFieldportnumber.setText("");
             }
         });
     }
