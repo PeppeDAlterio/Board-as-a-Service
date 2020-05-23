@@ -19,7 +19,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Deletegator communication listener
+ * Deletegator communication listener.
+ * Async callbacks called by the parser of the received message are listed here
+ * as well as blocking version of requests
  */
 public class ServerCommunicationListener {
 

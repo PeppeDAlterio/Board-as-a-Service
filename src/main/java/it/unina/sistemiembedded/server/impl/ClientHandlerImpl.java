@@ -59,12 +59,11 @@ public class ClientHandlerImpl extends ClientHandler {
     /**
      * Create a new Client Handler
      *
-     * @param id     long client id
      * @param server Server Server that handles the client
      * @param socket Socket Socket connected to the client
      */
-    protected ClientHandlerImpl(long id, Server server, Socket socket) throws IOException {
-        super(id, server, socket);
+    protected ClientHandlerImpl(Server server, Socket socket) throws IOException {
+        super(server, socket);
 
         this.dis = new DataInputStream(socket.getInputStream());
         this.dos = new DataOutputStream(socket.getOutputStream());
@@ -194,6 +193,8 @@ public class ClientHandlerImpl extends ClientHandler {
                 if(board!=null) {
                     stringBuilder.append(" request a board: ");
                     stringBuilder.append(this.board.toString());
+                } else {
+                    stringBuilder.append(" board busy or not found");
                 }
 
                 break;
@@ -257,14 +258,14 @@ public class ClientHandlerImpl extends ClientHandler {
                 Date date = new Date();
                 UIHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
 
-                break;
+                return stringBuilder.toString();
 
         }
 
-        if(!stringBuilder.toString().contains("Received")) {
-            logger.info("[parseReceivedMessage] " + stringBuilder.toString());
-            UIHelper.serverActionPrint(stringBuilder.toString());
-        }
+
+        logger.info("[parseReceivedMessage] " + stringBuilder.toString());
+        UIHelper.serverActionPrint(stringBuilder.toString());
+
         return stringBuilder.toString();
 
     }

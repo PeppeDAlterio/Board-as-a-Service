@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -42,12 +41,7 @@ public class ServerImpl extends Server {
     /**
      * Server client handlers map: (id, client handler)
      */
-    private final Map<Long, ClientHandler> clientHandlers = new HashMap<>();
-
-    /**
-     * Clients sequencer for IDs
-     */
-    private final AtomicLong clientSequencer = new AtomicLong(0);
+    private final Map<String, ClientHandler> clientHandlers = new HashMap<>();
 
     /**
      * RW lock for boards data structure
@@ -305,8 +299,7 @@ public class ServerImpl extends Server {
                         try {
 
                             // Create a new handler object for handling this request.
-                            ClientHandler clientHandler = new ClientHandlerImpl(clientSequencer.getAndIncrement(),
-                                    this, socket);
+                            ClientHandler clientHandler = new ClientHandlerImpl(this, socket);
 
                             addClientHandler(clientHandler);
 

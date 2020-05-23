@@ -3,7 +3,7 @@ package it.unina.sistemiembedded.utility.communication;
 public class Commands {
 
     /**
-     * ATTACH ON BOARD
+     * Attach on board protocol commands
      */
     public static class AttachOnBoard {
 
@@ -40,7 +40,7 @@ public class Commands {
     }
 
     /**
-     * DETACH FROM BOARD
+     * Detach from board protocol commands
      */
     public static class DetachFromBoard {
 
@@ -56,6 +56,9 @@ public class Commands {
 
     }
 
+    /**
+     * Flash protocol commands
+     */
     public static class Flash {
 
         /**
@@ -75,6 +78,9 @@ public class Commands {
 
     }
 
+    /**
+     * Debug session protocol commands
+     */
     public static class Debug {
 
         /**
@@ -109,6 +115,9 @@ public class Commands {
 
     }
 
+    /**
+     * Info request protocol commands
+     */
     public static class Info {
 
         /**
@@ -123,6 +132,9 @@ public class Commands {
 
     }
 
+    /**
+     * Interrupt messages protocol commands
+     */
     public static class Interrupt {
         
         /**
@@ -132,6 +144,9 @@ public class Commands {
 
     }
 
+    /**
+     * File transfer protocol commands
+     */
     public static class FileTransfer {
         /**
          * Sent by Client at the beginning of file transfer
