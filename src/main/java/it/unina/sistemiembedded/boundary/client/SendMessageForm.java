@@ -17,6 +17,7 @@ public class SendMessageForm extends ClientJFrame {
     private JTextField textFieldMessage;
     private JButton sendButton;
     private JTextArea textAreaComunication;
+    private JScrollPane scrollTextArea;
 
     private PrintStream printStream;
 
@@ -34,7 +35,7 @@ public class SendMessageForm extends ClientJFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-
+        this.scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.setLocationRelativeTo(null);
 
         this.textAreaComunication.setEditable(false);

@@ -5,7 +5,9 @@
     <constraints>
       <xy x="20" y="20" width="500" height="400"/>
     </constraints>
-    <properties/>
+    <properties>
+      <minimumSize width="300" height="250"/>
+    </properties>
     <border type="none" title="Server"/>
     <children>
       <component id="cba2f" class="javax.swing.JLabel" binding="labelStartedOnPort">
@@ -24,26 +26,6 @@
           <text value="[PORT NUMBER]"/>
         </properties>
       </component>
-      <component id="937ae" class="javax.swing.JTextArea" binding="textAreaClientAction">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-1048833"/>
-        </properties>
-      </component>
-      <component id="d1d79" class="javax.swing.JTextArea" binding="textAreaClientComunication">
-        <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-1048833"/>
-        </properties>
-      </component>
       <component id="adeb" class="javax.swing.JLabel">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -60,6 +42,36 @@
           <text value="Client's comunications"/>
         </properties>
       </component>
+      <scrollpane id="181c6" binding="spAct">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="937ae" class="javax.swing.JTextArea" binding="textAreaClientAction">
+            <constraints/>
+            <properties>
+              <background color="-1048833"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <scrollpane id="ab741" binding="spComm">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="d1d79" class="javax.swing.JTextArea" binding="textAreaClientComunication">
+            <constraints/>
+            <properties>
+              <background color="-1048833"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
     </children>
   </grid>
 </form>
