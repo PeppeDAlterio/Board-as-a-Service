@@ -8,6 +8,7 @@ import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+import it.unina.sistemiembedded.utility.ui.client.UIServerDisconnectedHelper;
 import org.junit.jupiter.api.*;
 
 import java.io.File;
@@ -32,6 +33,8 @@ class SimpleApplicationTestSuite {
 
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+
+        UIServerDisconnectedHelper.setDefaultOperation(UIServerDisconnectedHelper.ServerDisconnectedOperation.NOOP);
 
         server = new ServerImpl("Mio server");
 
