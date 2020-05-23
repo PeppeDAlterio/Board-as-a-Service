@@ -1,6 +1,10 @@
 package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,11 +12,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-@Getter @Setter
+@Getter
+@Setter
 public class COMDriver {
 
-    private SerialPort serialPort;
+    private static Logger logger = LoggerFactory.getLogger(COMDriver.class);
+
+    private final SerialPort serialPort;
 
     private LinkedList<String> availableMessages = new LinkedList<>();
 
@@ -26,10 +34,11 @@ public class COMDriver {
 
     /**
      * Return the int value of the passed string
+     * 
      * @param string String
      * @return int integer parity value as SerialPort enum
      */
-    private int parseParity(String string){
+    private int parseParity(String string) {
 
         int id = 0;
 
@@ -51,6 +60,7 @@ public class COMDriver {
 
     /**
      * Parse flow control string collection
+     * 
      * @param stringSet Collection string of flow controls
      * @return int flow control value as SerialPort enum
      */
@@ -90,11 +100,23 @@ public class COMDriver {
 
     }
 
-    //TODO: trovare un modo per creare un metodo pubblico
-    public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop, Collection<String> flowControl) {
+    //TODO: inserire documentazione
+    public void changeParameters(int boudRate, String parity, int numBitData, int numBitStop,
+            Collection<String> flowControl) {
+
+        this.serialPort.setBaudRate(boudRate);
+        this.serialPort.setNumDataBits(numBitData);
+        this.serialPort.setNumStopBits(numBitStop);
+        this.serialPort.setParity(parseParity(parity));
+        this.serialPort.setFlowControl(parseFlowControl(flowControl));
+
+    }
+
+    public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop,
+            Collection<String> flowControl) {
 
         this.serialPort = comPort.getSerialPort();
-        if(this.serialPort == null || !this.serialPort.openPort()) {
+        if (this.serialPort == null || !this.serialPort.openPort()) {
             throw new IllegalArgumentException();
         }
 
@@ -117,60 +139,82 @@ public class COMDriver {
     }
 
     public void closeCommunication() {
-        if(serialPort != null) {
+        if (serialPort != null) {
             serialPort.closePort();
         }
     }
 
+    //TODO: inserire documentazione
     public void writeln(String str) {
 
-        if(str == null || str.length() == 0) return;
+        if (str == null || str.length() == 0)
+            return;
 
-        if(!str.endsWith("\r") || !str.endsWith("\n")) {
+        if (!str.endsWith("\r") || !str.endsWith("\n")) {
             str = str.concat("\r");
         }
 
-        synchronized (this) {
+        final String finalStr = str;
 
-            while(this.outputBuffer.isBusy()) {
+        CompletableFuture.<Boolean>supplyAsync(() -> {
+            int count = 0;
+            while (this.outputBuffer.isBusy()) {
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException ignored) {
+                } finally {
+                    count++;
+                    if (count == 20) {
+                        return false;
+                    }
                 }
-                //FIXME: Aggiungi un controllo tc. dopo un timeout restituisci errore per evitare loop infiniti
             }
 
-
-            this.outputBuffer.setBusy(true);
-
-            this.serialPort.writeBytes(str.getBytes(), str.getBytes().length);
-
+            return true;
+        }).thenAccept(result -> {
+            if (result == true){
+                this.outputBuffer.setBusy(true);
+                this.serialPort.writeBytes(finalStr.getBytes(), finalStr.getBytes().length);
+            }
+            else
+                logger.warn("Timeout scaduto, output Buffer is busy "+this.serialPort);
         }
+        );
+
 
     }
 
+    //TODO: inserire documentazione
     public void write(String str) {
 
         if(str == null || str.length() == 0) return;
 
-        synchronized (this) {
+        final String finalStr = str;
 
-            while(this.outputBuffer.isBusy()) {
+        CompletableFuture.<Boolean>supplyAsync(() -> {
+            int count = 0;
+            while (this.outputBuffer.isBusy()) {
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException ignored) {
+                } finally {
+                    count++;
+                    if (count == 20) {
+                        return false;
+                    }
                 }
-                //FIXME: Aggiungi un controllo tc. dopo un timeout restituisci errore per evitare loop infiniti
             }
 
-
-            this.outputBuffer.setBusy(true);
-
-            this.serialPort.writeBytes(str.getBytes(), str.getBytes().length);
-
+            return true;
+        }).thenAccept(result -> {
+            if (result == true){
+                this.outputBuffer.setBusy(true);
+                this.serialPort.writeBytes(finalStr.getBytes(), finalStr.getBytes().length);
+            }
+            else
+                logger.warn("Timeout scaduto, output Buffer is busy "+this.serialPort);
         }
+        );
 
     }
 
