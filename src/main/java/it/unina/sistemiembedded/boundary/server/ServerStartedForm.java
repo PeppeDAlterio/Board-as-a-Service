@@ -18,6 +18,8 @@ public class ServerStartedForm extends JFrame {
     private JLabel labelPortNumber;
     private JPanel mainPanel;
     private JLabel labelStartedOnPort;
+    private JScrollPane scrollComunication;
+    private JScrollPane scrollAction;
 
     public PrintStream printStream;
 
@@ -35,6 +37,8 @@ public class ServerStartedForm extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        scrollAction.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollComunication.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaClientAction.setEditable(false);
         this.textAreaClientComunication.setEditable(false);
         this.textAreaClientComunication.setFont(new Font("courier", Font.BOLD, 12));

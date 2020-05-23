@@ -84,17 +84,17 @@ public class SystemHelper {
             try {
                 clientHandler.sendTextMessage(Commands.Debug.STARTED);
                 UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' started.");
+                        "' on '" + boardSerialNumber + "' with GDB server port [ "+ port +" ] started.");
                 logger.info("[remoteDebug] Remote debug session has been started...");
                 flashProcess.waitFor();
                 UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' finished.");
+                        "' on '" + boardSerialNumber + "' with GDB server port [ "+ port +" ]  finished.");
                 logger.info("[remoteDebug] Remote debug session finished.");
                 clientHandler.sendTextMessage(Commands.Debug.FINISHED);
             } catch (InterruptedException ignored) {
                 logger.info("[remoteDebug] Remote debug session finished.");
                 UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' finished.");
+                        "' on '" + boardSerialNumber +  "' with GDB server port [ "+ port +" ]  finished.");
                 clientHandler.sendTextMessage(Commands.Debug.FINISHED);
                 flashProcess.destroyForcibly();
             }

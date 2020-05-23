@@ -17,6 +17,7 @@ public class SendMessageForm extends ActiveJFrame {
     private JTextField textFieldMessage;
     private JButton sendButton;
     private JTextArea textAreaComunication;
+    private JScrollPane scrollTextArea;
 
     private PrintStream printStream;
 
@@ -34,6 +35,7 @@ public class SendMessageForm extends ActiveJFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaComunication.setEditable(false);
         this.textAreaComunication.setFont(new Font("courier", Font.BOLD, 12));
 

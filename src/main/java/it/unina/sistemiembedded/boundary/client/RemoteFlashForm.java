@@ -16,6 +16,7 @@ public class RemoteFlashForm extends ActiveJFrame {
     private JTextField textField1;
     private JButton startFlashButton;
     private JTextArea textAreaFlash;
+    private JScrollPane scrollPaneTextArea;
 
     private PrintStream printStream;
 
@@ -33,6 +34,7 @@ public class RemoteFlashForm extends ActiveJFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        scrollPaneTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaFlash.setEditable(false);
         this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
         printStream = new PrintStream(new CustomOutputStream(null, null, null, this.textAreaFlash, null));
