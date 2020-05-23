@@ -14,7 +14,7 @@ public class UILongRunningHelper {
      * @param parent JFrame parent to center the dialog to
      * @param runnable Runnable long running code to execute async
      */
-    public static void runAsync(JFrame parent, Runnable runnable) {
+    public static void runAsync(JFrame parent, Runnable runnable) throws InterruptedException {
 
         LongRunningDialog longRunningDialog = new LongRunningDialog(DEFAULT_MESSAGE, parent);
         longRunningDialog.setVisible(true);
@@ -28,12 +28,13 @@ public class UILongRunningHelper {
      * @param message String message to be displayed while the operation is in progress
      * @param runnable Runnable long running code to execute async
      */
-    public static void runAsync(JFrame parent, String message, Runnable runnable) {
+    public static void runAsync(JFrame parent, String message, Runnable runnable) throws InterruptedException {
 
         LongRunningDialog longRunningDialog = new LongRunningDialog(message, parent);
         longRunningDialog.setVisible(true);
         CompletableFuture.runAsync(runnable).thenRun(longRunningDialog::dispose);
 
     }
+
 
 }

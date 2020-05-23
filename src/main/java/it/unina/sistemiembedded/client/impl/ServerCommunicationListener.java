@@ -2,14 +2,17 @@ package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
+import it.unina.sistemiembedded.main.MainClientGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
+import it.unina.sistemiembedded.utility.ui.UIHelperServerDisconnected;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +54,9 @@ public class ServerCommunicationListener {
 
     void serverDisconnectedCallback() {
         this.client.disconnect();
+        UIHelperServerDisconnected.serverDisconnected();
+        JOptionPane.showMessageDialog(null,"The server was stopped","Error",JOptionPane.ERROR_MESSAGE);
+        new MainClientGUIForm();
     }
 
     /*

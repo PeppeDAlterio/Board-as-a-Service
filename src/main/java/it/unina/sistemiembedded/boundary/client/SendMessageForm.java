@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SendMessageForm extends JFrame {
+public class SendMessageForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JTextField textFieldMessage;
     private JButton sendButton;
@@ -28,7 +28,7 @@ public class SendMessageForm extends JFrame {
     }
 
     public SendMessageForm(Client client) {
-        super();
+        super("SendMessageForm");
         setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

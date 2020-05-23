@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class ChoiseForm extends JFrame {
+public class ChoiseForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JLabel labelLAB;
     private JLabel labelBoard;
@@ -20,9 +20,9 @@ public class ChoiseForm extends JFrame {
 
     private int closeForm = 1;
 
-
     public ChoiseForm(Client client, String lab, String board, String ip, int port,JFrame parent) {
-        super();
+        super("ChoiseForm");
+        System.out.println(ActiveJFrame.getActiveFrame());
         String infoLab = labelLAB.getText();
         infoLab = infoLab.replace("[IP]", "[ "+ip);
         infoLab = infoLab.replace("[PORT]", Integer.toString(port)+" ]");

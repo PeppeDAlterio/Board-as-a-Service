@@ -15,7 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AttachBoardForm extends JFrame {
+public class AttachBoardForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JButton buttonRequestSelectedBoard;
     private JList listBoard;
@@ -28,16 +28,18 @@ public class AttachBoardForm extends JFrame {
 
 
     private void initLists(Client client) {
-        List<Board> boards = client.requestBlockingServerBoardList();
-        listLab.setSelectedIndex(0);
-        listBoard.setModel(modelBoard);
-        if (!boards.isEmpty()) {
-            for (int i = 0; i < boards.size(); i++)
-                modelBoard.addElement(boards.get(i));
-        } else {
-            modelBoard.addElement("No avaible boards");
+        if(client.isConnected()) {
+            List<Board> boards = client.requestBlockingServerBoardList();
+            listLab.setSelectedIndex(0);
+            listBoard.setModel(modelBoard);
+            if (!boards.isEmpty()) {
+                for (int i = 0; i < boards.size(); i++)
+                    modelBoard.addElement(boards.get(i));
+            } else {
+                modelBoard.addElement("No avaible boards");
+            }
+            listBoard.setSelectedIndex(0);
         }
-        listBoard.setSelectedIndex(0);
     }
 
     private void setSize(double height_inc, double weight_inc) {
@@ -48,6 +50,8 @@ public class AttachBoardForm extends JFrame {
     }
 
     public AttachBoardForm(Client client, String ip, int port) {
+        super("AttachBoardForm");
+        System.out.println(ActiveJFrame.getActiveFrame());
         setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,7 +74,7 @@ public class AttachBoardForm extends JFrame {
                     try {
                         client.requestBlockingBoard(selectedBoard.getSerialNumber());
                         new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port,this);
-                        dispose();
+                        this.dispose();
                     } catch (BoardNotFoundException ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(null,"The selected board doesn't exists","Board not found",JOptionPane.ERROR_MESSAGE);

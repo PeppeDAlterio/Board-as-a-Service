@@ -47,7 +47,7 @@ public class MainServerGUIForm extends JFrame {
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    private void initList(){
+    private void initList() throws InterruptedException {
         DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
 
         UILongRunningHelper.runAsync(this, "Messaggio di esempio di attesa...", () -> {
@@ -71,7 +71,9 @@ public class MainServerGUIForm extends JFrame {
         setSize(0.5,0.5);
         initGUI();
         server = new ServerImpl(nameServer);
-        initList();
+        try {
+            initList();
+        } catch (InterruptedException ignored) { }
         listBoard.getSelectionModel().addListSelectionListener(e -> {
             if(!e.getValueIsAdjusting() && listBoard.getSelectedValue()!=null && listBoard.getSelectedValue() instanceof Board) {
                 Board board = (Board) listBoard.getSelectedValue();

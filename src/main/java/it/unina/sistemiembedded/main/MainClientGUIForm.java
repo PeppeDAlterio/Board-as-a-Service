@@ -1,18 +1,17 @@
 package it.unina.sistemiembedded.main;
 
+import it.unina.sistemiembedded.boundary.client.ActiveJFrame;
 import it.unina.sistemiembedded.boundary.client.AttachBoardForm;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class MainClientGUIForm extends JFrame {
+public class MainClientGUIForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JLabel labelName;
     private JLabel labelIP;
@@ -24,7 +23,7 @@ public class MainClientGUIForm extends JFrame {
     private JButton startConnectionButton;
 
     private String nameClient = "Client" + (int) (Math.random() * 1000 + 1000);
-    ;
+
     private String ipAddress;
     private int portNumber;
     private Client client;
@@ -39,6 +38,8 @@ public class MainClientGUIForm extends JFrame {
     }
 
     public MainClientGUIForm() {
+        super("MainClientGUIForm");
+        System.out.println(ActiveJFrame.getActiveFrame());
         setSize(0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,9 +47,7 @@ public class MainClientGUIForm extends JFrame {
         this.pack();
         this.setTitle("Lab as a Service application Client");
         this.textFieldName.setText(nameClient);
-        startConnectionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        startConnectionButton.addActionListener(e -> {
                 ipAddress = textFieldIP.getText();
                 portNumber = Integer.parseInt(textFieldPort.getText());
                 String name = textFieldName.getText();
@@ -58,14 +57,12 @@ public class MainClientGUIForm extends JFrame {
                 client = new ClientImpl(name);
                 try {
                     client.connect(ipAddress, portNumber);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
-                }
-                if (client.isConnected())
                     new AttachBoardForm(client, ipAddress, portNumber);
-                dispose();
-            }
+                    dispose();
+                } catch (IOException ex) {
+                    //ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
+                }
         });
 
         textFieldName.addMouseListener(new MouseAdapter() {

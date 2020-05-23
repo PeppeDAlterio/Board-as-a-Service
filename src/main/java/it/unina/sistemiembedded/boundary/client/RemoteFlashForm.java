@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class RemoteFlashForm extends JFrame {
+public class RemoteFlashForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JTextField textField1;
     private JButton startFlashButton;
@@ -27,7 +27,7 @@ public class RemoteFlashForm extends JFrame {
     }
 
     public RemoteFlashForm(Client client) {
-        super();
+        super("RemoteFlashForm");
         setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

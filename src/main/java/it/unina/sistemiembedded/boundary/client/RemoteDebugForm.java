@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
-public class RemoteDebugForm extends JFrame {
+public class RemoteDebugForm extends ActiveJFrame {
     private JPanel mainPanel;
     private JTextField textFieldgdbPort;
     private JButton debugButton;
@@ -34,7 +34,7 @@ public class RemoteDebugForm extends JFrame {
     }
 
     public RemoteDebugForm(Client client) {
-        super();
+        super("RemoteDegubForm");
         setSize(0.5, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
