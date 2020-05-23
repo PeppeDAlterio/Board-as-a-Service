@@ -1,8 +1,8 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.utility.ui.CustomOutputStream;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 
-public class RemoteDebugForm extends ActiveJFrame {
+public class RemoteDebugForm extends ClientJFrame {
     private JPanel mainPanel;
     private JTextField textFieldgdbPort;
     private JButton debugButton;
@@ -34,18 +34,19 @@ public class RemoteDebugForm extends ActiveJFrame {
     }
 
     public RemoteDebugForm(Client client) {
-        super("RemoteDegubForm");
+        super("Debug - Client - Board as a Service");
         setSize(0.5, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        this.setLocationRelativeTo(null);
 
         scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaResponse.setEditable(false);
         textAreaResponse.setFont(new Font("courier", Font.BOLD, 12));
         printStream = new PrintStream(new CustomOutputStream(null, null, this.textAreaResponse, null, null));
-        UIHelper.setPrintStream(printStream);
+        UIPrinterHelper.setPrintStream(printStream);
 
         debugButton.addActionListener(e -> {
             if (textFieldgdbPort.getText().compareTo("") == 0) {
@@ -54,15 +55,15 @@ public class RemoteDebugForm extends ActiveJFrame {
             } else {
                 try {
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());
-                    UIHelper.clientDebug("Starting remote GDB debug session on port : " + gdbPort + "\n");
+                    UIPrinterHelper.clientDebug("Starting remote GDB debug session on port : " + gdbPort + "\n");
                     client.requestDebug(gdbPort);
-                    UIHelper.clientDebug("To correctly use the remote debbugger :");
-                    UIHelper.clientDebug("\t1)  Open your STM32CubeIDE");
-                    UIHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");
-                    UIHelper.clientDebug("\t3)  In the 'Debbugger' section enable 'Connect to remote GDB server");
-                    UIHelper.clientDebug("\t4)  Insert the server ip and the port specified above");
-                    UIHelper.clientDebug("\t5)  Click on 'Apply' and then 'Degub' buttons");
-                    UIHelper.clientDebug("\t6)  Start debbugging!\n ");
+                    UIPrinterHelper.clientDebug("To correctly use the remote debbugger :");
+                    UIPrinterHelper.clientDebug("\t1)  Open your STM32CubeIDE");
+                    UIPrinterHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");
+                    UIPrinterHelper.clientDebug("\t3)  In the 'Debbugger' section enable 'Connect to remote GDB server");
+                    UIPrinterHelper.clientDebug("\t4)  Insert the server ip and the port specified above");
+                    UIPrinterHelper.clientDebug("\t5)  Click on 'Apply' and then 'Degub' buttons");
+                    UIPrinterHelper.clientDebug("\t6)  Start debbugging!\n ");
                 } catch (NumberFormatException n) {
                     n.getMessage();
                     JOptionPane.showMessageDialog(null, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);

@@ -36,7 +36,8 @@ public class MainServerGUIForm extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setTitle("Board as a Service Server Application");
+        this.setLocationRelativeTo(null);
+        this.setTitle("Server - Board as a Service");
         this.textFieldName.setText(nameServer);
     }
 

@@ -1,12 +1,12 @@
 package it.unina.sistemiembedded.boundary.dialog;
 
-import it.unina.sistemiembedded.boundary.client.ActiveJFrame;
+import it.unina.sistemiembedded.boundary.client.ClientJFrame;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class LongRunningDialog extends ActiveJFrame {
+public class LongRunningDialog extends ClientJFrame {
 
     private JPanel mainPanel;
     private JLabel messageLabel;
@@ -16,7 +16,6 @@ public class LongRunningDialog extends ActiveJFrame {
         super("LongRunningDialog");
         this.constructor(message, parent);
         this.progressBar.setIndeterminate(true);
-       // this.progressBar.setValue(100);
     }
 
     private void constructor(String message, JFrame parent) {

@@ -5,7 +5,7 @@ import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.SystemHelper;
 import it.unina.sistemiembedded.utility.communication.Commands;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class ClientHandlerCommunicationListener {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("[flashBoardRequestCallback] There was an error while receiving the file: " + e.getMessage());
-            UIHelper.serverActionPrint("There was an error while receiving the file: " + e.getMessage());
+            UIPrinterHelper.serverActionPrint("There was an error while receiving the file: " + e.getMessage());
             this.clientHandler.sendTextMessage(Commands.Flash.ERROR);
         }
 

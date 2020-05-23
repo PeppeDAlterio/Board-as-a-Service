@@ -15,7 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AttachBoardForm extends ActiveJFrame {
+public class AttachBoardForm extends ClientJFrame {
     private JPanel mainPanel;
     private JButton buttonRequestSelectedBoard;
     private JList listBoard;
@@ -50,14 +50,14 @@ public class AttachBoardForm extends ActiveJFrame {
     }
 
     public AttachBoardForm(Client client, String ip, int port) {
-        super("AttachBoardForm");
-        System.out.println(ActiveJFrame.getActiveFrame());
+        super("Server board list - Client - Board as a Service");
+        System.out.println(ClientJFrame.getActiveFrames());
         setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setTitle("Require an avaible board");
+        this.setLocationRelativeTo(null);
         //Per ora rendo la lista dei laboratori non visibile
         this.listLab.setVisible(false);
         this.labelLabslist.setVisible(false);

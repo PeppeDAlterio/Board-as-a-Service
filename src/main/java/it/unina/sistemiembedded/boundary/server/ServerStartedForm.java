@@ -1,8 +1,8 @@
 package it.unina.sistemiembedded.boundary.server;
 
 import it.unina.sistemiembedded.server.Server;
-import it.unina.sistemiembedded.utility.ui.CustomOutputStream;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,12 +29,13 @@ public class ServerStartedForm extends JFrame {
     }
 
     public ServerStartedForm(Server server) {
-        super();
+        super("Server console - Board as a Service");
         setSize(0.7, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        this.setLocationRelativeTo(null);
         this.textAreaClientAction.setEditable(false);
         this.textAreaClientComunication.setEditable(false);
         this.textAreaClientComunication.setFont(new Font("courier", Font.BOLD, 12));
@@ -42,7 +43,7 @@ public class ServerStartedForm extends JFrame {
         labelPortNumber.setText(Integer.toString(server.getPort()));
         labelStartedOnPort.setText(labelStartedOnPort.getText().replace("#SERVER#", server.getName()));
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication, null, null, null));
-        UIHelper.setPrintStream(printStream);
+        UIPrinterHelper.setPrintStream(printStream);
     }
 
 }

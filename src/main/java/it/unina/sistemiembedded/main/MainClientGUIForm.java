@@ -1,7 +1,7 @@
 package it.unina.sistemiembedded.main;
 
-import it.unina.sistemiembedded.boundary.client.ActiveJFrame;
 import it.unina.sistemiembedded.boundary.client.AttachBoardForm;
+import it.unina.sistemiembedded.boundary.client.ClientJFrame;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
@@ -12,7 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class MainClientGUIForm extends ActiveJFrame {
+public class MainClientGUIForm extends ClientJFrame {
     private JPanel mainPanel;
     private JLabel labelName;
     private JLabel labelIP;
@@ -39,14 +39,14 @@ public class MainClientGUIForm extends ActiveJFrame {
     }
 
     public MainClientGUIForm() {
-        super("MainClientGUIForm");
-        System.out.println(ActiveJFrame.getActiveFrame());
+        super("Client - Board as a Server");
+        System.out.println(ClientJFrame.getActiveFrames());
         setSize(0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setTitle("Lab as a Service application Client");
+        this.setLocationRelativeTo(null);
         this.textFieldName.setText(nameClient);
         startConnectionButton.addActionListener(e -> {
                 ipAddress = textFieldIP.getText();
@@ -56,7 +56,7 @@ public class MainClientGUIForm extends ActiveJFrame {
                     name = nameClient;
                 }
                 client = new ClientImpl(name);
-                UILongRunningHelper.<Boolean>clientSupplyAync(this,"Connecting...",()-> {
+                UILongRunningHelper.<Boolean>supplyAsync(this,"Connecting...",()-> {
                     try {
                         client.connect(ipAddress,portNumber);
                         return true;

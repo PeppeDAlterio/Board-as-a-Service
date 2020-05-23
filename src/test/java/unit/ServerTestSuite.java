@@ -140,7 +140,6 @@ public class ServerTestSuite {
     
     @Test
     @DisplayName("ListaTest")
-    
     public void ListaBoards() throws IOException {
         int check = 0;
         String buffer_str;

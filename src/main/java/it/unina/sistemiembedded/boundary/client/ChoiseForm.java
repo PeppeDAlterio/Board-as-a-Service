@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class ChoiseForm extends ActiveJFrame {
+public class ChoiseForm extends ClientJFrame {
     private JPanel mainPanel;
     private JLabel labelLAB;
     private JLabel labelBoard;
@@ -20,9 +20,9 @@ public class ChoiseForm extends ActiveJFrame {
 
     private int closeForm = 1;
 
-    public ChoiseForm(Client client, String lab, String board, String ip, int port,JFrame parent) {
-        super("ChoiseForm");
-        System.out.println(ActiveJFrame.getActiveFrame());
+    public ChoiseForm(Client client, String lab, String board, String ip, int port, JFrame parent) {
+        super("Board controller - Board as a Service");
+        System.out.println(ClientJFrame.getActiveFrames());
         String infoLab = labelLAB.getText();
         infoLab = infoLab.replace("[IP]", "[ "+ip);
         infoLab = infoLab.replace("[PORT]", Integer.toString(port)+" ]");
@@ -33,6 +33,7 @@ public class ChoiseForm extends ActiveJFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
+        this.setLocationRelativeTo(null);
         label_name.setText(client.getName());
         sendMessageButton.addActionListener(new ActionListener() {
             @Override
@@ -56,7 +57,7 @@ public class ChoiseForm extends ActiveJFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 closeForm =0;
-                JOptionPane.showMessageDialog(null, "This operation will detach you from the current board", "Request another board", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You will be detached from the current board", "Request another board", JOptionPane.INFORMATION_MESSAGE);
                 client.requestReleaseBoard();
                 dispose();
                 new AttachBoardForm(client, ip, port);
@@ -68,7 +69,7 @@ public class ChoiseForm extends ActiveJFrame {
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
                 if(closeForm == 1) {
-                    JOptionPane.showMessageDialog(null, "This operation will detach you from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "You will be detached from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
                     client.requestReleaseBoard();
                     new AttachBoardForm(client, ip, port);
                 }

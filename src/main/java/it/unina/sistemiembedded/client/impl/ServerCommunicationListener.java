@@ -4,7 +4,7 @@ import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
-import it.unina.sistemiembedded.utility.ui.UIHelperServerDisconnected;
+import it.unina.sistemiembedded.utility.ui.client.UIServerDisconnectedHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,8 +53,8 @@ public class ServerCommunicationListener {
 
     void serverDisconnectedCallback() {
         this.client.disconnect();
-        UIHelperServerDisconnected.serverDisconnected();
-        JOptionPane.showMessageDialog(null,"The server was stopped","Error",JOptionPane.ERROR_MESSAGE);
+        UIServerDisconnectedHelper.uiServerDisconnectedCallback();
+        JOptionPane.showMessageDialog(null,"Connection to server lost","Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /*
