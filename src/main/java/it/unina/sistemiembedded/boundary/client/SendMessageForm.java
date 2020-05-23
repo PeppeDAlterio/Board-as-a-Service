@@ -1,8 +1,8 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.utility.ui.CustomOutputStream;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
