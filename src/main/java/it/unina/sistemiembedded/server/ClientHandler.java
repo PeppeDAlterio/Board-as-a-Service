@@ -5,13 +5,14 @@ import it.unina.sistemiembedded.model.Board;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.Socket;
+import java.util.UUID;
 
 public abstract class ClientHandler implements Runnable {
 
     /**
      * Client handler id
      */
-    protected long id;
+    protected String id = UUID.randomUUID().toString();
 
     /**
      * Socket connected to the client
@@ -25,12 +26,10 @@ public abstract class ClientHandler implements Runnable {
 
     /**
      * Create a new Client Handler
-     * @param id long client id
      * @param server Server Server that handles the client
      * @param socket Socket Socket connected to the client
      */
-    protected ClientHandler(long id, Server server, Socket socket) {
-        this.id = id;
+    protected ClientHandler(Server server, Socket socket) {
         this.socket = socket;
         this.server = server;
     }
@@ -69,7 +68,7 @@ public abstract class ClientHandler implements Runnable {
      * Get client handler ID
      * @return long client handler id
      */
-    public long getId() {return this.id;}
+    public String getId() {return this.id;}
 
     public abstract String getName();
 

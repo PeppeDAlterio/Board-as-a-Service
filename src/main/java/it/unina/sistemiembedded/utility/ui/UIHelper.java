@@ -35,10 +35,19 @@ public class UIHelper {
         }
     }
 
+    /**
+     * Use this to configure the PrintStream to redirect the output to
+     * @param printStream PrintStream to redirect the output to
+     */
     public static void setPrintStream(PrintStream printStream) {
         System.setOut(printStream);
     }
 
+    /**
+     * Write a message in a TextArea
+     * @param textArea TextArea
+     * @param msg String message
+     */
     private static void write(TextArea textArea, String msg) {
         System.out.println(textArea.getValue() + msg);
     }
@@ -62,20 +71,5 @@ public class UIHelper {
     public static void clientFlash(String msg) {
         write(TextArea.CLIENT_FLASH, msg);
     }
-
-    /*
-        Esempio uso:
-        UIHelper.serverCommunicationPrint("Prova prova 123");
-        anzichè fare
-        System.out.println(RedirectStream.TEXT_AREA_COMUNICATION_SERVER + "Prova prova 123");
-
-        così se domani abbiamo un problema / vogliamo cambiarlo / non so, teniamo un singolo metodo che viene invocato
-
-        Nel main invece di fare System.setOut(printStream)
-        facciamo
-        UIHelper.setPrintStream(printStream)
-        per lo stesso motivo di prima
-
-     */
 
 }

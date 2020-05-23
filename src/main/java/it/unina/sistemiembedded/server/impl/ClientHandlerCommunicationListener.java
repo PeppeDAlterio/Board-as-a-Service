@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Delegator listener
+ * Delegator listener.
+ * Async callbacks called by the parser of the received message are listed here
  */
 public class ClientHandlerCommunicationListener {
 
@@ -104,23 +105,6 @@ public class ClientHandlerCommunicationListener {
 
     }
 
-    void stopActiveDebugSession() {
-        if(this.clientHandler.getBoard()!=null) {
-            synchronized (this.clientHandler.getBoard().getSerialNumber().intern()) {
-                this.clientHandler.getBoard().setDebugging(false);
-                if (this.clientHandler.getBoard().getDebuggingProcess() != null) {
-                    try {
-                        this.clientHandler.getBoard().getDebuggingProcess().destroyForcibly().waitFor();
-
-                    } catch (InterruptedException ignored) {
-                    } finally {
-                        this.clientHandler.getBoard().setDebuggingProcess(null);
-                    }
-                }
-            }
-        }
-    }
-
     void boardListRequestCallback() {
 
         List<Board> boardList = this.clientHandler.getServer().listBoards();
@@ -150,6 +134,26 @@ public class ClientHandlerCommunicationListener {
 
         }
 
+    }
+
+    /**
+     * Utility to stop active debug session, if any
+     */
+    private void stopActiveDebugSession() {
+        if(this.clientHandler.getBoard()!=null) {
+            synchronized (this.clientHandler.getBoard().getSerialNumber().intern()) {
+                this.clientHandler.getBoard().setDebugging(false);
+                if (this.clientHandler.getBoard().getDebuggingProcess() != null) {
+                    try {
+                        this.clientHandler.getBoard().getDebuggingProcess().destroyForcibly().waitFor();
+
+                    } catch (InterruptedException ignored) {
+                    } finally {
+                        this.clientHandler.getBoard().setDebuggingProcess(null);
+                    }
+                }
+            }
+        }
     }
 
 }
