@@ -1,10 +1,11 @@
-package it.unina.sistemiembedded.utility.ui;
+package it.unina.sistemiembedded.utility.ui.stream;
 
 import lombok.Getter;
 
 import java.io.PrintStream;
 
-public class UIHelper {
+public class UIPrinterHelper {
+
     @Getter
     public enum TextArea {
         /**

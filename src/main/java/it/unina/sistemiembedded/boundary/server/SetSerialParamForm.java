@@ -95,7 +95,7 @@ public class SetSerialParamForm extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(parent);
         this.setTitle(board + " serial parameters");
         initComboBox();
         index1 = 2;
@@ -110,8 +110,6 @@ public class SetSerialParamForm extends JFrame {
                 bitStop = Integer.parseInt(comboBoxStop.getSelectedItem().toString());
                 comPort = (COMPort) comboBoxlistComPort.getSelectedItem();
                 parity = comboBoxParity.getSelectedItem().toString();
-                //flowControl = comboBoxFlowControl.getSelectedItem().toString();
-                //TODO : risolvere il bug che non permette di selezionare la stessa comPort sulla stessa scheda
                 server.setBoardCOMDriver(board.getSerialNumber(), comPort, boudRate, bitData, bitStop, parity, flowControl);
                 logger.info("Params set to : BoudRate : " + boudRate + " bitData : " + bitData + " bitStop : " + bitStop + " parity : " + parity);
             }
@@ -119,8 +117,8 @@ public class SetSerialParamForm extends JFrame {
 
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
                 parent.setEnabled(true);
                 parent.requestFocus();
             }

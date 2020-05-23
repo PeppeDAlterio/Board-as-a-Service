@@ -11,12 +11,11 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class RemoteFlashForm extends ActiveJFrame {
+public class RemoteFlashForm extends ClientJFrame {
     private JPanel mainPanel;
     private JTextField textField1;
     private JButton startFlashButton;
     private JTextArea textAreaFlash;
-    private JScrollPane scrollPaneTextArea;
 
     private PrintStream printStream;
 
@@ -28,13 +27,13 @@ public class RemoteFlashForm extends ActiveJFrame {
     }
 
     public RemoteFlashForm(Client client) {
-        super("RemoteFlashForm");
+        super("Remote flash - Client - Board as a Service");
         setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        scrollPaneTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.setLocationRelativeTo(null);
         this.textAreaFlash.setEditable(false);
         this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
         printStream = new PrintStream(new CustomOutputStream(null, null, null, this.textAreaFlash, null));

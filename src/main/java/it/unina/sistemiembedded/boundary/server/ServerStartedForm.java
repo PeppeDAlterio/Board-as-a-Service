@@ -18,8 +18,6 @@ public class ServerStartedForm extends JFrame {
     private JLabel labelPortNumber;
     private JPanel mainPanel;
     private JLabel labelStartedOnPort;
-    private JScrollPane scrollComunication;
-    private JScrollPane scrollAction;
 
     public PrintStream printStream;
 
@@ -31,14 +29,13 @@ public class ServerStartedForm extends JFrame {
     }
 
     public ServerStartedForm(Server server) {
-        super();
+        super("Server console - Board as a Service");
         setSize(0.7, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        scrollAction.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollComunication.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.setLocationRelativeTo(null);
         this.textAreaClientAction.setEditable(false);
         this.textAreaClientComunication.setEditable(false);
         this.textAreaClientComunication.setFont(new Font("courier", Font.BOLD, 12));
@@ -46,7 +43,7 @@ public class ServerStartedForm extends JFrame {
         labelPortNumber.setText(Integer.toString(server.getPort()));
         labelStartedOnPort.setText(labelStartedOnPort.getText().replace("#SERVER#", server.getName()));
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication, null, null, null));
-        UIHelper.setPrintStream(printStream);
+        UIPrinterHelper.setPrintStream(printStream);
     }
 
 }

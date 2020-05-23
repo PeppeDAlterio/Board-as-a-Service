@@ -4,7 +4,7 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.communication.Commands;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -79,7 +79,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         if (this.running) {
             logger.info("[stop] Client handler (" + this.id + ") has been stopped");
-            UIHelper.serverActionPrint("Client '" + this.name + "' disconnected");
+            UIPrinterHelper.serverActionPrint("Client '" + this.name + "' disconnected");
         }
 
         this.running = false;
@@ -113,7 +113,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
-        UIHelper.serverActionPrint("New client connected. Hello '" + this.name + "'");
+        UIPrinterHelper.serverActionPrint("New client connected. Hello '" + this.name + "'");
 
 
         sendTextMessage(this.server.getName());
@@ -256,7 +256,7 @@ public class ClientHandlerImpl extends ClientHandler {
                 stringBuilder.append("Received: ").append(message);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
-                UIHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
+                UIPrinterHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
 
                 return stringBuilder.toString();
 
@@ -264,7 +264,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
 
         logger.info("[parseReceivedMessage] " + stringBuilder.toString());
-        UIHelper.serverActionPrint(stringBuilder.toString());
+        UIPrinterHelper.serverActionPrint(stringBuilder.toString());
 
         return stringBuilder.toString();
 
@@ -365,7 +365,7 @@ public class ClientHandlerImpl extends ClientHandler {
 
             if (endOfTx.equals(Commands.FileTransfer.END_OF_FILE_TX)) {
                 logger.debug("[receiveFile] File transfer successfully completed.");
-                UIHelper.serverActionPrint("File transfer successfully completed.");
+                UIPrinterHelper.serverActionPrint("File transfer successfully completed.");
 
             }
 

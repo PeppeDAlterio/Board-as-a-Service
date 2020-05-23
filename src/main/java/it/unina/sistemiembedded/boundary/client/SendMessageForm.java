@@ -12,12 +12,11 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SendMessageForm extends ActiveJFrame {
+public class SendMessageForm extends ClientJFrame {
     private JPanel mainPanel;
     private JTextField textFieldMessage;
     private JButton sendButton;
     private JTextArea textAreaComunication;
-    private JScrollPane scrollTextArea;
 
     private PrintStream printStream;
 
@@ -29,18 +28,20 @@ public class SendMessageForm extends ActiveJFrame {
     }
 
     public SendMessageForm(Client client) {
-        super("SendMessageForm");
+        super("Send message - Client - Board as a Service");
         setSize(0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
-        scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        this.setLocationRelativeTo(null);
+
         this.textAreaComunication.setEditable(false);
         this.textAreaComunication.setFont(new Font("courier", Font.BOLD, 12));
 
         printStream = new PrintStream(new CustomOutputStream(null, null, null, null, this.textAreaComunication));
-        UIHelper.setPrintStream(printStream);
+        UIPrinterHelper.setPrintStream(printStream);
 
         sendButton.addActionListener(new ActionListener() {
             @Override
@@ -51,7 +52,7 @@ public class SendMessageForm extends ActiveJFrame {
                 } else {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
-                    UIHelper.clientMessage("[ " + formatter.format(date) + " ]   " + message);
+                    UIPrinterHelper.clientMessage("[ " + formatter.format(date) + " ]   " + message);
                     textFieldMessage.setText("");
                     client.sendTextMessage(message);
                 }

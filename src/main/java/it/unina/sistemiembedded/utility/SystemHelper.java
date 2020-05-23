@@ -3,7 +3,7 @@ package it.unina.sistemiembedded.utility;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.utility.communication.Commands;
-import it.unina.sistemiembedded.utility.ui.UIHelper;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,18 +83,18 @@ public class SystemHelper {
         executor.execute(() -> {
             try {
                 clientHandler.sendTextMessage(Commands.Debug.STARTED);
-                UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' with GDB server port [ "+ port +" ] started.");
+                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' started.");
                 logger.info("[remoteDebug] Remote debug session has been started...");
                 flashProcess.waitFor();
-                UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' with GDB server port [ "+ port +" ]  finished.");
+                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
                 logger.info("[remoteDebug] Remote debug session finished.");
                 clientHandler.sendTextMessage(Commands.Debug.FINISHED);
             } catch (InterruptedException ignored) {
                 logger.info("[remoteDebug] Remote debug session finished.");
-                UIHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber +  "' with GDB server port [ "+ port +" ]  finished.");
+                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
                 clientHandler.sendTextMessage(Commands.Debug.FINISHED);
                 flashProcess.destroyForcibly();
             }
