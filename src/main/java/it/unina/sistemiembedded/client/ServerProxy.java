@@ -15,8 +15,6 @@ public abstract class ServerProxy {
      * Server proxy initialization
      * @param socket Socket server socket
      * @throws IllegalArgumentException socket not connected
-     * @throws IOException I/O error occurs when creating the input stream, the socket is closed,
-     *                     the socket is not connected, or the socket input has been shutdown using
      */
     protected ServerProxy(@Nonnull Socket socket) {
         if(!socket.isConnected() || socket.isClosed()) throw new IllegalArgumentException("Socket is not connected");

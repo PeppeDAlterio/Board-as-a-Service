@@ -27,7 +27,13 @@ public class ServerProxyImpl extends ServerProxy {
      */
     private final Lock messagingLock = new ReentrantLock(true);
 
-
+    /**
+     * Server proxy initialization
+     * @param socket Socket server socket
+     * @throws IllegalArgumentException socket not connected
+     * @throws IOException I/O error occurs when creating the input stream, the socket is closed,
+     *                     the socket is not connected, or the socket input has been shutdown using
+     */
     public ServerProxyImpl(@Nonnull Socket socket) throws IOException {
 
         super(socket);
@@ -65,8 +71,7 @@ public class ServerProxyImpl extends ServerProxy {
                 dos.writeUTF(preMessage);
             }
 
-            //FIXME
-//            dos.writeUTF(Constants.BEGIN_FILE_TX);
+            dos.writeUTF(Commands.FileTransfer.BEGIN_FILE_TX);
 
             dos.writeUTF(myFile.getName());
 

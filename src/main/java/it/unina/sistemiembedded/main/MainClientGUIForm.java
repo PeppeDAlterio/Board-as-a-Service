@@ -13,7 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
-public class MainClientGUIForm extends JFrame{
+public class MainClientGUIForm extends JFrame {
     private JPanel mainPanel;
     private JLabel labelName;
     private JLabel labelIP;
@@ -24,20 +24,23 @@ public class MainClientGUIForm extends JFrame{
     private JPanel panel;
     private JButton startConnectionButton;
 
-    private String nameClient="Client"+ (int)(Math.random()*1000+1000);;
+    private String nameClient = "Client" + (int) (Math.random() * 1000 + 1000);
+    ;
     private String ipAddress;
     private int portNumber;
     private Client client;
 
-    private int clickedFistTime=0;
-    private void setSize(double height_inc,double weight_inc){
+    private int clickedFistTime = 0;
+
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
-    public MainClientGUIForm(){
-        setSize(0.3,0.3);
+
+    public MainClientGUIForm() {
+        setSize(0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -51,18 +54,18 @@ public class MainClientGUIForm extends JFrame{
                 ipAddress = textFieldIP.getText();
                 portNumber = Integer.parseInt(textFieldPort.getText());
                 String name = textFieldName.getText();
-                if(name.compareTo("")==0) {
-                    name=nameClient;
+                if (name.compareTo("") == 0) {
+                    name = nameClient;
                 }
                 client = new ClientImpl(name);
                 try {
-                    client.connect(ipAddress,portNumber);
+                    client.connect(ipAddress, portNumber);
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Can't connect to "+ipAddress+":"+portNumber,"Connection error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
                 }
-                if(client.isConnected())
-                    new AttachBoardForm(client,ipAddress,portNumber);
+                if (client.isConnected())
+                    new AttachBoardForm(client, ipAddress, portNumber);
                 dispose();
             }
         });
@@ -71,7 +74,7 @@ public class MainClientGUIForm extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(clickedFistTime==0) {
+                if (clickedFistTime == 0) {
                     textFieldName.setText("");
                     clickedFistTime++;
                 }
@@ -82,4 +85,5 @@ public class MainClientGUIForm extends JFrame{
     public static void main(String[] args) {
         new MainClientGUIForm();
     }
+
 }

@@ -1,7 +1,9 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
+import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.exception.NotConnectedException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
@@ -171,14 +173,6 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public List<Board> requestBlockingServerBoardList() throws NotConnectedException {
-
-        checkConnection();
-
-        return serverCommunicationListener.blockingReceiveServerBoardList();
-    }
-
-    @Override
     public void requestServerBoardList() throws NotConnectedException {
 
         checkConnection();
@@ -186,6 +180,30 @@ public class ClientImpl extends Client {
         this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
 
     }
+
+    /*
+     *  BEGIN OF BLOCKING REQUESTS
+     */
+
+    @Override
+    public List<Board> requestBlockingServerBoardList() throws NotConnectedException {
+
+        checkConnection();
+
+        return serverCommunicationListener.blockingReceiveServerBoardList(20);
+    }
+
+    @Override
+    public Board requestBlockingBoard(String boardSerialNumber) throws NotConnectedException, BoardNotFoundException, BoardAlreadyInUseException {
+
+        checkConnection();
+
+        return serverCommunicationListener.blockingRequestBoard(boardSerialNumber, 20);
+    }
+
+    /*
+     *  END OF BLOCKING REQUESTS
+     */
 
     private void checkConnection() {
         if (!isConnected()) {
@@ -198,7 +216,10 @@ public class ClientImpl extends Client {
      */
     private void waitForMessagesAsync() {
 
-        listeningExecutor.shutdownNow();
+        if (!listeningExecutor.isTerminated()) {
+            listeningExecutor.shutdownNow();
+            listeningExecutor = Executors.newSingleThreadExecutor();
+        }
 
         listeningExecutor.execute( () -> {
 
@@ -229,23 +250,35 @@ public class ClientImpl extends Client {
 
         if(StringUtils.isBlank(message)) return;
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[parseReceivedMessage] ");
+        String loggerPrefix = "[parseReceivedMessage] ";
+
+        StringBuilder loggerStringBuilder = new StringBuilder();
+        loggerStringBuilder.append(loggerPrefix);
 
         switch (message) {
 
             // ATTACH ON BOARD
 
             case Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD:
-                stringBuilder.append("Transfer board message received");
-                serverCommunicationListener.receiveAndSetBoardCallback();
+                loggerStringBuilder.append("Transfer board message received");
+                serverCommunicationListener.receiveBoardBeginTransferCallback();
+                break;
+
+            case Commands.AttachOnBoard.BOARD_BUSY:
+                loggerStringBuilder.append("Requested board is already attached to another client");
+                serverCommunicationListener.receiveBoardBusyCallback();
+                break;
+
+            case Commands.AttachOnBoard.BOARD_NOT_FOUND:
+                loggerStringBuilder.append("Requested board was not found");
+                serverCommunicationListener.receiveBoardNotFoundCallback();
                 break;
 
             //
             // DETACH FROM BOARD
 
             case Commands.DetachFromBoard.SUCCESS:
-                stringBuilder.append("Detach from board ack received");
+                loggerStringBuilder.append("Detach from board ack received");
                 serverCommunicationListener.detachBoardCallback();
                 break;
 
@@ -253,12 +286,12 @@ public class ClientImpl extends Client {
             // FLASH
 
             case Commands.Flash.SUCCESS:
-                stringBuilder.append("Detach from board success ack received");
+                loggerStringBuilder.append("Detach from board success ack received");
                 serverCommunicationListener.flashCallback("success");
                 break;
 
             case Commands.Flash.ERROR:
-                stringBuilder.append("Detach from board error ack received");
+                loggerStringBuilder.append("Detach from board error ack received");
                 serverCommunicationListener.flashCallback("error");
                 break;
 
@@ -266,13 +299,13 @@ public class ClientImpl extends Client {
             // DEBUG
 
             case Commands.Debug.STARTED:
-                stringBuilder.append("Debugging session started");
+                loggerStringBuilder.append("Debugging session started");
                 serverCommunicationListener.startedDebugCallback();
                 break;
 
             case Commands.Debug.ERROR:
             case Commands.Debug.FINISHED:
-                stringBuilder.append("Debugging session finished");
+                loggerStringBuilder.append("Debugging session finished");
                 serverCommunicationListener.finishedDebugCallback();
                 break;
 
@@ -294,12 +327,13 @@ public class ClientImpl extends Client {
             // SIMPLE MESSAGE
 
             default:
-                stringBuilder.append("Received: ").append(message);
+                loggerStringBuilder.append("Received: ").append(message);
                 break;
 
         }
 
-        logger.debug(stringBuilder.toString());
+        if(!loggerStringBuilder.toString().equals("[parseReceivedMessage] "))
+            logger.debug(loggerStringBuilder.toString());
 
     }
 

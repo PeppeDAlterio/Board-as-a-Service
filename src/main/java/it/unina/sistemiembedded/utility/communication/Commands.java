@@ -18,7 +18,7 @@ public class Commands {
         public static final String BEGIN_TRANSFER_BOARD     = "$--- ATTACH ON BOARD REQUEST TRANSFER BOARD ---$";
 
         /**
-         * Sent by both Client and Server to successfully acknowledge a request
+         * Sent by the Client to successfully acknowledge the transfer request
          */
         public static final String SUCCESS                  = "$--- ATTACH ON BOARD SUCCESS ---$";
 
@@ -30,7 +30,7 @@ public class Commands {
         /**
          * Sent by Server as a "board already in use" response to a board request
          */
-        public static final String BOARD_BUSY               = "$--- ATTACH ON BOARD BUSY ---$";
+        public static final String BOARD_BUSY = "$--- ATTACH ON BOARD BUSY ---$";
 
         /**
          * Sent by both Client and Server to acknowledge a request with an error result
