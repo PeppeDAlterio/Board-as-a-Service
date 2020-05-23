@@ -72,10 +72,8 @@ public class ServerListBoardGUIForm extends JFrame {
         });
 
         startServerButton.addActionListener(new ActionListener() {
-            @SneakyThrows
             @Override
             public void actionPerformed(ActionEvent e) {
-                server.start();
                 new ServerStartedForm(server);
             }
         });

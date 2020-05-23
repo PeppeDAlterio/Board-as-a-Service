@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ public class MainServerGUIForm extends JFrame{
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
-        this.setTitle("Server - Board as a Service");
+        this.setTitle("Server settings - Board as a Service");
         this.textFieldname.setText(nameServer);
         this.textFieldportnumber.setText(Integer.toString(portNumber));
         startServerButton.addActionListener(e -> {
@@ -52,6 +53,12 @@ public class MainServerGUIForm extends JFrame{
             } else {
                 portNumber = Integer.parseInt(textFieldportnumber.getText());
                 server = new ServerImpl(name,portNumber);
+                try {
+                    server.start();
+                } catch (IOException ex) {
+                    //ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this,"Impossible to start server : "+name+" on port : "+portNumber,"Error!",JOptionPane.ERROR_MESSAGE);
+                }
                 dispose();
                 new ServerListBoardGUIForm(server);
             }
