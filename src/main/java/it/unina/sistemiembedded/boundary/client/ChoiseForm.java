@@ -14,6 +14,7 @@ public class ChoiseForm extends  JFrame{
     private JButton remoteFlashButton;
     private JButton remoteDegubButton;
     private JLabel label_name;
+    private JButton requestAnotherBoardButton;
 
 
     public ChoiseForm(Client client, String lab , String board ,String ip ,int port) {
@@ -32,19 +33,25 @@ public class ChoiseForm extends  JFrame{
         sendMessageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SendMessageForm sendMessageForm = new SendMessageForm(client);
+                new SendMessageForm(client);
             }
         });
         remoteDegubButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RemoteDebugForm remoteDebugForm = new RemoteDebugForm(client);
+                new RemoteDebugForm(client);
             }
         });
         remoteFlashButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RemoteFlashForm remoteFlashForm = new RemoteFlashForm(client);
+                new RemoteFlashForm(client);
+            }
+        });
+        requestAnotherBoardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }

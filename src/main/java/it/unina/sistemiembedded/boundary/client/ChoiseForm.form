@@ -82,7 +82,7 @@
                   <text value="[NAME]"/>
                 </properties>
               </component>
-              <grid id="aabbb" layout-manager="GridLayoutManager" row-count="3" column-count="40" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+              <grid id="aabbb" layout-manager="GridLayoutManager" row-count="4" column-count="40" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -141,6 +141,14 @@
                     <properties>
                       <foreground color="-16777216"/>
                       <text value="Send a message to the selected board's remote terminal"/>
+                    </properties>
+                  </component>
+                  <component id="2114f" class="javax.swing.JButton" binding="requestAnotherBoardButton" default-binding="true">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Request another board"/>
                     </properties>
                   </component>
                 </children>

@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -109,7 +110,16 @@ public class MainServerGUIForm extends JFrame {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
         Date date = new Date();
-        System.setProperty("org.slf4j.simpleLogger.logFile", "./log/log[ "+formatter.format(date)+" ].txt");
+        File directory = new File("./log/");
+        if (!directory.exists() && !directory.mkdir()) {
+            throw new IllegalArgumentException("Non è possibile creare la directory"+directory.getPath());
+        }
+        if (directory.exists()){
+            System.out.println(directory.getPath()+" già esistente");
+        }
+
+        File file = new File(directory.getPath()+"/log[ "+formatter.format(date)+" ].txt");
+        System.setProperty("org.slf4j.simpleLogger.logFile", file.getPath());
         new MainServerGUIForm();
     }
 }
