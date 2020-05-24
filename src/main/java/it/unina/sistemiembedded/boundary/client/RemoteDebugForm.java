@@ -57,7 +57,9 @@ public class RemoteDebugForm extends ClientJFrame {
                 try {
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());
                     UIPrinterHelper.clientDebug("Remote GDB debug session started on port : " + gdbPort + "\n");
-                    UILongRunningHelper.runAsync(this,"Starting GDB debug session started on port :" + gdbPort,()->{client.requestDebug(gdbPort);});
+                    UILongRunningHelper.runAsync(this, "Starting GDB debug session started on port :" + gdbPort, () -> {
+                        client.requestDebug(gdbPort);
+                    });
                     UIPrinterHelper.clientDebug("To correctly use the remote debbugger :");
                     UIPrinterHelper.clientDebug("\t1)  Open your STM32CubeIDE");
                     UIPrinterHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");

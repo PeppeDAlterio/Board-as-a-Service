@@ -28,7 +28,7 @@ public class AttachBoardForm extends ClientJFrame {
 
 
     private void initLists(Client client) {
-        if(client.isConnected()) {
+        if (client.isConnected()) {
             List<Board> boards = client.requestBlockingServerBoardList();
             listLab.setSelectedIndex(0);
             listBoard.setModel(modelBoard);
@@ -69,22 +69,22 @@ public class AttachBoardForm extends ClientJFrame {
 
 
         buttonRequestSelectedBoard.addActionListener(e -> {
-                if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
-                    Board selectedBoard = (Board) listBoard.getSelectedValue();
-                    try {
-                        client.requestBlockingBoard(selectedBoard.getSerialNumber());
-                        new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port,this);
-                        this.dispose();
-                    } catch (BoardNotFoundException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null,"The selected board doesn't exists","Board not found",JOptionPane.ERROR_MESSAGE);
-                    } catch (BoardAlreadyInUseException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null,"The selected board is already in used by another client","Board already in use",JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Unable to make the request.", "No boards available.", JOptionPane.ERROR_MESSAGE);
+            if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
+                Board selectedBoard = (Board) listBoard.getSelectedValue();
+                try {
+                    client.requestBlockingBoard(selectedBoard.getSerialNumber());
+                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port, this);
+                    this.dispose();
+                } catch (BoardNotFoundException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "The selected board doesn't exists", "Board not found", JOptionPane.ERROR_MESSAGE);
+                } catch (BoardAlreadyInUseException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "The selected board is already in use by another client", "Board already in use", JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                JOptionPane.showMessageDialog(null, "Unable to make the request.", "No boards available.", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         refreshButtonBoard.addActionListener(new ActionListener() {

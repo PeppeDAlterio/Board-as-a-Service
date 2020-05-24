@@ -94,6 +94,8 @@ public class ServerImpl extends Server {
     @Override
     public void stop() throws IOException {
 
+        logger.info("[stop] Stopping Server ...");
+
         clientHandlersRWLock.writeLock().lock();
         try {
 
@@ -122,7 +124,7 @@ public class ServerImpl extends Server {
             } catch (InterruptedException ignored) {}
         }
 
-        logger.info("[stop] Server successfully stopped.");
+        logger.info("[stop] ...Server successfully stopped.");
 
         this.running = false;
 

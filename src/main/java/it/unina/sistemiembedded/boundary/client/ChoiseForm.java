@@ -24,8 +24,8 @@ public class ChoiseForm extends ClientJFrame {
         super("Board controller - Board as a Service");
         System.out.println(ClientJFrame.getActiveFrames());
         String infoLab = labelLAB.getText();
-        infoLab = infoLab.replace("[IP]", "[ "+ip);
-        infoLab = infoLab.replace("[PORT]", Integer.toString(port)+" ]");
+        infoLab = infoLab.replace("[IP]", "[ " + ip);
+        infoLab = infoLab.replace("[PORT]", Integer.toString(port) + " ]");
         infoLab = infoLab.replace("[LAB]", lab);
         this.labelLAB.setText(infoLab);
         this.labelBoard.setText(board);
@@ -56,7 +56,7 @@ public class ChoiseForm extends ClientJFrame {
         requestAnotherBoardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                closeForm =0;
+                closeForm = 0;
                 JOptionPane.showMessageDialog(null, "You will be detached from the current board", "Request another board", JOptionPane.INFORMATION_MESSAGE);
                 client.requestReleaseBoard();
                 dispose();
@@ -68,7 +68,7 @@ public class ChoiseForm extends ClientJFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                if(closeForm == 1) {
+                if (closeForm == 1) {
                     JOptionPane.showMessageDialog(null, "You will be detached from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
                     client.requestReleaseBoard();
                     new AttachBoardForm(client, ip, port);

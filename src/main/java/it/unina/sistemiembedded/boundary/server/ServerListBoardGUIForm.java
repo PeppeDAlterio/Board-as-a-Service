@@ -20,7 +20,7 @@ public class ServerListBoardGUIForm extends JFrame {
     private Server server;
 
 
-    private void initGUI(){
+    private void initGUI() {
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -29,10 +29,10 @@ public class ServerListBoardGUIForm extends JFrame {
         this.setTitle("Server - Board as a Service");
     }
 
-    private void setSize(double height_inc,double weight_inc){
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
@@ -42,7 +42,7 @@ public class ServerListBoardGUIForm extends JFrame {
         UILongRunningHelper.runAsync(this, "Messaggio di esempio di attesa...", () -> {
 
             List<Board> boardList = server.rebuildBoards();
-            if(boardList.size()!=0) {
+            if (boardList.size() != 0) {
                 for (Board board : boardList) {
                     defaultListModelBoard.addElement(board);
                 }
@@ -57,16 +57,17 @@ public class ServerListBoardGUIForm extends JFrame {
 
     public ServerListBoardGUIForm(Server server) {
         super();
-        this.server=server;
-        setSize(0.5,0.5);
+        this.server = server;
+        setSize(0.5, 0.5);
         initGUI();
         try {
             initList();
-        } catch (InterruptedException ignored) { }
+        } catch (InterruptedException ignored) {
+        }
         listBoard.getSelectionModel().addListSelectionListener(e -> {
-            if(!e.getValueIsAdjusting() && listBoard.getSelectedValue()!=null && listBoard.getSelectedValue() instanceof Board) {
+            if (!e.getValueIsAdjusting() && listBoard.getSelectedValue() != null && listBoard.getSelectedValue() instanceof Board) {
                 Board board = (Board) listBoard.getSelectedValue();
-                new SetSerialParamForm(this, server,board);
+                new SetSerialParamForm(this, server, board);
                 listBoard.clearSelection();
             }
         });
@@ -86,4 +87,5 @@ public class ServerListBoardGUIForm extends JFrame {
         });
 
     }
+
 }

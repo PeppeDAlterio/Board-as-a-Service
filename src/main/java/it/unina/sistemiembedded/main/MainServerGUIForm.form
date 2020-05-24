@@ -60,6 +60,7 @@
             </constraints>
             <properties>
               <background color="-524802"/>
+              <toolTipText value="Port number in range [ 0 , 65535 ]"/>
             </properties>
           </component>
         </children>

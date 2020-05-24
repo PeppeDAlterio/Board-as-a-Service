@@ -3,6 +3,8 @@ package it.unina.sistemiembedded.main;
 import it.unina.sistemiembedded.boundary.server.ServerListBoardGUIForm;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,28 +15,38 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainServerGUIForm extends JFrame{
+public class MainServerGUIForm extends JFrame {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainServerGUIForm.class);
+
+    private static Server server;
 
     private JPanel mainPanel;
     private JTextField textFieldname;
     private JTextField textFieldportnumber;
     private JButton startServerButton;
 
-    private String nameServer = "Server-"+((int) (Math.random()*1000+1000));
+    private String nameServer = "Server-" + ((int) (Math.random() * 1000 + 1000));
     private int portNumber = 1234;
 
-    private Server server;
-
-    private void setSize(double height_inc,double weight_inc){
+    private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height *height_inc);
-        int width = (int) (screenSize.width *weight_inc);
+        int height = (int) (screenSize.height * height_inc);
+        int width = (int) (screenSize.width * weight_inc);
         this.setPreferredSize(new Dimension(width, height));
     }
 
-    public MainServerGUIForm(){
+    public MainServerGUIForm() {
         super();
-        setSize(0.2,0.2);
+
+        if (server != null) {
+            try {
+                server.stop();
+            } catch (IOException ignored) {
+            }
+        }
+
+        setSize(0.2, 0.2);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -45,19 +57,22 @@ public class MainServerGUIForm extends JFrame{
         this.textFieldportnumber.setText(Integer.toString(portNumber));
         startServerButton.addActionListener(e -> {
             String name = textFieldname.getText();
-            if(name.compareTo("")==0){
+            if (name.compareTo("") == 0) {
                 name = nameServer;
             }
             if (textFieldportnumber.getText().compareTo("") == 0) {
                 JOptionPane.showMessageDialog(this, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
             } else {
-                portNumber = Integer.parseInt(textFieldportnumber.getText());
-                server = new ServerImpl(name,portNumber);
                 try {
+                    portNumber = Integer.parseInt(textFieldportnumber.getText());
+                    server = new ServerImpl(name, portNumber);
                     server.start();
-                } catch (IOException ex) {
-                    //ex.printStackTrace();
-                    JOptionPane.showMessageDialog(this,"Impossible to start server : "+name+" on port : "+portNumber,"Error!",JOptionPane.ERROR_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Invalid port number: " + textFieldportnumber.getText(), "Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Server : " + name + " cannot start on port : " + portNumber, "Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 dispose();
                 new ServerListBoardGUIForm(server);
@@ -80,21 +95,40 @@ public class MainServerGUIForm extends JFrame{
     }
 
     public static void main(String[] args) {
-        System.setProperty("org.slf4j.simpleLogger.dateTimeFormat","dd/MM/yyyy HH:mm:ss");
-        System.setProperty("org.slf4j.simpleLogger.showDateTime","true");
+        mainApplicationInit();
+        new MainServerGUIForm();
+    }
+
+    private static void mainApplicationInit() {
+
+        System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "dd/MM/yyyy HH:mm:ss");
+        System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
         Date date = new Date();
         File directory = new File("./log/");
         if (!directory.exists() && !directory.mkdir()) {
-            throw new IllegalArgumentException("Non è possibile creare la directory"+directory.getPath());
+            throw new IllegalArgumentException("Non è possibile creare la directory" + directory.getPath());
         }
-        if (directory.exists()){
-            System.out.println(directory.getPath()+" già esistente");
+        if (directory.exists()) {
+            System.out.println(directory.getPath() + " già esistente");
         }
 
-        File file = new File(directory.getPath()+"/log[ "+formatter.format(date)+" ].txt");
+        File file = new File(directory.getPath() + "/log[ " + formatter.format(date) + " ].txt");
         System.setProperty("org.slf4j.simpleLogger.logFile", file.getPath());
-        new MainServerGUIForm();
+
+        final Thread shutdownThread = new Thread(() -> {
+            logger.info("[shutdownhook] Shutdown hook started...");
+            if (server != null) {
+                try {
+                    server.stop();
+                } catch (IOException ignored) {
+                }
+            }
+            logger.info("[shutdownhook] ...shutdown hook finished.");
+        });
+
+        Runtime.getRuntime().addShutdownHook(shutdownThread);
+
     }
 }

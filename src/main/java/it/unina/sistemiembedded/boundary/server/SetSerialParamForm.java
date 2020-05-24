@@ -128,8 +128,8 @@ public class SetSerialParamForm extends JFrame {
         buttonInformation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Before select a specific Com port:\n" +
-                        "check the correspondence to the selected board in the section \"Ports(COM and LPT)\" of your management device settings", "Important!", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Please, be sure to select the COM port " +
+                        "related to the selected board. You can check this from \"Ports(COM and LPT)\" in \"Windows Device Manager\"", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         });
         XONXOFF_IN_ENABLEDRadioButton.addActionListener(new ActionListener() {

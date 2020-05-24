@@ -139,7 +139,7 @@ public class ClientHandlerCommunicationListener {
     /**
      * Utility to stop active debug session, if any
      */
-    private void stopActiveDebugSession() {
+    void stopActiveDebugSession() {
         if(this.clientHandler.getBoard()!=null) {
             synchronized (this.clientHandler.getBoard().getSerialNumber().intern()) {
                 this.clientHandler.getBoard().setDebugging(false);

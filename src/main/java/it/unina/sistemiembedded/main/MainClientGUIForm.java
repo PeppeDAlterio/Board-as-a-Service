@@ -49,28 +49,28 @@ public class MainClientGUIForm extends ClientJFrame {
         this.setLocationRelativeTo(null);
         this.textFieldName.setText(nameClient);
         startConnectionButton.addActionListener(e -> {
-                ipAddress = textFieldIP.getText();
-                portNumber = Integer.parseInt(textFieldPort.getText());
-                String name = textFieldName.getText();
-                if (name.compareTo("") == 0) {
-                    name = nameClient;
+            ipAddress = textFieldIP.getText();
+            portNumber = Integer.parseInt(textFieldPort.getText());
+            String name = textFieldName.getText();
+            if (name.compareTo("") == 0) {
+                name = nameClient;
+            }
+            client = new ClientImpl(name);
+            UILongRunningHelper.<Boolean>supplyAsync(this, "Connecting...", () -> {
+                try {
+                    client.connect(ipAddress, portNumber);
+                    return true;
+                } catch (IOException ignored) {
+                    return false;
                 }
-                client = new ClientImpl(name);
-                UILongRunningHelper.<Boolean>supplyAsync(this,"Connecting...",()-> {
-                    try {
-                        client.connect(ipAddress,portNumber);
-                        return true;
-                    } catch (IOException ignored) {
-                        return false;
-                    }
-                },result ->{
-                    if(result){
-                        new AttachBoardForm(client, ipAddress, portNumber);
-                        dispose();
-                    }else{
-                        JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
-                    }
-                });
+            }, result -> {
+                if (result) {
+                    new AttachBoardForm(client, ipAddress, portNumber);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
 
         });
 

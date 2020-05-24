@@ -82,6 +82,8 @@ public class ClientHandlerImpl extends ClientHandler {
             UIPrinterHelper.serverActionPrint("Client '" + this.name + "' disconnected");
         }
 
+        this.communicationListener.stopActiveDebugSession();
+
         this.running = false;
 
         this.detachBoard();

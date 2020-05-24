@@ -49,7 +49,7 @@ public class SendMessageForm extends ClientJFrame {
             public void actionPerformed(ActionEvent e) {
                 String message = textFieldMessage.getText();
                 if (message.compareTo("") == 0) {
-                    JOptionPane.showMessageDialog(null, "There are no message", "", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "There are no messages", "", JOptionPane.WARNING_MESSAGE);
                 } else {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                     Date date = new Date();
