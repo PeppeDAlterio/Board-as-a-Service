@@ -39,7 +39,7 @@ public class MainClientGUIForm extends ClientJFrame {
     }
 
     public MainClientGUIForm() {
-        super("Client - Board as a Server");
+        super("Client - Board as a Service");
         setSize(0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
