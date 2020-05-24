@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
 
 public class SystemHelper {
 
@@ -60,7 +63,7 @@ public class SystemHelper {
 
     }
 
-    public static Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) throws IOException {
+    public static @Nullable Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) throws IOException {
 
         final Process flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
                 + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
@@ -104,42 +107,53 @@ public class SystemHelper {
 
     }
 
-    public static Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) throws IOException {
+    public static @Nullable Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) throws IOException {
 
-        //TODO: start dovrebbe essere sempre lo stesso ma non ne sono sicura
-        final Process flashProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
-                + " -c port=swd sn=" + boardSerialNumber + " -d " + elfPath + " -v --start 0x08000000");
+        final Process flashProcess;
+        try {
+            flashProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
+                + " -c port=swd sn=" + boardSerialNumber + " -d " + elfPath + " -v --start");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("There was an error while executing: " + "." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
+            + " -c port=swd sn=" + boardSerialNumber + " -d " + elfPath + " -v --start" + ", " + e.getMessage());
+            return null;
+        }
 
-        executor.execute(() -> {
+        clientHandler.sendTextMessage(Commands.Flash.REQUEST);
+                UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' started.");
+                logger.info("[remoteFlash] Remote flash session has been started...");
+
+        flashProcess.onExit().thenRun(() -> {
 
             try {
-                while (flashProcess.isAlive()) {
+                while (flashProcess.getInputStream().available() > 0) {
                     int cnt = 0;
                     if (((cnt = flashProcess.getInputStream().available()) > 0)) {
                         final byte[] buffer = new byte[cnt];
                         flashProcess.getInputStream().read(buffer, 0, cnt);
-                        logger.debug("[remoteFlash]" + new String(buffer));
+                        System.out.println(new String(buffer));
                     }
                 }
-            } catch (final Exception ignored) { }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
 
         });
 
-        executor.execute(() -> {
+
+        executor.execute(() -> {  
             try {
-                clientHandler.sendTextMessage(Commands.Flash.REQUEST);
+                flashProcess.waitFor(45, TimeUnit.SECONDS);
                 UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' started.");
-                logger.info("[remoteFlash] Remote flash session has been started...");
-                flashProcess.waitFor();
-                UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' finished.");
+                                                  "' on '" + boardSerialNumber + "' finished.");
                 logger.info("[remoteFlash] Remote flash session finished and the program is started.");
                 clientHandler.sendTextMessage(Commands.Flash.SUCCESS);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
                 logger.info("[remoteFlash] Remote flash session finished.");
                 UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
-                        "' on '" + boardSerialNumber + "' finished.");
+                                                  "' on '" + boardSerialNumber + "' finished.");
                 clientHandler.sendTextMessage(Commands.Flash.ERROR);
                 flashProcess.destroyForcibly();
             }
@@ -187,6 +201,7 @@ public class SystemHelper {
                     i++;
 
                 }
+
             } catch (IOException|InterruptedException e) {
                 logger.error(e.getMessage());
                 break;
