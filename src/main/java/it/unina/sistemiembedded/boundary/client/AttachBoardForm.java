@@ -40,7 +40,7 @@ public class AttachBoardForm extends ClientJFrame {
                 for (int i = 0; i < boards.size(); i++)
                     modelBoard.addElement(boards.get(i));
             } else {
-                modelBoard.addElement("No avaible boards");
+                modelBoard.addElement("No board's available");
             }
             listBoard.setSelectedIndex(0);
         }
@@ -54,8 +54,7 @@ public class AttachBoardForm extends ClientJFrame {
     }
 
     public AttachBoardForm(Client client, String ip, int port) {
-        super("Server board list - Client - Board as a Service");
-        System.out.println(ClientJFrame.getActiveFrames());
+        super("Client - Board as a Service");
         setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,17 +72,15 @@ public class AttachBoardForm extends ClientJFrame {
 
 
         buttonRequestSelectedBoard.addActionListener(e -> {
-            if (listBoard.getSelectedValue().getClass().toString().contains("Board")) {
+            if (listBoard.getSelectedValue() instanceof Board) {
                 Board selectedBoard = (Board) listBoard.getSelectedValue();
                 try {
                     client.requestBlockingBoard(selectedBoard.getSerialNumber());
                     new ChoiseForm(client, listBoard.getSelectedValue().toString(), ip, port, this);
                     this.dispose();
                 } catch (BoardNotFoundException ex) {
-                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "The selected board doesn't exists", "Board not found", JOptionPane.ERROR_MESSAGE);
                 } catch (BoardAlreadyInUseException ex) {
-                    ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "The selected board is already in use by another client", "Board already in use", JOptionPane.ERROR_MESSAGE);
                 }
             } else {

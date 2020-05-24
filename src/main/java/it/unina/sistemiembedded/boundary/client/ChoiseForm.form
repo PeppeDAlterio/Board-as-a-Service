@@ -94,26 +94,27 @@
                 <children>
                   <component id="71057" class="javax.swing.JButton" binding="remoteDegubButton" default-binding="true">
                     <constraints>
-                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="remote degub"/>
+                      <text value="Debug"/>
                     </properties>
                   </component>
                   <component id="5501b" class="javax.swing.JButton" binding="sendMessageButton" default-binding="true">
                     <constraints>
-                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Send message"/>
+                      <text value="Terminal"/>
                     </properties>
                   </component>
                   <component id="13524" class="javax.swing.JButton" binding="remoteFlashButton" default-binding="true">
                     <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="remote flash"/>
+                      <horizontalAlignment value="0"/>
+                      <text value="Flash"/>
                     </properties>
                   </component>
                   <component id="afe54" class="javax.swing.JLabel">
@@ -122,7 +123,7 @@
                     </constraints>
                     <properties>
                       <foreground color="-16777216"/>
-                      <text value="Require a remote flash on the selected board"/>
+                      <text value="Request a remote flash"/>
                     </properties>
                   </component>
                   <component id="1a155" class="javax.swing.JLabel">
@@ -131,7 +132,7 @@
                     </constraints>
                     <properties>
                       <foreground color="-16777216"/>
-                      <text value="Require a remote debug's session on the selected board"/>
+                      <text value="Start a remote debugging session"/>
                     </properties>
                   </component>
                   <component id="7c9ed" class="javax.swing.JLabel">
@@ -140,15 +141,15 @@
                     </constraints>
                     <properties>
                       <foreground color="-16777216"/>
-                      <text value="Send a message to the selected board's remote terminal"/>
+                      <text value="Open a remote terminal connected to the board"/>
                     </properties>
                   </component>
                   <component id="2114f" class="javax.swing.JButton" binding="requestAnotherBoardButton" default-binding="true">
                     <constraints>
-                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text value="Request another board"/>
+                      <text value="Change board"/>
                     </properties>
                   </component>
                 </children>

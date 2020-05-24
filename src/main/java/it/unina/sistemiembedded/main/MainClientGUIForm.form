@@ -24,7 +24,7 @@
             </constraints>
             <properties>
               <foreground color="-16777216"/>
-              <text value="Insert Name"/>
+              <text value="Your name"/>
             </properties>
           </component>
           <component id="2392c" class="javax.swing.JLabel" binding="labelIP">
@@ -33,16 +33,7 @@
             </constraints>
             <properties>
               <foreground color="-16777216"/>
-              <text value="Insert IP"/>
-            </properties>
-          </component>
-          <component id="8e53b" class="javax.swing.JLabel" binding="labelPort">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <foreground color="-16777216"/>
-              <text value="Insert Port"/>
+              <text value="Server IP"/>
             </properties>
           </component>
           <component id="7c9a3" class="javax.swing.JTextField" binding="textFieldName">
@@ -77,6 +68,15 @@
               <text value="1234"/>
             </properties>
           </component>
+          <component id="8e53b" class="javax.swing.JLabel" binding="labelPort">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <foreground color="-16777216"/>
+              <text value="Server port"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="b1c94" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -94,7 +94,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Start Connection"/>
+              <text value="Connect"/>
             </properties>
           </component>
         </children>

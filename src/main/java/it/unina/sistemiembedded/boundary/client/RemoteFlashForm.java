@@ -16,6 +16,7 @@ public class RemoteFlashForm extends ClientJFrame {
     private JButton startFlashButton;
     JTextArea textAreaFlash;
     private JScrollPane scrollPaneTextArea;
+    private JButton browseButton;
 
     private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

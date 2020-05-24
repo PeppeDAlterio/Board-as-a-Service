@@ -8,7 +8,7 @@
     <properties>
       <background color="-983553"/>
     </properties>
-    <border type="line" title="Client"/>
+    <border type="line"/>
     <children>
       <grid id="e4a2f" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
@@ -71,7 +71,7 @@
                     </constraints>
                     <properties>
                       <foreground color="-16777216"/>
-                      <text value="Board's list for selected lab"/>
+                      <text value="Available boards"/>
                     </properties>
                   </component>
                 </children>
@@ -94,7 +94,7 @@
                 </constraints>
                 <properties>
                   <foreground color="-16777216"/>
-                  <text value="Lab's list"/>
+                  <text value="Available laboratories"/>
                 </properties>
               </component>
               <component id="f29dc" class="javax.swing.JList" binding="listLab">
