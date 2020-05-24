@@ -66,7 +66,6 @@ public class MainServerGUIForm extends JFrame {
                 try {
                     portNumber = Integer.parseInt(textFieldportnumber.getText());
                     server = new ServerImpl(name, portNumber);
-                    server.start();
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Invalid port number: " + textFieldportnumber.getText(), "Error!", JOptionPane.ERROR_MESSAGE);
                     return;
