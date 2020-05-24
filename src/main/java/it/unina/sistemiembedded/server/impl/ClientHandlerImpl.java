@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.server.impl;
 
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
@@ -159,6 +160,7 @@ public class ClientHandlerImpl extends ClientHandler {
         if(this.board!=null) {
             synchronized (this.board.getSerialNumber().intern()) {
                 this.board.setInUse(false);
+                this.board.getComDriver().ifPresent(COMDriver::closeCommunication);
             }
         }
 
