@@ -19,7 +19,7 @@ public abstract class Client implements ClientCommandsInterface {
      * Set blocking requests timeout time in seconds
      * @param timeout int timeout in seconds
      */
-    public static void setBlockingTimeout(int timeout) {
+    public static void setBlockingRequestsTimeout(int timeout) {
         if(timeout>0)
             BLOCKING_REQUEST_SECONDS_TIMEOUT = timeout;
     }
