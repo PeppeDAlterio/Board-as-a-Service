@@ -7,3 +7,5 @@ log/*
 .classpath
 .vscode
 .settings
+/received/**
+/received
