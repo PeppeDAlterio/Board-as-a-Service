@@ -1,24 +1,17 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
-import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.PrintStream;
 
 public class RemoteFlashForm extends ClientJFrame {
     private JPanel mainPanel;
-    private JTextField textField1;
+    private JTextField textFieldFlash;
     private JButton startFlashButton;
-    private JTextArea textAreaFlash;
+    JTextArea textAreaFlash;
     private JScrollPane scrollPaneTextArea;
-
-    private PrintStream printStream;
 
     private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -38,23 +31,16 @@ public class RemoteFlashForm extends ClientJFrame {
         this.setLocationRelativeTo(null);
         this.textAreaFlash.setEditable(false);
         this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
-        printStream = new PrintStream(new CustomOutputStream(null, null, null, this.textAreaFlash, null));
 
-        startFlashButton.addActionListener(new ActionListener() {
-            String elf_file = textAreaFlash.getText();
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        startFlashButton.addActionListener(e -> {
                 //TODO : Controlli su elf_file
                 try {
-                    client.requestFlash(elf_file);
+                    client.requestFlash(textFieldFlash.getText());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-            }
         });
 
-        UIPrinterHelper.setPrintStream(printStream);
     }
 
 }

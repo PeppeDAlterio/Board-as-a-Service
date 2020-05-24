@@ -131,7 +131,7 @@
                     </constraints>
                     <properties>
                       <foreground color="-16777216"/>
-                      <text value="Require a remote debug's sessione on the selected board"/>
+                      <text value="Require a remote debug's session on the selected board"/>
                     </properties>
                   </component>
                   <component id="7c9ed" class="javax.swing.JLabel">

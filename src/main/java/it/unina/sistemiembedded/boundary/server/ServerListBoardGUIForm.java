@@ -84,7 +84,7 @@ public class ServerListBoardGUIForm extends JFrame {
                     new ServerStartedForm(server);
                 }catch (BindException ex){
                     //ex.getMessage();
-                    JOptionPane.showMessageDialog(this,"there is already an active connection to the specified port","Fatal error",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,"there is already an active connection to the specified port","Error!",JOptionPane.ERROR_MESSAGE);
                     dispose();
                     new MainServerGUIForm();
                 } catch (IOException ex) {

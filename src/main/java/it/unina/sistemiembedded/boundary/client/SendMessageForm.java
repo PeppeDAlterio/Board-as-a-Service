@@ -1,14 +1,12 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
-import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,10 +14,8 @@ public class SendMessageForm extends ClientJFrame {
     private JPanel mainPanel;
     private JTextField textFieldMessage;
     private JButton sendButton;
-    private JTextArea textAreaComunication;
+    JTextArea textAreaComunication;
     private JScrollPane scrollTextArea;
-
-    private PrintStream printStream;
 
     private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -40,9 +36,6 @@ public class SendMessageForm extends ClientJFrame {
 
         this.textAreaComunication.setEditable(false);
         this.textAreaComunication.setFont(new Font("courier", Font.BOLD, 12));
-
-        printStream = new PrintStream(new CustomOutputStream(null, null, null, null, this.textAreaComunication));
-        UIPrinterHelper.setPrintStream(printStream);
 
         sendButton.addActionListener(new ActionListener() {
             @Override

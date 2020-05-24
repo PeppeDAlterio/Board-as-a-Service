@@ -2,7 +2,6 @@ package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
-import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
@@ -11,17 +10,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.PrintStream;
 
 public class RemoteDebugForm extends ClientJFrame {
     private JPanel mainPanel;
     private JTextField textFieldgdbPort;
     private JButton debugButton;
-    private JTextArea textAreaResponse;
+    JTextArea textAreaResponse;
     private JButton finishDebugSessionButton;
     private JScrollPane scrollTextArea;
 
-    private PrintStream printStream;
+
     private int gdbPort;
 
 
@@ -39,20 +37,18 @@ public class RemoteDebugForm extends ClientJFrame {
         setSize(0.5, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setVisible(true);
+        //this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
 
         scrollTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.textAreaResponse.setEditable(false);
         textAreaResponse.setFont(new Font("courier", Font.BOLD, 12));
-        printStream = new PrintStream(new CustomOutputStream(null, null, this.textAreaResponse, null, null));
-        UIPrinterHelper.setPrintStream(printStream);
 
         debugButton.addActionListener(e -> {
             if (textFieldgdbPort.getText().compareTo("") == 0) {
                 //TODO : Maggiori informazioni nel JoptionPane
-                JOptionPane.showMessageDialog(null, "Insert a valid GDB port number!", "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Insert a valid GDB port number!", "", JOptionPane.ERROR_MESSAGE);
             } else {
                 try {
                     gdbPort = Integer.parseInt(textFieldgdbPort.getText());

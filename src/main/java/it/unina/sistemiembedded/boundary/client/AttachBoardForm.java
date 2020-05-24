@@ -3,6 +3,7 @@ package it.unina.sistemiembedded.boundary.client;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
+import it.unina.sistemiembedded.main.MainClientGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 @Getter
@@ -25,6 +28,8 @@ public class AttachBoardForm extends ClientJFrame {
 
     private DefaultListModel modelLab = new DefaultListModel();
     private DefaultListModel modelBoard = new DefaultListModel();
+
+    private final ClientJFrame $this=this;
 
 
     private void initLists(Client client) {
@@ -54,17 +59,16 @@ public class AttachBoardForm extends ClientJFrame {
         System.out.println(ClientJFrame.getActiveFrames());
         setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
         //Per ora rendo la lista dei laboratori non visibile
-        this.listLab.setVisible(false);
-        this.labelLabslist.setVisible(false);
+        this.listLab.setVisible(true);
+        this.labelLabslist.setVisible(true);
         //
 
         listLab.setModel(modelLab);
-        modelLab.addElement("Lab Claudio");
+        modelLab.addElement(client.getServerName()+" [ "+ip+":"+port+" ]");
         initLists(client);
 
 
@@ -73,7 +77,7 @@ public class AttachBoardForm extends ClientJFrame {
                 Board selectedBoard = (Board) listBoard.getSelectedValue();
                 try {
                     client.requestBlockingBoard(selectedBoard.getSerialNumber());
-                    new ChoiseForm(client, listLab.getSelectedValue().toString(), listBoard.getSelectedValue().toString(), ip, port, this);
+                    new ChoiseForm(client, listBoard.getSelectedValue().toString(), ip, port, this);
                     this.dispose();
                 } catch (BoardNotFoundException ex) {
                     ex.printStackTrace();
@@ -92,6 +96,17 @@ public class AttachBoardForm extends ClientJFrame {
             public void actionPerformed(ActionEvent e) {
                 modelBoard.clear();
                 initLists(client);
+            }
+        });
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                    JOptionPane.showMessageDialog($this, "Your connection whit "+client.getServerName()+
+                            " [ "+ip+":"+port+" ] will be closed", "Closing connection...", JOptionPane.WARNING_MESSAGE);
+                    client.disconnect();
+                    dispose();
+                    new MainClientGUIForm();
             }
         });
     }
