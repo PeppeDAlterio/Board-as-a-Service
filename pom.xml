@@ -13,7 +13,7 @@
 
         <main-class-package>it.unina.sistemiembedded.main</main-class-package>
 
-        <java-language-level>13</java-language-level>
+        <java-language-level>11</java-language-level>
 
         <client-app-name>Client application</client-app-name>
         <client-main-class>MainClientGUIForm</client-main-class>
