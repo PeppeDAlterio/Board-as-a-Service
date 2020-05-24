@@ -23,7 +23,7 @@ public class MainClientGUIForm extends ClientJFrame {
     private JPanel panel;
     private JButton startConnectionButton;
 
-    private String nameClient = "Client" + (int) (Math.random() * 1000 + 1000);
+    private String nameClient = "Client-" + (int) (Math.random() * 1000 + 1000);
 
     private String ipAddress;
     private int portNumber;
@@ -40,7 +40,6 @@ public class MainClientGUIForm extends ClientJFrame {
 
     public MainClientGUIForm() {
         super("Client - Board as a Server");
-        System.out.println(ClientJFrame.getActiveFrames());
         setSize(0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
