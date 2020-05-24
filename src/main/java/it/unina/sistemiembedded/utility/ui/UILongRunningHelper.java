@@ -51,7 +51,10 @@ public class UILongRunningHelper {
 
         LongRunningDialog longRunningDialog = new LongRunningDialog(message, parent);
         longRunningDialog.setVisible(true);
-        CompletableFuture.<T>supplyAsync(supplier).thenAccept(consumer).thenRun(longRunningDialog::dispose);
+        CompletableFuture.<T>supplyAsync(supplier).thenApply((r) -> {
+            longRunningDialog.dispose();
+            return r;
+        }).thenAccept(consumer);
 
     }
 

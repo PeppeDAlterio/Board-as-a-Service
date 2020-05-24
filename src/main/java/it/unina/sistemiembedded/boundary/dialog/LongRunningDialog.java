@@ -24,6 +24,8 @@ public class LongRunningDialog extends ClientJFrame {
         messageLabel.setText(message);
         parent.setEnabled(false);
         this.setUndecorated(true);
+        this.setResizable(false);
+        this.setAlwaysOnTop(true);
         this.progressBar.setMinimum(0);
         this.progressBar.setMaximum(100);
 
