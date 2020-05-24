@@ -12,7 +12,7 @@ public abstract class ClientHandler implements Runnable {
     /**
      * Client handler id
      */
-    protected String id = UUID.randomUUID().toString();
+    protected final String id = UUID.randomUUID().toString();
 
     /**
      * Socket connected to the client

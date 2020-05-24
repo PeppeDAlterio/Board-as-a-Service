@@ -152,32 +152,7 @@ public class COMDriver {
             str = str.concat("\r");
         }
 
-        final String finalStr = str;
-
-        CompletableFuture.<Boolean>supplyAsync(() -> {
-            int count = 0;
-            while (this.outputBuffer.isBusy()) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException ignored) {
-                } finally {
-                    count++;
-                    if (count == 20) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }).thenAccept(result -> {
-            if (result == true){
-                this.outputBuffer.setBusy(true);
-                this.serialPort.writeBytes(finalStr.getBytes(), finalStr.getBytes().length);
-            }
-            else
-                logger.warn("Timeout scaduto, output Buffer is busy "+this.serialPort);
-        });
-
+        write(str);
 
     }
 

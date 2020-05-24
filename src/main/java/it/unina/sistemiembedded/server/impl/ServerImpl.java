@@ -268,7 +268,7 @@ public class ServerImpl extends Server {
     }
 
     @Override
-    public List<Board> listBoards() { return Collections.unmodifiableList(new ArrayList<>(boards.values())); }
+    public List<Board> listBoards() { return List.copyOf(boards.values()); }
 
     @Override
     public void removeClientHandler(@Nonnull ClientHandler clientHandler) {

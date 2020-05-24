@@ -37,8 +37,8 @@ public class ServerCommunicationListener {
 
     private final ClientImpl client;
 
-    private Semaphore blockingReceivingRequest = new Semaphore(1);
-    private Semaphore blockingReceivingBufferReady = new Semaphore(0);
+    private final Semaphore blockingReceivingRequest = new Semaphore(1);
+    private final Semaphore blockingReceivingBufferReady = new Semaphore(0);
     private BlockingReceivingMethod blockingReceivingMethod = BlockingReceivingMethod.none;
     private final Message blockingReceivingBuffer = new Message();
 

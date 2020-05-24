@@ -7,6 +7,7 @@ import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
-
 public class SystemHelper {
     
-    private static Logger logger = LoggerFactory.getLogger(SystemHelper.class);
+    private static final Logger logger = LoggerFactory.getLogger(SystemHelper.class);
     
-    private static Executor executor = Executors.newFixedThreadPool(10);
+    private static final Executor executor = Executors.newFixedThreadPool(10);
     
     public static void runCommandAndPrintOutputAsync(final String command) {
         
@@ -107,7 +106,7 @@ public class SystemHelper {
         
     }
     
-    public static @Nullable Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) throws IOException {
+    public static @Nullable Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) {
         
         final Process flashProcess;
         try {
@@ -170,7 +169,7 @@ public class SystemHelper {
     public static List<Board> listBoards()  {
         String buffer_str;
         int i = 0;
-        ArrayList<Board> list = new ArrayList<Board>();
+        ArrayList<Board> list = new ArrayList<>();
         
         list.toArray(new Board[0]);
         
