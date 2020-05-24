@@ -2,6 +2,7 @@ package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,15 +35,28 @@ public class RemoteFlashForm extends ClientJFrame {
         this.setLocationRelativeTo(null);
         this.textAreaFlash.setEditable(false);
         this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
+        //TODO : togliere il file di default nella textField
 
         startFlashButton.addActionListener(e -> {
                 //TODO : Controlli su elf_file
                 String elf_file = textFieldFlash.getText();
-                UILongRunningHelper.runAsync(this, "Sending file : " + elf_file, () -> {
+                UILongRunningHelper.<Exception>supplyAsync(this, "Flashing file : " + elf_file, () -> {
                     try {
                         client.requestBlockingFlash(elf_file);
+                    }catch (IllegalArgumentException ex){
+                        return ex;
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        return ex;
+                    }
+                    return null;
+                }, result ->{
+                    if(result instanceof IllegalArgumentException){
+                        JOptionPane.showMessageDialog(this,"File "+elf_file+" does't exists","Error!",JOptionPane.ERROR_MESSAGE);
+                    }else if(result instanceof IOException){
+                        JOptionPane.showMessageDialog(this,"There was an error during flashing operation.","Error!",JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        UIPrinterHelper.clientFlash("Flash of file '"+elf_file+"' completed");
+                        //TODO : Aggiungere più info sul flash
                     }
                 });
         });
