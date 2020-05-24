@@ -1,29 +1,32 @@
 package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
+import it.unina.sistemiembedded.server.ClientHandler;
 import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@Getter
-@Setter
 public class COMDriver {
 
     private static Logger logger = LoggerFactory.getLogger(COMDriver.class);
 
+    // TODO: Documentazione
+    @Getter
     private final SerialPort serialPort;
 
-    private LinkedList<String> availableMessages = new LinkedList<>();
-
+    // TODO: Documentazione
     private OutputBuffer outputBuffer = new OutputBuffer();
 
+    /**
+     * Handler of the Client holding the port
+     */
+    private ClientHandler clientHandler;
+
+    // TODO: Documentazione
     private int br;
     private int P;
     private int db;
@@ -110,6 +113,7 @@ public class COMDriver {
 
     }
 
+    //TODO: inserire documentazione
     public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop,
             Collection<String> flowControl) {
 
@@ -126,20 +130,36 @@ public class COMDriver {
 
         this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 
-        this.serialPort.addDataListener(new ReadingDataListener(this.serialPort, this.availableMessages, outputBuffer));
+    }
+
+    //TODO: inserire documentazione
+    public void setClientHandler(ClientHandler clientHandler) {
+
+        if(clientHandler==null) return;
+
+        removeClientHandler();
+
+        this.clientHandler = clientHandler;
+        this.serialPort.addDataListener(new COMPortDataListener(clientHandler, outputBuffer));
 
     }
 
-    public List<String> consumeAllAvailableMessages() {
-        List<String> copyOfMessage = new ArrayList<>(this.availableMessages);
-        this.availableMessages.clear();
-        return copyOfMessage;
+    public void removeClientHandler() {
+        this.serialPort.removeDataListener();
+        this.clientHandler = null;
     }
 
+    //TODO: inserire documentazione
+    public Optional<ClientHandler> getClientHandler() {
+        return Optional.ofNullable(this.clientHandler);
+    }
+
+    //TODO: inserire documentazione
     public void closeCommunication() {
         if (serialPort != null) {
             serialPort.closePort();
         }
+        this.clientHandler = null;
     }
 
     //TODO: inserire documentazione
@@ -164,6 +184,7 @@ public class COMDriver {
         final String finalStr = str;
 
         CompletableFuture.<Boolean>supplyAsync(() -> {
+
             int count = 0;
             while (this.outputBuffer.isBusy()) {
                 try {
@@ -171,22 +192,23 @@ public class COMDriver {
                 } catch (InterruptedException ignored) {
                 } finally {
                     count++;
-                    if (count == 20) {
-                        return false;
-                    }
+                }
+                if (count == 20) {
+                    return false;
                 }
             }
 
             return true;
+
         }).thenAccept(result -> {
-            if (result == true){
+            if (result) {
                 this.outputBuffer.setBusy(true);
                 this.serialPort.writeBytes(finalStr.getBytes(), finalStr.getBytes().length);
             }
-            else
-                logger.warn("Timeout scaduto, output Buffer is busy "+this.serialPort);
-        }
-        );
+            else {
+                logger.warn("[write] Timeout, output Buffer is busy " + this.serialPort);
+            }
+        });
 
     }
 

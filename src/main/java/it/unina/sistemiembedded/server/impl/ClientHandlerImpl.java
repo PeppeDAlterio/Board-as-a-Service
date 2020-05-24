@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.server.impl;
 
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
@@ -145,6 +146,7 @@ public class ClientHandlerImpl extends ClientHandler {
         this.board = board;
         synchronized (this.board.getSerialNumber().intern()) {
             this.board.setInUse(true);
+            this.board.getComDriver().ifPresent(comDriver -> comDriver.setClientHandler(this));
         }
 
         sendTextMessages(Commands.AttachOnBoard.BEGIN_TRANSFER_BOARD, board.serialize());
@@ -159,6 +161,7 @@ public class ClientHandlerImpl extends ClientHandler {
         if(this.board!=null) {
             synchronized (this.board.getSerialNumber().intern()) {
                 this.board.setInUse(false);
+                this.board.getComDriver().ifPresent(COMDriver::removeClientHandler);
             }
         }
 
@@ -254,12 +257,13 @@ public class ClientHandlerImpl extends ClientHandler {
                 break;
 
             default:
-
                 stringBuilder.append("Received: ").append(message);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
                 UIPrinterHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
-
+                this.board.getComDriver().ifPresent(comDriver -> {
+                    comDriver.writeln(message);
+                });
                 return stringBuilder.toString();
 
         }
@@ -299,6 +303,7 @@ public class ClientHandlerImpl extends ClientHandler {
         } catch (IOException e) {
             this.stop();
         }
+
     }
 
     /**
@@ -365,16 +370,17 @@ public class ClientHandlerImpl extends ClientHandler {
 
             String endOfTx = dis.readUTF();
 
-            if (endOfTx.equals(Commands.FileTransfer.END_OF_FILE_TX)) {
-                logger.debug("[receiveFile] File transfer successfully completed.");
-                UIPrinterHelper.serverActionPrint("File transfer successfully completed.");
-
-            }
-
             logger.info("[receiveFile] File " + filename
                     + " downloaded (" + currentBytes + " bytes read)");
 
             bos.close();
+
+            if (endOfTx.equals(Commands.FileTransfer.END_OF_FILE_TX)) {
+                logger.debug("[receiveFile] File transfer successfully completed.");
+                UIPrinterHelper.serverActionPrint("File received from '"
+                        + this.socket.getInetAddress() + "/" + this.name + "/" + this.board.getSerialNumber() + " : "
+                        + filename + " (" + currentBytes + " bytes)");
+            }
 
             if(!StringUtils.isBlank(postMessage)) {
                 sendTextMessage(postMessage);

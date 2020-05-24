@@ -338,6 +338,7 @@ public class ClientImpl extends Client {
 
             default:
                 loggerStringBuilder.append("Received: ").append(message);
+                serverCommunicationListener.genericMessageReceivedCallback(message);
                 break;
 
         }

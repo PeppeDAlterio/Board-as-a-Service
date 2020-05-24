@@ -5,6 +5,7 @@ import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.client.UIServerDisconnectedHelper;
+import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -155,6 +156,10 @@ public class ServerCommunicationListener {
 
         }
 
+    }
+
+    void genericMessageReceivedCallback(String message) {
+        UIPrinterHelper.clientMessage(message);
     }
 
     /*
