@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.main;
 
 import it.unina.sistemiembedded.boundary.server.ServerListBoardGUIForm;
+import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
 import org.slf4j.Logger;
@@ -120,6 +121,7 @@ public class MainServerGUIForm extends JFrame {
             logger.info("[shutdownhook] Shutdown hook started...");
             if (server != null) {
                 try {
+                    server.listBoards().forEach(b->b.getComDriver().ifPresent(COMDriver::closeCommunication));
                     server.stop();
                 } catch (IOException ignored) {
                 }
