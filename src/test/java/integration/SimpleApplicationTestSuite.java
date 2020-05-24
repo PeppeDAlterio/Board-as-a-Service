@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleApplicationTestSuite {
 
+    public static final String TEST_ELF_FILE_PATH = "./src/main/resources/testfile.elf";
     private ServerImpl server;
 
     private Board testBoard1, testBoard2;
@@ -418,6 +419,52 @@ class SimpleApplicationTestSuite {
 
         assertDoesNotThrow(() -> {
             System.out.println(client.requestBlockingBoard(serialNumberBoard1));
+        });
+
+    }
+
+    @Test
+    @DisplayName("Request flash blocking: ok case")
+    void requestBlockingFlashTest1() throws IOException {
+
+        ClientImpl client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        assertDoesNotThrow(() -> client.requestBlockingBoard(serialNumberBoard1));
+
+        assertDoesNotThrow( () -> {
+            assertTrue(client.requestBlockingFlash(TEST_ELF_FILE_PATH));
+        });
+
+
+    }
+
+    @Test
+    @DisplayName("Request flash blocking: non existing file case")
+    void requestBlockingFlashTest2() throws IOException {
+
+        ClientImpl client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        assertDoesNotThrow(() -> client.requestBlockingBoard(serialNumberBoard1));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            client.requestBlockingFlash("./non esisto.elf");
+        });
+
+    }
+
+    @Test
+    @DisplayName("Request flash blocking: non elf file case")
+    void requestBlockingFlashTest3() throws IOException {
+
+        ClientImpl client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        assertDoesNotThrow(() -> client.requestBlockingBoard(serialNumberBoard1));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            client.requestBlockingFlash("./src/main/resources/refresh.png");
         });
 
     }

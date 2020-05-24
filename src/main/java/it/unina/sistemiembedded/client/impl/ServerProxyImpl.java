@@ -56,14 +56,16 @@ public class ServerProxyImpl extends ServerProxy {
     @Override
     public void sendFile(String preMessage, String postMessage, String file, String extension) throws IOException {
 
+        File myFile = new File(file);
+
+        if (!myFile.getName().endsWith(extension.trim()) || !myFile.exists()) {
+            logger.error("[sendFile] File not found or not valid: " + myFile.getPath());
+            throw new IllegalArgumentException("File not found or not valid: " + myFile.getPath());
+        }
+
+
         messagingLock.lock();
         try {
-
-            File myFile = new File(file);
-
-            if (!myFile.exists()) {
-                throw new IllegalArgumentException("Il file specificato non esiste");
-            }
 
             FileInputStream fis = new FileInputStream(myFile);
 

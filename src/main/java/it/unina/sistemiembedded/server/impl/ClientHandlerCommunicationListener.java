@@ -70,9 +70,9 @@ public class ClientHandlerCommunicationListener {
         stopActiveDebugSession();
 
         try {
-            this.clientHandler.receiveFile(".elf", Commands.Flash.SUCCESS);
+            String receivedFile = this.clientHandler.receiveFile(".elf", null);
 
-            // TODO: Avvia flash e applicazione !
+            SystemHelper.remoteFlash(this.clientHandler.getBoard().getSerialNumber(), receivedFile, this.clientHandler);
 
         } catch (Exception e) {
             e.printStackTrace();

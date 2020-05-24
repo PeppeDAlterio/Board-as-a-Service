@@ -43,7 +43,7 @@ public class ServerCommunicationListener {
     private final Message blockingReceivingBuffer = new Message();
 
     private enum BlockingReceivingMethod {
-        none, listConnectedServerBoards, requestBoard
+        none, listConnectedServerBoards, requestBoard, flash
     }
 
     ServerCommunicationListener(ClientImpl client) {
@@ -100,7 +100,9 @@ public class ServerCommunicationListener {
         this.client.setBoard(null);
     }
 
-    void flashCallback(String result) {
+    void flashCallback(boolean result) {
+
+        fillBlockingReceiving(BlockingReceivingMethod.flash, result);
 
         logger.info("[flashCallback] Flash complete with result: " + result);
 
@@ -174,7 +176,7 @@ public class ServerCommunicationListener {
 
         requestBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
         try {
-            this.client.getServer().sendMessage(Commands.Info.BOARD_LIST_REQUEST);
+            this.client.requestServerBoardList();
         } catch (Exception e) {
             releaseBlockingReceiving(BlockingReceivingMethod.listConnectedServerBoards);
             return Collections.emptyList();
@@ -211,7 +213,7 @@ public class ServerCommunicationListener {
 
         requestBlockingReceiving(BlockingReceivingMethod.requestBoard);
         try {
-            this.client.getServer().sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardSerialNumber);
+            this.client.requestBoard(boardSerialNumber);
         } catch (Exception e) {
             releaseBlockingReceiving(BlockingReceivingMethod.requestBoard);
             throw e;
@@ -240,6 +242,36 @@ public class ServerCommunicationListener {
         }
 
         return receivedBoard;
+
+    }
+
+    boolean blockingFlash(String file, int timeout) throws IOException {
+
+        Boolean result = false;
+
+        requestBlockingReceiving(BlockingReceivingMethod.flash);
+        try {
+            this.client.requestFlash(file);
+        } catch (Exception e) {
+            releaseBlockingReceiving(BlockingReceivingMethod.flash);
+            throw e;
+        }
+
+        try {
+
+            blockingReceivingBufferReady.tryAcquire(timeout, TimeUnit.SECONDS);
+
+            if(blockingReceivingBuffer.getPayload() instanceof Boolean) {
+                result = (Boolean) blockingReceivingBuffer.getPayload();
+            }
+
+        } catch (InterruptedException e) {
+            throw new IOException();
+        } finally {
+            releaseBlockingReceiving(BlockingReceivingMethod.flash);
+        }
+
+        return result;
 
     }
 

@@ -79,4 +79,15 @@ public interface ClientCommandsInterface {
      */
     Board requestBlockingBoard(String boardSerialNumber) throws NotConnectedException, BoardNotAvailableException, BoardNotFoundException, BoardAlreadyInUseException;
 
+    /**
+     * Request a flash on the connected board, blocking
+     * @param file String path to the file to flash
+     * @return true if flash completed correctly, false otherwise
+     * @throws NotConnectedException client is not connected to a server
+     * @throws BoardNotAvailableException no board connected
+     * @throws IOException if there's an error while communicating with the server
+     * @throws IllegalArgumentException file does not exists
+     */
+    boolean requestBlockingFlash(String file) throws NotConnectedException, BoardNotAvailableException, IOException;
+
 }

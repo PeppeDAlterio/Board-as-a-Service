@@ -120,7 +120,7 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        if(!board().isPresent()) {
+        if(board().isEmpty()) {
             throw new BoardNotAvailableException();
         }
 
@@ -136,7 +136,7 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        if(!board().isPresent()) {
+        if(board().isEmpty()) {
             throw new BoardNotAvailableException();
         }
 
@@ -190,7 +190,7 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        return serverCommunicationListener.blockingReceiveServerBoardList(20);
+        return serverCommunicationListener.blockingReceiveServerBoardList(BLOCKING_REQUEST_SECONDS_TIMEOUT);
     }
 
     @Override
@@ -198,7 +198,16 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        return serverCommunicationListener.blockingRequestBoard(boardSerialNumber, 20);
+        return serverCommunicationListener.blockingRequestBoard(boardSerialNumber, BLOCKING_REQUEST_SECONDS_TIMEOUT);
+    }
+
+    @Override
+    public boolean requestBlockingFlash(String file) throws NotConnectedException, BoardNotAvailableException, IOException {
+
+        checkConnection();
+
+        return serverCommunicationListener.blockingFlash(file, BLOCKING_REQUEST_SECONDS_TIMEOUT);
+
     }
 
     /*
@@ -288,12 +297,12 @@ public class ClientImpl extends Client {
 
             case Commands.Flash.SUCCESS:
                 loggerStringBuilder.append("Detach from board success ack received");
-                serverCommunicationListener.flashCallback("success");
+                serverCommunicationListener.flashCallback(true);
                 break;
 
             case Commands.Flash.ERROR:
                 loggerStringBuilder.append("Detach from board error ack received");
-                serverCommunicationListener.flashCallback("error");
+                serverCommunicationListener.flashCallback(false);
                 break;
 
             //
