@@ -106,7 +106,7 @@ public class MainServerGUIForm extends JFrame {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
         Date date = new Date();
-        File directory = new File("./log/");
+        File directory = new File("log/");
         if (!directory.exists() && !directory.mkdir()) {
             throw new IllegalArgumentException("Non è possibile creare la directory" + directory.getPath());
         }
