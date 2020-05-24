@@ -3,7 +3,6 @@ package it.unina.sistemiembedded.boundary.client;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
-import it.unina.sistemiembedded.main.MainClientGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,6 +58,7 @@ public class AttachBoardForm extends ClientJFrame {
         System.out.println(ClientJFrame.getActiveFrames());
         setSize(0.5, 0.5);
         this.setContentPane(this.mainPanel);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
@@ -104,9 +104,6 @@ public class AttachBoardForm extends ClientJFrame {
                 super.windowClosing(e);
                     JOptionPane.showMessageDialog($this, "Your connection whit "+client.getServerName()+
                             " [ "+ip+":"+port+" ] will be closed", "Closing connection...", JOptionPane.WARNING_MESSAGE);
-                    client.disconnect();
-                    dispose();
-                    new MainClientGUIForm();
             }
         });
     }

@@ -1,9 +1,12 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class RemoteFlashForm extends ClientJFrame {
@@ -34,13 +37,24 @@ public class RemoteFlashForm extends ClientJFrame {
 
         startFlashButton.addActionListener(e -> {
                 //TODO : Controlli su elf_file
-                try {
-                    client.requestFlash(textFieldFlash.getText());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                String elf_file = textFieldFlash.getText();
+                UILongRunningHelper.runAsync(this, "Sending file : " + elf_file, () -> {
+                    try {
+                        client.requestBlockingFlash(elf_file);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
         });
 
+
+        textFieldFlash.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                textFieldFlash.setText("");
+            }
+        });
     }
 
 }

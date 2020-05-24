@@ -42,6 +42,7 @@
             </constraints>
             <properties>
               <background color="-917761"/>
+              <text value="C:\Users\dicos\IdeaProjects\jcommunic\src\main\resources\testfile.elf"/>
             </properties>
           </component>
           <component id="33482" class="javax.swing.JButton" binding="startFlashButton" default-binding="true">
