@@ -63,15 +63,29 @@ public class SystemHelper {
         
     }
     
+    //TODO: scrivere descrizione
     public static @Nullable Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) throws IOException {
         
-        final Process flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
+        final Process flashProcess;
+        try {
+            flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
         + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("There was an error while executing: " + "." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
+            + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH + ", " + e.getMessage());
+            return null;
+        }
+
+        clientHandler.sendTextMessage(Commands.Debug.STARTED);
+        UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+        "' on '" + boardSerialNumber + "' started.");
+        logger.info("[remoteDebug] Remote debug session has been started...");
         
-        executor.execute(() -> {
+        flashProcess.onExit().thenRun(() -> {
             
             try {
-                while (flashProcess.isAlive()) {
+                while (flashProcess.getInputStream().available() > 0) {
                     int cnt = 0;
                     if (((cnt = flashProcess.getInputStream().available()) > 0)) {
                         final byte[] buffer = new byte[cnt];
@@ -79,17 +93,16 @@ public class SystemHelper {
                         logger.debug("[remoteDebug]" + new String(buffer));
                     }
                 }
-            } catch (final Exception ignored) { }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
             
         });
         
         executor.execute(() -> {
             try {
-                clientHandler.sendTextMessage(Commands.Debug.STARTED);
-                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                "' on '" + boardSerialNumber + "' started.");
-                logger.info("[remoteDebug] Remote debug session has been started...");
-                flashProcess.waitFor();
+
+                flashProcess.waitFor(45, TimeUnit.SECONDS);
                 UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
                 "' on '" + boardSerialNumber + "' finished.");
                 logger.info("[remoteDebug] Remote debug session finished.");
@@ -107,6 +120,13 @@ public class SystemHelper {
         
     }
     
+    /**
+    * Flash memory programming
+    * 
+    * @param command String command to execute
+    * @throws IOException
+    */
+    //TODO: scrivere descrizione
     public static @Nullable Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) throws IOException {
         
         final Process flashProcess;
@@ -166,6 +186,7 @@ public class SystemHelper {
     * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
     * store the serial number and name
     *
+    *@return list containing the serial number and the name of the board
     */
     public static List<Board> listBoards()  {
         String buffer_str;
