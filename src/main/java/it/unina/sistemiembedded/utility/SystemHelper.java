@@ -104,6 +104,50 @@ public class SystemHelper {
 
     }
 
+    public static Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) throws IOException {
+
+        //TODO: start dovrebbe essere sempre lo stesso ma non ne sono sicura
+        final Process flashProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
+                + " -c port=swd sn=" + boardSerialNumber + " -d " + elfPath + " -v --start 0x08000000");
+
+        executor.execute(() -> {
+
+            try {
+                while (flashProcess.isAlive()) {
+                    int cnt = 0;
+                    if (((cnt = flashProcess.getInputStream().available()) > 0)) {
+                        final byte[] buffer = new byte[cnt];
+                        flashProcess.getInputStream().read(buffer, 0, cnt);
+                        logger.debug("[remoteFlash]" + new String(buffer));
+                    }
+                }
+            } catch (final Exception ignored) { }
+
+        });
+
+        executor.execute(() -> {
+            try {
+                clientHandler.sendTextMessage(Commands.Flash.REQUEST);
+                UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' started.");
+                logger.info("[remoteFlash] Remote flash session has been started...");
+                flashProcess.waitFor();
+                UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
+                logger.info("[remoteFlash] Remote flash session finished and the program is started.");
+                clientHandler.sendTextMessage(Commands.Flash.SUCCESS);
+            } catch (InterruptedException ignored) {
+                logger.info("[remoteFlash] Remote flash session finished.");
+                UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
+                clientHandler.sendTextMessage(Commands.Flash.ERROR);
+                flashProcess.destroyForcibly();
+            }
+        });
+
+        return flashProcess;
+    }
+
     /**
      * Executes a command "STM32_Programmer_CLI.exe" in CMD and parse output to
      * store the serial number and name
