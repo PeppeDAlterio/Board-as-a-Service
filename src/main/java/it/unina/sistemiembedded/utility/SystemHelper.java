@@ -210,10 +210,5 @@ public class SystemHelper {
 
         return list;
     }
-    
 
-    public void flashBoard(){
-
-
-    }
 }
