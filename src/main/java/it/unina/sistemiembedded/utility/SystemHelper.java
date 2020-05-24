@@ -126,7 +126,6 @@ public class SystemHelper {
                 byte[] buffer = new byte[cnt];
                 flashProcess.getInputStream().read(buffer, 0, cnt);
                 buffer_str = new String(buffer);
-                
                 finish = buffer_str.contains("Error") || buffer_str.contains("ST-LINK error");
                 
                 if(!finish) {
@@ -158,5 +157,4 @@ public class SystemHelper {
 
 
     }
-   
 }

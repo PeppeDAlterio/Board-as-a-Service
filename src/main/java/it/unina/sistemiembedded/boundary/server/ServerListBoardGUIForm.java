@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.boundary.server;
 
+import it.unina.sistemiembedded.main.MainServerGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
@@ -9,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.BindException;
 import java.util.List;
 
 public class ServerListBoardGUIForm extends JFrame {
@@ -17,6 +20,7 @@ public class ServerListBoardGUIForm extends JFrame {
     private JList<Object> listBoard;
     private JButton startServerButton;
     private JButton buttonRefresh;
+    private JLabel labelport;
     private Server server;
 
 
@@ -27,6 +31,7 @@ public class ServerListBoardGUIForm extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setTitle("Server - Board as a Service");
+        this.labelport.setText(this.labelport.getText().replace("#PORT",Integer.toString(server.getPort())));
     }
 
     private void setSize(double height_inc, double weight_inc) {
@@ -72,11 +77,19 @@ public class ServerListBoardGUIForm extends JFrame {
             }
         });
 
-        startServerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new ServerStartedForm(server);
-            }
+        startServerButton.addActionListener(e -> {
+                try {
+                    server.start();
+                    dispose();
+                    new ServerStartedForm(server);
+                }catch (BindException ex){
+                    //ex.getMessage();
+                    JOptionPane.showMessageDialog(this,"there is already an active connection to the specified port","Fatal error",JOptionPane.ERROR_MESSAGE);
+                    dispose();
+                    new MainServerGUIForm();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
         });
         buttonRefresh.addActionListener(new ActionListener() {
             @SneakyThrows
