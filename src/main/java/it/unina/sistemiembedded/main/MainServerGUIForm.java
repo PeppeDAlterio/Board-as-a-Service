@@ -106,7 +106,7 @@ public class MainServerGUIForm extends JFrame {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy - HH_mm_ss");
         Date date = new Date();
-        File directory = new File("./log/");
+        File directory = new File("log/");
         if (!directory.exists() && !directory.mkdir()) {
             throw new IllegalArgumentException("Non è possibile creare la directory" + directory.getPath());
         }
@@ -115,7 +115,7 @@ public class MainServerGUIForm extends JFrame {
         }
 
         File file = new File(directory.getPath() + "/log[ " + formatter.format(date) + " ].txt");
-        System.setProperty("org.slf4j.simpleLogger.logFile", file.getPath());
+        System.setProperty("org.slf4j.simpleLogger.logFile", file.getAbsolutePath());
 
         final Thread shutdownThread = new Thread(() -> {
             logger.info("[shutdownhook] Shutdown hook started...");
