@@ -10,7 +10,19 @@ import java.util.Optional;
 @Getter @Setter
 public abstract class Client implements ClientCommandsInterface {
 
+    /**
+     * Timeout for blocking requests in Seconds
+     */
     protected static int BLOCKING_REQUEST_SECONDS_TIMEOUT = 20;
+
+    /**
+     * Set blocking requests timeout time in seconds
+     * @param timeout int timeout in seconds
+     */
+    public static void setBlockingTimeout(int timeout) {
+        if(timeout>0)
+            BLOCKING_REQUEST_SECONDS_TIMEOUT = timeout;
+    }
 
     /**
      * Client name
@@ -28,15 +40,6 @@ public abstract class Client implements ClientCommandsInterface {
      */
     protected Client(String name) {
         this.name = name.trim();
-    }
-
-    /**
-     * Set blocking requests timeout time in seconds
-     * @param timeout int timeout in seconds
-     */
-    public static void setBlockingTimeout(int timeout) {
-        if(timeout>0)
-            BLOCKING_REQUEST_SECONDS_TIMEOUT = timeout;
     }
 
     /**

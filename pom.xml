@@ -20,6 +20,7 @@
 
         <server-app-name>Server application</server-app-name>
         <server-main-class>MainServerGUIForm</server-main-class>
+
     </properties>
 
     <developers>
