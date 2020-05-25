@@ -31,10 +31,14 @@ public class COMPort {
 
     @Override
     public String toString() {
-        return delegate.getDescriptivePortName();
+        if(delegate != null) {
+            return delegate.getDescriptivePortName();
+        } else {
+            return "";
+        }
     }
 
-    public SerialPort getSerialPort() {
+    public @Nullable SerialPort getSerialPort() {
         return this.delegate;
     }
 

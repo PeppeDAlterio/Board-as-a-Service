@@ -10,15 +10,22 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@Getter
 public class COMDriver {
 
     private static Logger logger = LoggerFactory.getLogger(COMDriver.class);
 
-    // TODO: Documentazione
+    /**
+     * TODO
+     * 
+     */
     @Getter
     private final SerialPort serialPort;
 
-    // TODO: Documentazione
+    /**
+     * TODO
+     * 
+     */
     private OutputBuffer outputBuffer = new OutputBuffer();
 
     /**
@@ -26,7 +33,10 @@ public class COMDriver {
      */
     private ClientHandler clientHandler;
 
-    // TODO: Documentazione
+    /**
+     * TODO
+     * 
+     */
     private int br;
     private int P;
     private int db;
@@ -101,7 +111,15 @@ public class COMDriver {
 
     }
 
-    //TODO: inserire documentazione
+    /**
+     * Change parameters of serial communication
+     * 
+     * @param boudRate Specifies the rate at which information is transferred in a communication channel
+     * @param parity  Specifies the parity mode
+     * @param numBitData Number of data bits per word
+     * @param numBitStop Specifies the number of stop bits transmitted
+     * 
+     */
     public void changeParameters(int boudRate, String parity, int numBitData, int numBitStop,
             Collection<String> flowControl) {
 
@@ -113,7 +131,17 @@ public class COMDriver {
 
     }
 
-    //TODO: inserire documentazione
+    /**
+     * Change parameters of serial communication
+     * 
+     * @param comPort Communication port
+     * @param boudRate Specifies the rate at which information is transferred in a communication channel
+     * @param parity  Specifies the parity mode
+     * @param numBitData Number of data bits per word
+     * @param numBitStop Specifies the number of stop bits transmitted
+     * @param flowControl The process of managing the rate of data transmission between two nodes
+     * 
+     */
     public COMDriver(COMPort comPort, int boudRate, String parity, int numBitData, int numBitStop,
             Collection<String> flowControl) {
 
@@ -127,12 +155,14 @@ public class COMDriver {
         this.serialPort.setNumStopBits(numBitStop);
         this.serialPort.setParity(parseParity(parity));
         this.serialPort.setFlowControl(parseFlowControl(flowControl));
-
         this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 5000, 5000);
 
     }
 
-    //TODO: inserire documentazione
+    /**
+     * TODO
+     * 
+     */
     public void setClientHandler(ClientHandler clientHandler) {
 
         if(clientHandler==null) return;
@@ -144,17 +174,27 @@ public class COMDriver {
 
     }
 
+    /**
+     * TODO
+     * 
+     */
     public void removeClientHandler() {
         this.serialPort.removeDataListener();
         this.clientHandler = null;
     }
 
-    //TODO: inserire documentazione
+    /**
+     * TODO
+     * 
+     */
     public Optional<ClientHandler> getClientHandler() {
         return Optional.ofNullable(this.clientHandler);
     }
 
-    //TODO: inserire documentazione
+    /**
+     * TODO
+     * 
+     */
     public void closeCommunication() {
         if (serialPort != null) {
             serialPort.closePort();
@@ -162,7 +202,11 @@ public class COMDriver {
         this.clientHandler = null;
     }
 
-    //TODO: inserire documentazione
+    /**
+     * TODO
+     * @param str 
+     * 
+     */
     public void writeln(String str) {
 
         if (str == null || str.length() == 0)
@@ -176,7 +220,11 @@ public class COMDriver {
 
     }
 
-    //TODO: inserire documentazione
+    /**
+     * TODO
+     * @param str 
+     * 
+     */
     public void write(String str) {
 
         if(str == null || str.length() == 0) return;
