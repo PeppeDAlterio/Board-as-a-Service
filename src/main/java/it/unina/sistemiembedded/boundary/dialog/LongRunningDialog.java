@@ -28,7 +28,6 @@ public class LongRunningDialog extends ClientJFrame {
         this.setAlwaysOnTop(true);
         this.progressBar.setMinimum(0);
         this.progressBar.setMaximum(100);
-
         this.pack();
 
         this.setLocationRelativeTo(parent);

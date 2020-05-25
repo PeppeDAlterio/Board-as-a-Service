@@ -4,12 +4,14 @@ import it.unina.sistemiembedded.main.MainServerGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.BindException;
 import java.util.List;
@@ -21,25 +23,29 @@ public class ServerListBoardGUIForm extends JFrame {
     private JButton startServerButton;
     private JButton buttonRefresh;
     private JLabel labelport;
+    private JLabel labelServerStarted;
     private Server server;
 
+    private JFrame serverStartedForm;
+
+    private JFrame $this = this;
+
+    private int startedFirstTime =0;
 
     private void initGUI() {
         this.setContentPane(mainPanel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
         this.setTitle("Server - Board as a Service");
         this.labelport.setText(this.labelport.getText().replace("#PORT",Integer.toString(server.getPort())));
+        serverStartedForm = new ServerStartedForm(server,this);
+        serverStartedForm.setVisible(false);
+        labelServerStarted.setText(labelServerStarted.getText().replace("#PORT",Integer.toString(server.getPort())));
+        labelServerStarted.setVisible(false);
     }
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
 
     private void initList() throws InterruptedException {
         DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
@@ -53,15 +59,15 @@ public class ServerListBoardGUIForm extends JFrame {
                 defaultListModelBoard.addElement("No boards detected");
             }
             listBoard.setModel(defaultListModelBoard);
-
+            listBoard.setVisibleRowCount(JList.VERTICAL_WRAP);
         });
 
     }
 
     public ServerListBoardGUIForm(Server server) {
-        super();
+        super("Server - Server Board's list Form");
         this.server = server;
-        setSize(0.5, 0.5);
+        UISizeHelper.setSize(this,0.5, 0.5);
         initGUI();
         try {
             initList();
@@ -76,28 +82,36 @@ public class ServerListBoardGUIForm extends JFrame {
         });
 
         startServerButton.addActionListener(e -> {
-                    UILongRunningHelper.supplyAsync(this,"Startin server...",()->{
-                        try {
-                            server.start();
-                        }catch(BindException ex){
-                            return ex;
-                        } catch (IOException ex) {
-                            return ex;
-                        }
-                        return null;
-                    },result->{
-                        if(result instanceof BindException){
-                            JOptionPane.showMessageDialog(this,"There is already an active connection to the specified port.","Error!",JOptionPane.ERROR_MESSAGE);
-                            dispose();
-                            new MainServerGUIForm();
-                        }else if(result instanceof IOException){
-                            JOptionPane.showMessageDialog(this,"Can't start server.","Error!",JOptionPane.ERROR_MESSAGE);
-
-                        }else {
-                            dispose();
-                            new ServerStartedForm(server);
-                        }
-                    });
+            if(startedFirstTime==0) {
+                UILongRunningHelper.supplyAsync(this, "Startin server...", () -> {
+                    try {
+                        server.start();
+                        startedFirstTime = 1;
+                    } catch (BindException ex) {
+                        return ex;
+                    } catch (IOException ex) {
+                        return ex;
+                    }
+                    return null;
+                }, result -> {
+                    if (result instanceof BindException) {
+                        JOptionPane.showMessageDialog(this, "There is already an active connection to the specified port.", "Error!", JOptionPane.ERROR_MESSAGE);
+                        dispose();
+                        new MainServerGUIForm();
+                    } else if (result instanceof IOException) {
+                        JOptionPane.showMessageDialog(this, "Can't start server.", "Error!", JOptionPane.ERROR_MESSAGE);
+                        new MainServerGUIForm();
+                    } else {
+                        this.setVisible(false);
+                        serverStartedForm.setVisible(true);
+                        startServerButton.setText("Open server console");
+                        labelServerStarted.setVisible(true);
+                    }
+                });
+            }else{
+                this.setVisible(false);
+                serverStartedForm.setVisible(true);
+            }
         });
         buttonRefresh.addActionListener(new ActionListener() {
             @SneakyThrows
@@ -106,7 +120,15 @@ public class ServerListBoardGUIForm extends JFrame {
                 initList();
             }
         });
-
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
+                super.windowClosing(e);
+                JOptionPane.showMessageDialog($this,"This will shoutdown the server!","Warning",JOptionPane.WARNING_MESSAGE);
+                new MainServerGUIForm();
+            }
+        });
     }
 
 }

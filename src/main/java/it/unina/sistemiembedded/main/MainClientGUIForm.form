@@ -57,18 +57,6 @@
               <text value="localhost"/>
             </properties>
           </component>
-          <component id="dc195" class="javax.swing.JTextField" binding="textFieldPort">
-            <constraints>
-              <grid row="2" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-524802"/>
-              <text value="1234"/>
-              <toolTipText value="Integer between [0,65535]"/>
-            </properties>
-          </component>
           <component id="8e53b" class="javax.swing.JLabel" binding="labelPort">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -76,6 +64,18 @@
             <properties>
               <foreground color="-16777216"/>
               <text value="Server port"/>
+            </properties>
+          </component>
+          <component id="dc195" class="javax.swing.JTextField" binding="textFieldPort">
+            <constraints>
+              <grid row="2" column="1" row-span="2" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-917761"/>
+              <text value="1234"/>
+              <toolTipText value="Integer between [0,65535]"/>
             </properties>
           </component>
         </children>

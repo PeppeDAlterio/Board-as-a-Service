@@ -4,11 +4,11 @@ import it.unina.sistemiembedded.boundary.server.ServerListBoardGUIForm;
 import it.unina.sistemiembedded.driver.COMDriver;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.server.impl.ServerImpl;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -30,15 +30,8 @@ public class MainServerGUIForm extends JFrame {
     private String nameServer = "Server-" + ((int) (Math.random() * 1000 + 1000));
     private int portNumber = 1234;
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
-
     public MainServerGUIForm() {
-        super();
+        super("Client - Main client GUI Form");
 
         if (server != null) {
             try {
@@ -47,7 +40,7 @@ public class MainServerGUIForm extends JFrame {
             }
         }
 
-        setSize(0.2, 0.2);
+        UISizeHelper.setSize(this,0.2, 0.2);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);

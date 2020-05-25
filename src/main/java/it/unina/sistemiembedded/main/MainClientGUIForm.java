@@ -5,9 +5,9 @@ import it.unina.sistemiembedded.boundary.client.ClientJFrame;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -31,16 +31,10 @@ public class MainClientGUIForm extends ClientJFrame {
 
     private int clickedFistTime = 0;
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
 
     public MainClientGUIForm() {
         super("Client - Board as a Service");
-        setSize(0.3, 0.3);
+        UISizeHelper.setSize(this,0.3, 0.3);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
@@ -66,7 +60,7 @@ public class MainClientGUIForm extends ClientJFrame {
                 return null;
             }, result -> {
                 if (result instanceof IOException) {
-                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Can't connect to '" + ipAddress + ":" + portNumber +"'", "Connection error", JOptionPane.ERROR_MESSAGE);
                 } else if(result instanceof  IllegalArgumentException){
                     JOptionPane.showMessageDialog(this, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
                 } else {

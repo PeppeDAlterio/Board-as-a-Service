@@ -3,13 +3,14 @@ package it.unina.sistemiembedded.boundary.client;
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
+import it.unina.sistemiembedded.main.MainClientGUIForm;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -49,25 +50,16 @@ public class AttachBoardForm extends ClientJFrame {
         }
     }
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
-
     public AttachBoardForm(Client client, String ip, int port) {
         super("Client - Board as a Service");
-        setSize(0.5, 0.5);
+        UISizeHelper.setSize(this,0.5, 0.5);
         this.setContentPane(this.mainPanel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
-        //Per ora rendo la lista dei laboratori non visibile
         this.listLab.setVisible(true);
         this.labelLabslist.setVisible(true);
-        //
 
         listLab.setModel(modelLab);
         modelLab.addElement(client.getServerName()+" [ "+ip+":"+port+" ]");
@@ -104,6 +96,7 @@ public class AttachBoardForm extends ClientJFrame {
                 super.windowClosing(e);
                     JOptionPane.showMessageDialog($this, "Your connection whit "+client.getServerName()+
                             " [ "+ip+":"+port+" ] will be closed", "Closing connection...", JOptionPane.WARNING_MESSAGE);
+                    new MainClientGUIForm();
             }
         });
     }

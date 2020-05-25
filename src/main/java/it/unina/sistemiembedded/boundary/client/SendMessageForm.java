@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
@@ -17,16 +18,9 @@ public class SendMessageForm extends ClientJFrame {
     JTextArea textAreaComunication;
     private JScrollPane scrollTextArea;
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
-
     public SendMessageForm(Client client) {
         super("Send message - Client - Board as a Service");
-        setSize(0.5, 0.5);
+        UISizeHelper.setSize(this,0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);

@@ -3,12 +3,12 @@ package it.unina.sistemiembedded.boundary.server;
 import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.Server;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -80,17 +80,10 @@ public class SetSerialParamForm extends JFrame {
         }
     }
 
-    private void setSize(double height_inc, double weight_inc) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int height = (int) (screenSize.height * height_inc);
-        int width = (int) (screenSize.width * weight_inc);
-        this.setPreferredSize(new Dimension(width, height));
-    }
-
     public SetSerialParamForm(JFrame parent, Server server, Board board) {
         super();
         parent.setEnabled(false);
-        setSize(0.5, 0.5);
+        UISizeHelper.setSize(this,0.5, 0.5);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);

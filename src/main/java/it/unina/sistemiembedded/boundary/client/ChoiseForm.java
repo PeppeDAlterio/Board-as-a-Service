@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
@@ -13,13 +14,13 @@ import java.io.PrintStream;
 
 public class ChoiseForm extends ClientJFrame {
     private JPanel mainPanel;
-    private JLabel labelLAB;
     private JLabel labelBoard;
     private JButton sendMessageButton;
     private JButton remoteFlashButton;
     private JButton remoteDegubButton;
     private JLabel label_name;
     private JButton requestAnotherBoardButton;
+    private JLabel labelInfoServer;
 
     private RemoteDebugForm debugFrame;
     private RemoteFlashForm flashFrame;
@@ -47,19 +48,24 @@ public class ChoiseForm extends ClientJFrame {
         UIPrinterHelper.setPrintStream(printStream);
 
         setVisibleFrames(false);
-        System.out.println(ClientJFrame.getActiveFrames());
-        String infoLab = labelLAB.getText();
+        UISizeHelper.setSize(this,0.3,0.3);
+        String infoLab = labelInfoServer.getText();
         infoLab = infoLab.replace("[IP]", "[ " + ip);
-        infoLab = infoLab.replace("[PORT]", Integer.toString(port) + " ]");
+        infoLab = infoLab.replace("[PORT]",port + " ]");
         infoLab = infoLab.replace("[LAB]", client.getServerName());
-        this.labelLAB.setText(infoLab);
-        this.labelBoard.setText(board);
+        this.labelInfoServer.setText(infoLab);
+        String infoBoard = labelBoard.getText();
+        infoBoard = infoBoard.replace("[BOARD]",board);
+        this.labelBoard.setText(infoBoard);
+        String infoClient = label_name.getText();
+        infoClient = infoClient.replace("[NAME]",client.getName());
+        label_name.setText(infoClient);
         this.setContentPane(this.mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
-        label_name.setText(client.getName());
+
         sendMessageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -187,6 +187,12 @@ public class Board implements Serializable {
 
     @Override
     public String toString() {
-        return "[  Name = " + this.name + "  |  Serial Number = " + this.serialNumber+"  ] \n";
+        String used;
+        if(isInUse()) {
+            used = "YES";
+        }else{
+            used = "NO";
+        }
+        return "[  Name = " + this.name + "  |  Serial Number = " + this.serialNumber + "  |  In use = " + used + " ] \n";
     }
 }
