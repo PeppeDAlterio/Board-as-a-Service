@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.model.ConnectedClient;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.SystemHelper;
@@ -357,6 +358,38 @@ public class ServerImpl extends Server {
         }
 
         return board;
+    }
+
+    @Override
+    public List<ConnectedClient> listConnectedClients() {
+
+        clientHandlersRWLock.readLock().lock();
+        try {
+
+            ArrayList<ConnectedClient> clients = new ArrayList<>(this.clientHandlers.size());
+
+            this.clientHandlers.values().forEach(clientHandler -> {
+
+                ConnectedClient connectedClient = new ConnectedClient();
+                connectedClient.setName(clientHandler.getName());
+                connectedClient.setBoard(clientHandler.getConnectedBoard().orElse(null));
+                connectedClient.setIp(clientHandler.getIpAddress());
+                connectedClient.setConnectedTimestamp(clientHandler.getConnectedTimestamp());
+
+                clients.add(connectedClient);
+
+
+            });
+
+
+            return clients;
+
+        } catch (Exception e) {
+            return Collections.emptyList();
+        } finally {
+            clientHandlersRWLock.readLock().unlock();
+        }
+
     }
 
     /**

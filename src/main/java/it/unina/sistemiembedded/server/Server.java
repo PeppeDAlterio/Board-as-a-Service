@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.model.ConnectedClient;
 import lombok.Getter;
 
 import javax.annotation.Nonnull;
@@ -161,5 +162,11 @@ public abstract class Server {
     public abstract void setBoardCOMDriver(@Nonnull String boardSerialNumber, @Nullable COMPort comPort,
                                            int baudRate, int numBitData, int bitStop, String parity, Collection<String> flowControl)
             throws BoardNotFoundException;
+
+    /**
+     * Gets copy of connected clients
+     * @return List of ConnectedClient
+     */
+    public abstract List<ConnectedClient> listConnectedClients();
 
 }
