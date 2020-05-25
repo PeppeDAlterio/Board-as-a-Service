@@ -63,7 +63,7 @@ public class SystemHelper {
     }
     
     //TODO: scrivere descrizione
-    public static @Nullable Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) throws IOException {
+    public static @Nullable Process remoteDebug(final String boardSerialNumber, final int port, final ClientHandler clientHandler) {
         
         final Process flashProcess;
         try {
@@ -97,7 +97,7 @@ public class SystemHelper {
 
             }
 
-        }, 6, TimeUnit.SECONDS);
+        }, 3, TimeUnit.SECONDS);
 
         flashProcess.onExit().thenRun(() -> {
 
