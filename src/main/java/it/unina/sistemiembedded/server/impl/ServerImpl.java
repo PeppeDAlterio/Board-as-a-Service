@@ -359,6 +359,11 @@ public class ServerImpl extends Server {
         return board;
     }
 
+    @Override
+    public List<ClientHandler> copyOfConnectedClients() {
+        return List.copyOf(clientHandlers.values());
+    }
+
     /**
      * Util to add a client handler to the map data struture
      * @param clientHandler ClientHandler client handler to be added, nonnull

@@ -162,4 +162,10 @@ public abstract class Server {
                                            int baudRate, int numBitData, int bitStop, String parity, Collection<String> flowControl)
             throws BoardNotFoundException;
 
+    /**
+     * Gets copy of connected clients
+     * @return List of ClientHandlers
+     */
+    public abstract List<ClientHandler> copyOfConnectedClients();
+
 }
