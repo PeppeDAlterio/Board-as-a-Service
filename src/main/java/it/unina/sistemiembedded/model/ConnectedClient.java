@@ -23,12 +23,7 @@ public class ConnectedClient {
 
         @Override
         public String toString() {
-            return "ConnectedBoard{" +
-                    "name='" + name + '\'' +
-                    ", serialNumber='" + serialNumber + '\'' +
-                    ", inUse=" + inUse +
-                    ", debugging=" + debugging +
-                    '}';
+            return "[ NAME = " + name + "  |  SERIAL NUMBER = " + serialNumber + "  |  IN DEBBUGGING = " + debugging + " ]\n";
         }
     }
 
@@ -46,8 +41,6 @@ public class ConnectedClient {
 
     private SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-    public Optional<Board> getBoard() {
-        return Optional.ofNullable(this.board);
     public Optional<ConnectedBoard> getBoard() {
         return Optional.ofNullable(ObjectMapper.map(this.board, ConnectedBoard.class));
     }

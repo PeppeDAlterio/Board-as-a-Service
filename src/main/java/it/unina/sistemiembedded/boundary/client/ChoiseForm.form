@@ -9,7 +9,7 @@
       <background color="-4473925"/>
       <foreground color="-16777216"/>
     </properties>
-    <border type="line" title="choise an option">
+    <border type="line" title="choose an option">
       <title-color color="-16777216"/>
       <color color="-16777216"/>
     </border>

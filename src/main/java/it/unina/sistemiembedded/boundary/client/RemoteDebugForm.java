@@ -23,9 +23,7 @@ public class RemoteDebugForm extends ClientJFrame {
 
     private int gdbPort;
 
-
-    //private int debugStartedFirstTime=0;
-
+    private int debuggedFirstTime =0;
 
 
     public RemoteDebugForm(Client client) {
@@ -33,7 +31,6 @@ public class RemoteDebugForm extends ClientJFrame {
         UISizeHelper.setSize(this,0.5, 0.7);
         this.setContentPane(mainPanel);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        //this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
 
@@ -51,26 +48,18 @@ public class RemoteDebugForm extends ClientJFrame {
                             gdbPort = Integer.parseInt(textFieldgdbPort.getText());
                             UIPrinterHelper.clientDebug("Remote GDB debug session started on port : " + gdbPort + "\n");
                             client.requestDebug(gdbPort);
-                        }catch (NumberFormatException ex){
-                            return ex;
-                        }catch (IllegalArgumentException ex){
+                        }catch (IllegalArgumentException ex) {
                             return ex;
                         }
                         return null;
                     },result ->{
-                        if(result instanceof IllegalArgumentException){
-                            JOptionPane.showMessageDialog(this,"","Error!",JOptionPane.ERROR_MESSAGE);
-                        }else if(result instanceof NumberFormatException){
+                        if(result instanceof NumberFormatException){
                             JOptionPane.showMessageDialog(null, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
-
                         }else{
-                            UIPrinterHelper.clientDebug("To correctly use the remote debbugger :");
-                            UIPrinterHelper.clientDebug("\t1)  Open your STM32CubeIDE");
-                            UIPrinterHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");
-                            UIPrinterHelper.clientDebug("\t3)  In the 'Debbugger' section enable 'Connect to remote GDB server");
-                            UIPrinterHelper.clientDebug("\t4)  Insert the server ip and the port specified above");
-                            UIPrinterHelper.clientDebug("\t5)  Click on 'Apply' and then 'Degub' buttons");
-                            UIPrinterHelper.clientDebug("\t6)  Start debbugging!\n ");
+                            if(debuggedFirstTime == 0) {
+                                debuggedFirstTime = 1;
+                                debugButton.setText("Restart debug");
+                            }
                         }
                     });
             }
@@ -83,6 +72,8 @@ public class RemoteDebugForm extends ClientJFrame {
                 super.windowClosing(e);
                 UIPrinterHelper.clientDebug("Remote GDB debug session on port : " + gdbPort + " finished.\n");
                 client.requestStopDebug();
+                debugButton.setText("Start degub");
+                debuggedFirstTime = 0;
             }
         });
         finishDebugSessionButton.addActionListener(new ActionListener() {
@@ -90,6 +81,8 @@ public class RemoteDebugForm extends ClientJFrame {
             public void actionPerformed(ActionEvent e) {
                 UIPrinterHelper.clientDebug("Remote GDB debug session on port : " + gdbPort + " finished.\n");
                 client.requestStopDebug();
+                debugButton.setText("Start degub");
+                debuggedFirstTime = 0;
                 setVisible(false);
             }
         });

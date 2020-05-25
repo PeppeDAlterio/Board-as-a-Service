@@ -122,6 +122,13 @@ public class ServerCommunicationListener {
             synchronized (this.client.getBoard().getSerialNumber().intern()) {
                 this.client.getBoard().setDebugging(true);
             }
+            UIPrinterHelper.clientDebug("To correctly use the remote debbugger :");
+            UIPrinterHelper.clientDebug("\t1)  Open your STM32CubeIDE");
+            UIPrinterHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");
+            UIPrinterHelper.clientDebug("\t3)  In the 'Debbugger' section enable 'Connect to remote GDB server");
+            UIPrinterHelper.clientDebug("\t4)  Insert the server ip and the port specified above");
+            UIPrinterHelper.clientDebug("\t5)  Click on 'Apply' and then 'Degub' buttons");
+            UIPrinterHelper.clientDebug("\t6)  Start debbugging!\n ");
         }
     }
 

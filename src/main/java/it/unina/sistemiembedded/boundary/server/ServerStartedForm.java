@@ -2,6 +2,7 @@ package it.unina.sistemiembedded.boundary.server;
 
 import it.unina.sistemiembedded.model.ConnectedClient;
 import it.unina.sistemiembedded.server.Server;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
@@ -18,6 +19,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
@@ -40,14 +43,16 @@ public class ServerStartedForm extends JFrame {
 
     private void initClientsConnectedList(){
         defaultListModel = new DefaultListModel();
-        List<ConnectedClient> connectedClients = server.listConnectedClients();
-        if(connectedClients.size()!=0) {
-            for (ConnectedClient connectedClient : connectedClients) {
-                defaultListModel.addElement(connectedClient);
+        UILongRunningHelper.runAsync(this,"Loading connected client's list",()->{
+            List<ConnectedClient> connectedClients = server.listConnectedClients();
+            if(connectedClients.size()!=0) {
+                for (ConnectedClient connectedClient : connectedClients) {
+                    defaultListModel.addElement(connectedClient);
+                }
+            }else{
+                defaultListModel.addElement("No client connected.");
             }
-        }else{
-            defaultListModel.addElement("No client connected.");
-        }
+        });
         listClientsConnected.setModel(defaultListModel);
     }
 
@@ -74,13 +79,14 @@ public class ServerStartedForm extends JFrame {
         initClientsConnectedList();
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication, null, null, null));
         UIPrinterHelper.setPrintStream(printStream);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> { textAreaAssociatedBoard.setText("");initClientsConnectedList();}, 0, 5, TimeUnit.MINUTES);
 
 
         listClientsConnected.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting())return;
-                textAreaAssociatedBoard.removeAll();
+                textAreaAssociatedBoard.setText("");
                 if(listClientsConnected.getSelectedValue() instanceof ConnectedClient) {
                     if(((ConnectedClient) listClientsConnected.getSelectedValue()).getBoard().isPresent()){
                         textAreaAssociatedBoard.append(((ConnectedClient) listClientsConnected.getSelectedValue()).getBoard().get().toString()+"\n");
@@ -104,7 +110,7 @@ public class ServerStartedForm extends JFrame {
         buttonRefresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textAreaAssociatedBoard.removeAll();
+                textAreaAssociatedBoard.setText("");
                 initClientsConnectedList();
             }
         });
