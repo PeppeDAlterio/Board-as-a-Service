@@ -59,7 +59,10 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Browse..."/>
+              <background color="-4473925"/>
+              <icon value="search.png"/>
+              <text value=""/>
+              <toolTipText value="Load from local"/>
             </properties>
           </component>
         </children>

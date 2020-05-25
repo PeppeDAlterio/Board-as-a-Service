@@ -55,19 +55,23 @@ public class MainClientGUIForm extends ClientJFrame {
                 name = nameClient;
             }
             client = new ClientImpl(name);
-            UILongRunningHelper.<Boolean>supplyAsync(this, "Connecting...", () -> {
+            UILongRunningHelper.<Exception>supplyAsync(this, "Connecting...", () -> {
                 try {
                     client.connect(ipAddress, portNumber);
-                    return true;
-                } catch (IOException ignored) {
-                    return false;
+                }catch (IllegalArgumentException ex){
+                    return ex;
+                } catch (IOException ex) {
+                    return ex;
                 }
+                return null;
             }, result -> {
-                if (result) {
+                if (result instanceof IOException) {
+                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
+                } else if(result instanceof  IllegalArgumentException){
+                    JOptionPane.showMessageDialog(this, "Port number must be an integer in the range of valid port values [ 0 , 65535 ]", "Invalid port number", JOptionPane.ERROR_MESSAGE);
+                } else {
                     new AttachBoardForm(client, ipAddress, portNumber);
                     dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Can't connect to " + ipAddress + ":" + portNumber, "Connection error", JOptionPane.ERROR_MESSAGE);
                 }
             });
 

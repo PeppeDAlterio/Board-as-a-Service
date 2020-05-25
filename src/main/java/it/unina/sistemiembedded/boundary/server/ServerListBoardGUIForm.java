@@ -43,9 +43,7 @@ public class ServerListBoardGUIForm extends JFrame {
 
     private void initList() throws InterruptedException {
         DefaultListModel<Object> defaultListModelBoard = new DefaultListModel<>();
-
-        UILongRunningHelper.runAsync(this, "Messaggio di esempio di attesa...", () -> {
-
+        UILongRunningHelper.runAsync(this, "Loading board's list...", () -> {
             List<Board> boardList = server.rebuildBoards();
             if (boardList.size() != 0) {
                 for (Board board : boardList) {
@@ -78,18 +76,28 @@ public class ServerListBoardGUIForm extends JFrame {
         });
 
         startServerButton.addActionListener(e -> {
-                try {
-                    server.start();
-                    dispose();
-                    new ServerStartedForm(server);
-                }catch (BindException ex){
-                    //ex.getMessage();
-                    JOptionPane.showMessageDialog(this,"there is already an active connection to the specified port","Error!",JOptionPane.ERROR_MESSAGE);
-                    dispose();
-                    new MainServerGUIForm();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                    UILongRunningHelper.supplyAsync(this,"Startin server...",()->{
+                        try {
+                            server.start();
+                        }catch(BindException ex){
+                            return ex;
+                        } catch (IOException ex) {
+                            return ex;
+                        }
+                        return null;
+                    },result->{
+                        if(result instanceof BindException){
+                            JOptionPane.showMessageDialog(this,"There is already an active connection to the specified port.","Error!",JOptionPane.ERROR_MESSAGE);
+                            dispose();
+                            new MainServerGUIForm();
+                        }else if(result instanceof IOException){
+                            JOptionPane.showMessageDialog(this,"Can't start server.","Error!",JOptionPane.ERROR_MESSAGE);
+
+                        }else {
+                            dispose();
+                            new ServerStartedForm(server);
+                        }
+                    });
         });
         buttonRefresh.addActionListener(new ActionListener() {
             @SneakyThrows

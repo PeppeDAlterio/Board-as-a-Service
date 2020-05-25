@@ -4,6 +4,7 @@ import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,16 +34,18 @@ public class AttachBoardForm extends ClientJFrame {
 
     private void initLists(Client client) {
         if (client.isConnected()) {
-            List<Board> boards = client.requestBlockingServerBoardList();
-            listLab.setSelectedIndex(0);
-            listBoard.setModel(modelBoard);
-            if (!boards.isEmpty()) {
-                for (int i = 0; i < boards.size(); i++)
-                    modelBoard.addElement(boards.get(i));
-            } else {
-                modelBoard.addElement("No board's available");
-            }
-            listBoard.setSelectedIndex(0);
+            UILongRunningHelper.runAsync(this,"Loading board's list...",()->{
+                List<Board> boards = client.requestBlockingServerBoardList();
+                listLab.setSelectedIndex(0);
+                listBoard.setModel(modelBoard);
+                if (!boards.isEmpty()) {
+                    for (int i = 0; i < boards.size(); i++)
+                        modelBoard.addElement(boards.get(i));
+                } else {
+                    modelBoard.addElement("No board's available");
+                }
+                listBoard.setSelectedIndex(0);
+            });
         }
     }
 
