@@ -1,13 +1,13 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.exception.NotConnectedException;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -31,9 +31,7 @@ public class SendMessageForm extends ClientJFrame {
         this.textAreaComunication.setEditable(false);
         this.textAreaComunication.setFont(new Font("courier", Font.BOLD, 12));
 
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        sendButton.addActionListener(e -> {
                 String message = textFieldMessage.getText();
                 if (message.compareTo("") == 0) {
                     JOptionPane.showMessageDialog(null, "There are no messages", "", JOptionPane.WARNING_MESSAGE);
@@ -42,9 +40,19 @@ public class SendMessageForm extends ClientJFrame {
                     Date date = new Date();
                     UIPrinterHelper.clientMessage("[ " + formatter.format(date) + " ]   " + message);
                     textFieldMessage.setText("");
-                    client.sendTextMessage(message);
+                    UILongRunningHelper.<Exception>supplyAsync(this,"Sending message...",()->{
+                        try {
+                            client.sendTextMessage(message);
+                        }catch (NotConnectedException ex){
+                            return ex;
+                        }
+                        return null;
+                    },result->{
+                        if(result instanceof NotConnectedException){
+                            JOptionPane.showMessageDialog(this,"Client not connected!","Error!",JOptionPane.ERROR_MESSAGE);
+                        }
+                    });
                 }
-            }
         });
 
 
