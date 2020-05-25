@@ -110,6 +110,8 @@ public class ObjectMapper {
      */
     public static <S, D> D map(S source, Class<D> destination, String ... skipArgs) {
 
+        if(source == null) return null;
+
         D mappedObject;
 
         try {
