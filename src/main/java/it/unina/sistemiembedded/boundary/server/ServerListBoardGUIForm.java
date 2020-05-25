@@ -40,7 +40,7 @@ public class ServerListBoardGUIForm extends JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Server - Board as a Service");
         this.labelport.setText(this.labelport.getText().replace("#PORT",Integer.toString(server.getPort())));
-        serverStartedForm = new ServerStartedForm(server);
+        serverStartedForm = new ServerStartedForm(server,this);
         serverStartedForm.setVisible(false);
         labelServerStarted.setText(labelServerStarted.getText().replace("#PORT",Integer.toString(server.getPort())));
         labelServerStarted.setVisible(false);

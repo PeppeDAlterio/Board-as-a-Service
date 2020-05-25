@@ -35,6 +35,7 @@ public class ServerStartedForm extends JFrame {
     private JTextArea textAreaAssociatedBoard;
     private JList<Object> listClientsConnected;
     private JButton buttonRefresh;
+    private JButton boardSListButton;
 
     public PrintStream printStream;
 
@@ -61,7 +62,7 @@ public class ServerStartedForm extends JFrame {
 
 
 
-    public ServerStartedForm(Server server) {
+    public ServerStartedForm(Server server,JFrame parent) {
         super("Server console - Board as a Service");
         this.server = server;
         tabbedPane.setTitleAt(0,"Server log");
@@ -114,6 +115,13 @@ public class ServerStartedForm extends JFrame {
                 super.windowClosing(e);
                 JOptionPane.showMessageDialog($this,"This will shoutdown the server!","Warning",JOptionPane.WARNING_MESSAGE);
                 new MainServerGUIForm();
+            }
+        });
+        boardSListButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                parent.setVisible(true);
             }
         });
     }
