@@ -39,6 +39,7 @@ public class RemoteDebugForm extends ClientJFrame {
         textAreaResponse.setFont(new Font("courier", Font.BOLD, 12));
 
         debugButton.addActionListener(e -> {
+            textAreaResponse.setText("");
             if (textFieldgdbPort.getText().compareTo("") == 0) {
                 //TODO : Maggiori informazioni nel JoptionPane
                 JOptionPane.showMessageDialog(this, "Insert a valid GDB port number!", "", JOptionPane.ERROR_MESSAGE);
@@ -73,6 +74,7 @@ public class RemoteDebugForm extends ClientJFrame {
                 UIPrinterHelper.clientDebug("Remote GDB debug session on port : " + gdbPort + " finished.\n");
                 client.requestStopDebug();
                 debugButton.setText("Start degub");
+                textAreaResponse.setText("");
                 debuggedFirstTime = 0;
             }
         });
@@ -83,9 +85,9 @@ public class RemoteDebugForm extends ClientJFrame {
                 client.requestStopDebug();
                 debugButton.setText("Start degub");
                 debuggedFirstTime = 0;
+                textAreaResponse.setText("");
                 setVisible(false);
             }
         });
     }
-
 }

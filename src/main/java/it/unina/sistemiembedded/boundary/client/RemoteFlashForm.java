@@ -42,6 +42,7 @@ public class RemoteFlashForm extends ClientJFrame {
         jFileChooser.setDialogTitle("Chose a file.");
 
         startFlashButton.addActionListener(e -> {
+                textAreaFlash.setText("");
                 //TODO : Controlli su elf_file
                 String elf_file = textFieldFlash.getText();
                 UILongRunningHelper.<Exception>supplyAsync(this, "Flashing file : " + elf_file, () -> {
