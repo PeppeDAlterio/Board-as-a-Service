@@ -5,9 +5,11 @@ import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 
 public class RemoteFlashForm extends ClientJFrame {
@@ -17,6 +19,8 @@ public class RemoteFlashForm extends ClientJFrame {
     JTextArea textAreaFlash;
     private JScrollPane scrollPaneTextArea;
     private JButton browseButton;
+
+    private final JFileChooser jFileChooser;
 
     private void setSize(double height_inc, double weight_inc) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -37,6 +41,11 @@ public class RemoteFlashForm extends ClientJFrame {
         this.textAreaFlash.setEditable(false);
         this.textAreaFlash.setFont(new Font("courier", Font.BOLD, 12));
         //TODO : togliere il file di default nella textField
+
+        jFileChooser = new JFileChooser();
+        jFileChooser.setCurrentDirectory(new File("C://"));
+        jFileChooser.setFileFilter(new FileNameExtensionFilter(".elf","elf"));
+        jFileChooser.setDialogTitle("Chose a file.");
 
         startFlashButton.addActionListener(e -> {
                 //TODO : Controlli su elf_file
@@ -69,6 +78,16 @@ public class RemoteFlashForm extends ClientJFrame {
                 super.mouseClicked(e);
                 textFieldFlash.setText("");
             }
+        });
+
+        browseButton.addActionListener(e -> {
+                int value = jFileChooser.showOpenDialog(this);
+                if(value == JFileChooser.APPROVE_OPTION){
+                    String file_selected = jFileChooser.getSelectedFile().getAbsolutePath();
+                    textFieldFlash.setText(file_selected);
+                }else{
+                    textFieldFlash.setText("No file selected.");
+                }
         });
     }
 

@@ -50,7 +50,7 @@
             </constraints>
             <properties>
               <background color="-917761"/>
-              <text value="C:\Users\dicos\IdeaProjects\jcommunic\src\main\resources\testfile.elf"/>
+              <text value=""/>
               <toolTipText value=".elf file path"/>
             </properties>
           </component>
