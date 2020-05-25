@@ -66,6 +66,7 @@
             <properties>
               <background color="-524802"/>
               <text value="1234"/>
+              <toolTipText value="Integer between [0,65535]"/>
             </properties>
           </component>
           <component id="8e53b" class="javax.swing.JLabel" binding="labelPort">
