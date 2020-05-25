@@ -67,13 +67,23 @@ public class SystemHelper {
         
         final Process flashProcess;
         try {
-            flashProcess = Runtime.getRuntime().exec("." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
-        + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH);
+
+            flashProcess = Runtime.getRuntime().exec(
+                    "." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
+                             + " -d -p " + port + " -i " + boardSerialNumber
+                             + " -cp " + "." + Constants.STM_PROGRAMMER_PATH
+            );
+
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("There was an error while executing: " + "." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
-            + " -d -p " + port + " -i " + boardSerialNumber + " -cp " + "." + Constants.STM_PROGRAMMER_PATH + ", " + e.getMessage());
+
+            logger.error(
+                         "There was an error while executing: " + "." + Constants.GDB_PATH + Constants.GDB_EXE_NAME
+                         + " -d -p " + port + " -i " + boardSerialNumber
+                         + " -cp " + "." + Constants.STM_PROGRAMMER_PATH + ", " + e.getMessage()
+            );
+
             return null;
+
         }
 
         clientHandler.sendTextMessage(Commands.Debug.STARTED);
@@ -82,38 +92,58 @@ public class SystemHelper {
         logger.info("[remoteDebug] Remote debug session has been started...");
 
         flashProcess.onExit().thenRun(() -> {
-            
+
             try {
+
                 while (flashProcess.getInputStream().available() > 0) {
-                    int cnt = 0;
+                    int cnt;
                     if (((cnt = flashProcess.getInputStream().available()) > 0)) {
                         final byte[] buffer = new byte[cnt];
                         flashProcess.getInputStream().read(buffer, 0, cnt);
                         logger.debug("[remoteDebug]" + new String(buffer));
                     }
                 }
+
             } catch (final Exception ignored) {}
-            
-        });
-        
-        executor.execute(() -> {
+
             try {
+
                 flashProcess.waitFor();
-                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                "' on '" + boardSerialNumber + "' finished.");
-                logger.info("[remoteDebug] Remote debug session finished.");
-                clientHandler.sendTextMessage(Commands.Debug.FINISHED);
+
+                if (flashProcess.exitValue() == 0) {
+
+                    UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                            "' on '" + boardSerialNumber + "' finished.");
+                    logger.info("[remoteDebug] Remote debug session finished.");
+
+                } else if(flashProcess.exitValue() == 1) {
+
+                    UIPrinterHelper.clientDebug("Remote debug session could not start: the given port is busy !");
+
+                } else {
+
+                    UIPrinterHelper.clientDebug("There was an error while starting remote debugging session: EXIT VALUE = " + flashProcess.exitValue());
+
+                }
+
             } catch (InterruptedException ignored) {
+
                 logger.info("[remoteDebug] Remote debug session finished.");
                 UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                "' on '" + boardSerialNumber + "' finished.");
-                clientHandler.sendTextMessage(Commands.Debug.FINISHED);
+                        "' on '" + boardSerialNumber + "' finished.");
+
                 flashProcess.destroyForcibly();
+
+            } finally {
+
+                clientHandler.sendTextMessage(Commands.Debug.FINISHED);
+
             }
+
         });
-        
+
         return flashProcess;
-        
+
     }
 
     //TODO: scrivere descrizione
@@ -129,14 +159,14 @@ public class SystemHelper {
             + " -c port=swd sn=" + boardSerialNumber + " -d " + elfPath + " -v --start" + ", " + e.getMessage());
             return null;
         }
-        
+
         clientHandler.sendTextMessage(Commands.Flash.REQUEST);
         UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
         "' on '" + boardSerialNumber + "' started.");
         logger.info("[remoteFlash] Remote flash session has been started...");
-        
+
         flashProcess.onExit().thenRun(() -> {
-            
+
             try {
                 while (flashProcess.getInputStream().available() > 0) {
                     int cnt = 0;
@@ -149,13 +179,13 @@ public class SystemHelper {
             } catch (final Exception e) {
                 e.printStackTrace();
             }
-            
+
         });
-        
-        
-        executor.execute(() -> {  
+
+
+        executor.execute(() -> {
             try {
-                flashProcess.waitFor(45, TimeUnit.SECONDS);
+                flashProcess.waitFor(5, TimeUnit.MINUTES);
                 UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
                 "' on '" + boardSerialNumber + "' finished.");
                 logger.info("[remoteFlash] Remote flash session finished and the program is started.");

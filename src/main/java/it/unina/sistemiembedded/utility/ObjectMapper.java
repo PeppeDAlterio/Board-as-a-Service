@@ -47,6 +47,8 @@ public class ObjectMapper {
      */
     public static <S, D> D mapOnInstance(S source, D destinationInstance, String ... skipArgs) {
 
+        if(source == null) return null;
+
         HashSet<String> skipSet = Arrays.stream(skipArgs)
                 .map(String::toLowerCase)
                 .collect(Collectors.toCollection(HashSet::new));
@@ -137,6 +139,8 @@ public class ObjectMapper {
      */
     public static <S, D> List<D> listMap(Collection<S> source, Class<D> destination, String ... skipArgs) {
 
+        if(source == null || source.isEmpty()) return Collections.emptyList();
+
         ArrayList<D> destinationList = new ArrayList<>(source.size());
         for (S s : source) {
             destinationList.add(map(s, destination, skipArgs));
@@ -159,6 +163,8 @@ public class ObjectMapper {
      * @return Set set with new instances of destination class from source data
      */
     public static <S, D> Set<D> setMap(Collection<S> source, Class<D> destination, String ... skipArgs) {
+
+        if(source == null || source.isEmpty()) return Collections.emptySet();
 
         Set<D> destinationList = new HashSet<>(source.size());
         for (S s : source) {
