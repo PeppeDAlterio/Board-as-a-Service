@@ -86,10 +86,18 @@ public class SystemHelper {
 
         }
 
-        clientHandler.sendTextMessage(Commands.Debug.STARTED);
-        UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-        "' on '" + boardSerialNumber + "' started.");
-        logger.info("[remoteDebug] Remote debug session has been started...");
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+
+            if(flashProcess.isAlive()) {
+
+                clientHandler.sendTextMessage(Commands.Debug.STARTED);
+                UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' started.");
+                logger.info("[remoteDebug] Remote debug session has been started...");
+
+            }
+
+        }, 6, TimeUnit.SECONDS);
 
         flashProcess.onExit().thenRun(() -> {
 
