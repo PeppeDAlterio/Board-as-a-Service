@@ -469,5 +469,18 @@ class SimpleApplicationTestSuite {
 
     }
 
+    @Test
+    @DisplayName("List connected clients simple test")
+    void listConnectedClientsTest1() throws IOException {
+
+        ClientImpl client1 = new ClientImpl("Client 1");
+        ClientImpl client2 = new ClientImpl("Client 2");
+        client1.connect("127.0.0.1");
+        client2.connect("127.0.0.1");
+
+        server.listConnectedClients();
+
+    }
+
 }
 

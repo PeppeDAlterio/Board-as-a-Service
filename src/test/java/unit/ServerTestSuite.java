@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -189,41 +190,54 @@ public class ServerTestSuite {
             // return list;
         }
         
-        @Test
-        @DisplayName("flash")
-        public void remoteFlash() throws IOException {
-            
-            String boardSerialNumber = "066EFF323535474B43111046";
-            String elfPath = "C:\\Users\\Rosa\\STM32CubeIDE\\workspace_1.3.0\\led_test\\Debug\\led_test.elf";
-            final Process flashProcess = Runtime.getRuntime()
-            .exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=swd sn="
-            + boardSerialNumber + " -d " + elfPath + " -v --start 0x08000000");
-            
-            flashProcess.onExit().thenRun(() -> {
-                
-                try {
-                    while (flashProcess.getInputStream().available() > 0) {
-                        int cnt = 0;
-                        if (((cnt = flashProcess.getInputStream().available()) > 0)) {
-                            final byte[] buffer = new byte[cnt];
-                            flashProcess.getInputStream().read(buffer, 0, cnt);
-                            System.out.println(new String(buffer));
-                        }
-                    }
-                } catch (final Exception ignored) {
-                    ignored.printStackTrace();
-                }
-                
-            });
-            
+    @Test
+    @DisplayName("flash")
+    public void remoteFlash() throws IOException {
+
+        String boardSerialNumber = "066EFF323535474B43111046";
+        String elfPath = "C:\\Users\\Rosa\\STM32CubeIDE\\workspace_1.3.0\\led_test\\Debug\\led_test.elf";
+        final Process flashProcess = Runtime.getRuntime()
+        .exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME + " -c port=swd sn="
+        + boardSerialNumber + " -d " + elfPath + " -v --start 0x08000000");
+
+        flashProcess.onExit().thenRun(() -> {
+
             try {
-                flashProcess.waitFor(30, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                // timeout rosa vedi tu che fare
+                while (flashProcess.getInputStream().available() > 0) {
+                    int cnt = 0;
+                    if (((cnt = flashProcess.getInputStream().available()) > 0)) {
+                        final byte[] buffer = new byte[cnt];
+                        flashProcess.getInputStream().read(buffer, 0, cnt);
+                        System.out.println(new String(buffer));
+                    }
+                }
+            } catch (final Exception ignored) {
+                ignored.printStackTrace();
             }
-            
-            System.out.println("rosa");
+
+        });
+
+        try {
+            flashProcess.waitFor(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // timeout rosa vedi tu che fare
         }
-        
+
+        System.out.println("rosa");
     }
+
+    @Test
+    void scheduledTaskTest1() {
+
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> System.out.println("hello"), 0, 1, TimeUnit.SECONDS);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
     

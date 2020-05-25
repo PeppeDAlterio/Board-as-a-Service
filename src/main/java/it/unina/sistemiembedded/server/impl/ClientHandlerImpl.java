@@ -6,7 +6,6 @@ import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -21,7 +20,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Getter(AccessLevel.PACKAGE) @Setter(AccessLevel.PACKAGE)
+@Getter @Setter
 public class ClientHandlerImpl extends ClientHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandlerImpl.class);
