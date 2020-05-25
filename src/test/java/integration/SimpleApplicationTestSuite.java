@@ -2,6 +2,8 @@ package integration;
 
 import it.unina.sistemiembedded.client.Client;
 import it.unina.sistemiembedded.client.impl.ClientImpl;
+import it.unina.sistemiembedded.driver.COMDriver;
+import it.unina.sistemiembedded.driver.COMPort;
 import it.unina.sistemiembedded.exception.BoardAlreadyExistsException;
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
 import it.unina.sistemiembedded.exception.BoardNotAvailableException;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -466,38 +470,20 @@ class SimpleApplicationTestSuite {
         assertThrows(IllegalArgumentException.class, () -> {
             client.requestBlockingFlash("./src/main/resources/refresh.png");
         });
-
     }
 
     @Test
-    @DisplayName("List connected clients simple test")
-    void listConnectedClientsTest1() throws IOException {
+    @DisplayName("COMDriver")
 
-        ClientImpl client1 = new ClientImpl("Client 1");
-        ClientImpl client2 = new ClientImpl("Client 2");
-        client1.connect("127.0.0.1");
-        client2.connect("127.0.0.1");
+    void COMDriver1(){
 
-        server.listConnectedClients();
-
-    }
-
-    @Test
-    @DisplayName("Remote debug on busy port")
-    void remoteDebugTest1() throws BoardAlreadyInUseException, BoardNotFoundException, IOException {
-
-        ClientImpl client1 = new ClientImpl("Client");
-        client1.connect("127.0.0.1");
-        client1.requestBlockingBoard(serialNumberBoard1);
-
-        client1.requestDebug(1234);
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        Collection<String> list = Collections.singletonList("XONXOFF_IN_ENABLED");
+       
+        assertThrows(IllegalArgumentException.class, () -> {
+            COMDriver driver = new COMDriver(new COMPort(null), 115200, "NO_PARITY", 8, 1, list);
+        
+            System.out.println(driver);
+        });
     }
 
 }
