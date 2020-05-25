@@ -5,6 +5,8 @@ import it.unina.sistemiembedded.model.Board;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.Socket;
+import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class ClientHandler implements Runnable {
@@ -71,5 +73,11 @@ public abstract class ClientHandler implements Runnable {
     public String getId() {return this.id;}
 
     public abstract String getName();
+
+    public abstract Optional<Board> getConnectedBoard();
+
+    public abstract String getIpAddress();
+
+    public abstract Date getConnectedTimestamp();
 
 }

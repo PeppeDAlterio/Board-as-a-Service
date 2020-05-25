@@ -6,6 +6,7 @@ import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -17,9 +18,10 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Getter @Setter
+@Getter(AccessLevel.PACKAGE) @Setter(AccessLevel.PACKAGE)
 public class ClientHandlerImpl extends ClientHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandlerImpl.class);
@@ -56,6 +58,11 @@ public class ClientHandlerImpl extends ClientHandler {
      * If true means that's already been stopped
      */
     private AtomicBoolean stopped = new AtomicBoolean(false);
+
+    /**
+     * Server connected time timestamp
+     */
+    private Date connectedTimestamp;
 
     /**
      * Create a new Client Handler
@@ -112,12 +119,16 @@ public class ClientHandlerImpl extends ClientHandler {
 
         this.running = socket.isConnected();
 
+        // FIXME: check this out
+        assert this.running;
+
+        this.connectedTimestamp = new Date();
+
         logger.info("[run] Client handler (" + this.id + ") has been started");
 
         this.name = readMessageFromClient();
         logger.debug("[run] Client connected: (" + this.id + ", " + this.name + ")");
         UIPrinterHelper.serverActionPrint("New client connected. Hello '" + this.name + "'");
-
 
         sendTextMessage(this.server.getName());
 
@@ -166,6 +177,22 @@ public class ClientHandlerImpl extends ClientHandler {
         }
 
         return this.board;
+    }
+
+    @Override
+    public String getIpAddress() {
+
+        if(isAlive()) {
+            return this.socket.getInetAddress().toString();
+        } else {
+            return "";
+        }
+
+    }
+
+    @Override
+    public Optional<Board> getConnectedBoard() {
+        return Optional.ofNullable(this.board);
     }
 
     public void sendTextMessages(String ... messages) {
