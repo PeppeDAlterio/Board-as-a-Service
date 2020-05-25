@@ -34,7 +34,9 @@
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <verticalScrollBarPolicy value="22"/>
+                </properties>
                 <border type="none"/>
                 <children>
                   <component id="937ae" class="javax.swing.JTextArea" binding="textAreaClientAction">
@@ -59,7 +61,9 @@
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties/>
+                <properties>
+                  <verticalScrollBarPolicy value="22"/>
+                </properties>
                 <border type="none"/>
                 <children>
                   <component id="d1d79" class="javax.swing.JTextArea" binding="textAreaClientComunication">
@@ -94,16 +98,23 @@
             </properties>
             <border type="none" title="Associated board"/>
             <children>
-              <component id="d7206" class="javax.swing.JTextArea" binding="textAreaAssociatedBoard">
+              <scrollpane id="c88b6">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="50"/>
-                  </grid>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <background color="-917761"/>
+                  <verticalScrollBarPolicy value="22"/>
                 </properties>
-              </component>
+                <border type="none"/>
+                <children>
+                  <component id="d7206" class="javax.swing.JTextArea" binding="textAreaAssociatedBoard">
+                    <constraints/>
+                    <properties>
+                      <background color="-917761"/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
           <grid id="c9947" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -117,16 +128,6 @@
             </properties>
             <border type="none" title="Clients connected"/>
             <children>
-              <component id="4b374" class="javax.swing.JList" binding="listClientsConnected">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="50"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <background color="-917761"/>
-                </properties>
-              </component>
               <component id="936f5" class="javax.swing.JButton" binding="buttonRefresh">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -136,6 +137,23 @@
                   <text value=""/>
                 </properties>
               </component>
+              <scrollpane id="b04ab">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <verticalScrollBarPolicy value="22"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="4b374" class="javax.swing.JList" binding="listClientsConnected">
+                    <constraints/>
+                    <properties>
+                      <background color="-917761"/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
         </children>

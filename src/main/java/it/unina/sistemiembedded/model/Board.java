@@ -193,6 +193,6 @@ public class Board implements Serializable {
         }else{
             used = "NO";
         }
-        return "[  Name = " + this.name + "  |  Serial Number = " + this.serialNumber + "  |  In use = " + used + " ] \n";
+        return "[  Name = " + this.name + "  |  Serial Number = " + this.serialNumber + "  ]\n";
     }
 }

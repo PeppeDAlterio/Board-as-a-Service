@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.boundary.server;
 
+import it.unina.sistemiembedded.model.ConnectedClient;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
@@ -11,9 +12,12 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,28 +29,33 @@ public class ServerStartedForm extends JFrame {
     private JScrollPane spComm;
     private JTabbedPane tabbedPane;
     private JTextArea textAreaAssociatedBoard;
-    private JList listClientsConnected;
+    private JList<Object> listClientsConnected;
     private JButton buttonRefresh;
 
     public PrintStream printStream;
 
     private DefaultListModel defaultListModel;
 
+    private Server server;
 
     private void initClientsConnectedList(){
         defaultListModel = new DefaultListModel();
-        Object obj; //server.getConnectedClient();
-        /*for(){
-            defaultListModel.add(obj);
+        List<ConnectedClient> connectedClients = server.listConnectedClients();
+        if(connectedClients.size()!=0) {
+            for (ConnectedClient connectedClient : connectedClients) {
+                defaultListModel.addElement(connectedClient);
+            }
+        }else{
+            defaultListModel.addElement("No client connected.");
         }
-        listClientConnected.setModel(defaultListModel);
-        */
+        listClientsConnected.setModel(defaultListModel);
     }
 
 
 
     public ServerStartedForm(Server server,JFrame parent) {
         super("Server console - Board as a Service");
+        this.server = server;
         tabbedPane.setTitleAt(0,"Server log");
         tabbedPane.setTitleAt(1,"Clients communications");
         UISizeHelper.setSize(this,0.7, 0.7);
@@ -61,23 +70,24 @@ public class ServerStartedForm extends JFrame {
         this.textAreaClientComunication.setEditable(false);
         this.textAreaClientComunication.setFont(new Font("courier", Font.BOLD, 12));
         this.textAreaClientAction.setFont(new Font("courier", Font.BOLD, 12));
+        this.textAreaAssociatedBoard.setFont(new Font("courier",Font.BOLD,12));
+        initClientsConnectedList();
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication, null, null, null));
         UIPrinterHelper.setPrintStream(printStream);
-
-
-        //initClientsConnectedList();
-
-
-
-
-
 
 
         listClientsConnected.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting())return;
                 textAreaAssociatedBoard.removeAll();
-
+                if(listClientsConnected.getSelectedValue() instanceof ConnectedClient) {
+                    if(((ConnectedClient) listClientsConnected.getSelectedValue()).getBoard().isPresent()){
+                        textAreaAssociatedBoard.append(((ConnectedClient) listClientsConnected.getSelectedValue()).getBoard().get().toString()+"\n");
+                    }else{
+                        textAreaAssociatedBoard.append("No board associated to the selected client.\n");
+                    }
+                }
             }
         });
 
@@ -91,7 +101,13 @@ public class ServerStartedForm extends JFrame {
             }
         });
 
-
+        buttonRefresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textAreaAssociatedBoard.removeAll();
+                initClientsConnectedList();
+            }
+        });
     }
 
 }
