@@ -482,5 +482,23 @@ class SimpleApplicationTestSuite {
 
     }
 
+    @Test
+    @DisplayName("Remote debug on busy port")
+    void remoteDebugTest1() throws BoardAlreadyInUseException, BoardNotFoundException, IOException {
+
+        ClientImpl client1 = new ClientImpl("Client");
+        client1.connect("127.0.0.1");
+        client1.requestBlockingBoard(serialNumberBoard1);
+
+        client1.requestDebug(1234);
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
 

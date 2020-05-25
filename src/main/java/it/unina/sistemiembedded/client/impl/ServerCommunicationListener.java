@@ -125,6 +125,14 @@ public class ServerCommunicationListener {
         }
     }
 
+    void busyPortDebugCallback() {
+        UIPrinterHelper.clientDebug("Debugging session couldn't start: the given port is busy");
+    }
+
+    void errorDebugCallback() {
+        UIPrinterHelper.clientDebug("Debugging session error");
+    }
+
     void receiveBoardListCallback() {
 
         List<Board> boards = null;

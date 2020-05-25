@@ -113,6 +113,15 @@ public class Commands {
          */
         public static final String REQUEST_END      = "$--- DEBUG ON BOARD REQUEST END ---$";
 
+        /**
+         * Sent by the server if GDB returns a busy port error
+         */
+        public static final String GDB_BUSY_PORT    = "$--- DEBUG ON BOARD GDB BUSY PORT ---$";
+
+        /**
+         * Sent by the server if GDB returns an error
+         */
+        public static final String GDB_ERROR        = "$--- DEBUG ON BOARD GDB ERROR ---$";
     }
 
     /**
