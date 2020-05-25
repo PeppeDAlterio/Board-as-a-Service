@@ -9,7 +9,6 @@ import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -97,7 +96,7 @@ public class ClientHandlerCommunicationListener {
         try {
             this.clientHandler.getBoard().setDebugging(true);
             this.clientHandler.getBoard().setDebuggingProcess(SystemHelper.remoteDebug(this.clientHandler.getBoard().getSerialNumber(), debugPort, this.clientHandler));
-        } catch (IOException e) {
+        } catch (Exception e) {
             this.clientHandler.sendTextMessages(Commands.Debug.ERROR);
             stopActiveDebugSession();
             logger.error("[debugRequestCallbak] There was an error while starting remote debug session on port: " + debugPort);
