@@ -120,7 +120,7 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        if(board().isEmpty()) {
+        if(!board().isPresent()) {
             throw new BoardNotAvailableException();
         }
 
@@ -136,7 +136,7 @@ public class ClientImpl extends Client {
 
         checkConnection();
 
-        if(board().isEmpty()) {
+        if(!board().isPresent()) {
             throw new BoardNotAvailableException();
         }
 

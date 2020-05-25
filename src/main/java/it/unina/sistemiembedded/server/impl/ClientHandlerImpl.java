@@ -212,7 +212,7 @@ public class ClientHandlerImpl extends ClientHandler {
         logger.debug("[parseReceivedMessage] Beggining parse of message: " + message);
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[ Client (").append(this.id).append(", ").append(this.name).append(") ] ");
+        stringBuilder.append("[ Client (").append(this.name).append(") ] ");
 
         switch (message) {
 

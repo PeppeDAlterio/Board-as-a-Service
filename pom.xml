@@ -13,7 +13,7 @@
 
         <main-class-package>it.unina.sistemiembedded.main</main-class-package>
 
-        <java-language-level>11</java-language-level>
+        <java-language-level>9</java-language-level>
 
         <client-app-name>Client application</client-app-name>
         <client-main-class>MainClientGUIForm</client-main-class>
@@ -135,13 +135,13 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.29</version>
+                <version>1.7.30</version>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.29</version>
+                <version>1.7.30</version>
             </dependency>
 
         <!-- / Utilities -->
