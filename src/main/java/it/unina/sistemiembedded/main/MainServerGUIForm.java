@@ -18,7 +18,7 @@ import java.util.Date;
 
 public class MainServerGUIForm extends JFrame {
 
-    private static final Logger logger = LoggerFactory.getLogger(MainServerGUIForm.class);
+    private static Logger logger;
 
     private static Server server;
 
@@ -91,9 +91,7 @@ public class MainServerGUIForm extends JFrame {
         mainApplicationInit();
         new MainServerGUIForm();
     }
-
     private static void mainApplicationInit() {
-
         System.setProperty("org.slf4j.simpleLogger.dateTimeFormat", "dd/MM/yyyy HH:mm:ss");
         System.setProperty("org.slf4j.simpleLogger.showDateTime", "true");
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
@@ -106,10 +104,9 @@ public class MainServerGUIForm extends JFrame {
         if (directory.exists()) {
             System.out.println(directory.getPath() + " già esistente");
         }
-
         File file = new File(directory.getPath() + "/log[ " + formatter.format(date) + " ].txt");
         System.setProperty("org.slf4j.simpleLogger.logFile", file.getAbsolutePath());
-
+        logger = LoggerFactory.getLogger(MainServerGUIForm.class);
         final Thread shutdownThread = new Thread(() -> {
             logger.info("[shutdownhook] Shutdown hook started...");
             if (server != null) {
@@ -121,7 +118,6 @@ public class MainServerGUIForm extends JFrame {
             }
             logger.info("[shutdownhook] ...shutdown hook finished.");
         });
-
         Runtime.getRuntime().addShutdownHook(shutdownThread);
 
     }

@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.boundary.server;
 
+import it.unina.sistemiembedded.main.MainServerGUIForm;
 import it.unina.sistemiembedded.model.ConnectedClient;
 import it.unina.sistemiembedded.server.Server;
 import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
@@ -41,6 +42,8 @@ public class ServerStartedForm extends JFrame {
 
     private Server server;
 
+    private JFrame $this=this;
+
     private void initClientsConnectedList(){
         defaultListModel = new DefaultListModel();
         UILongRunningHelper.runAsync(this,"Loading connected client's list",()->{
@@ -58,7 +61,7 @@ public class ServerStartedForm extends JFrame {
 
 
 
-    public ServerStartedForm(Server server,JFrame parent) {
+    public ServerStartedForm(Server server) {
         super("Server console - Board as a Service");
         this.server = server;
         tabbedPane.setTitleAt(0,"Server log");
@@ -97,21 +100,20 @@ public class ServerStartedForm extends JFrame {
             }
         });
 
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
-                super.windowClosing(e);
-                setVisible(false);
-                parent.setVisible(true);
-            }
-        });
-
         buttonRefresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 textAreaAssociatedBoard.setText("");
                 initClientsConnectedList();
+            }
+        });
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
+                super.windowClosing(e);
+                JOptionPane.showMessageDialog($this,"This will shoutdown the server!","Warning",JOptionPane.WARNING_MESSAGE);
+                new MainServerGUIForm();
             }
         });
     }
