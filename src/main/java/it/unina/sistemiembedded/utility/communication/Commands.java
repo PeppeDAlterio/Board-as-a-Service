@@ -74,7 +74,7 @@ public class Commands {
         /**
          * Sent by the Server to acknowledge an error with the flash
          */
-        public static final String ERROR          = "$--- FLASH ON BOARD ERROR ---$";
+        public static final String ERROR            = "$--- FLASH ON BOARD ERROR ---$";
 
     }
 

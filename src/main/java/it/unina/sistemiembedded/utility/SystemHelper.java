@@ -118,19 +118,15 @@ public class SystemHelper {
 
                 flashProcess.waitFor();
 
-                if (flashProcess.exitValue() == 0) {
-
-                    UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
-                            "' on '" + boardSerialNumber + "' finished.");
-                    logger.info("[remoteDebug] Remote debug session finished.");
-
-                } else if(flashProcess.exitValue() == -1) {
+                if(flashProcess.exitValue() == -1) {
 
                     clientHandler.sendTextMessage(Commands.Debug.GDB_BUSY_PORT);
 
                 } else {
 
-                    clientHandler.sendTextMessage(Commands.Debug.GDB_ERROR);
+                    UIPrinterHelper.serverActionPrint("Remote debug session requested by '" + clientHandler.getName() +
+                            "' on '" + boardSerialNumber + "' finished.");
+                    logger.info("[remoteDebug] Remote debug session finished.");
 
                 }
 
@@ -168,7 +164,6 @@ public class SystemHelper {
             return null;
         }
 
-        clientHandler.sendTextMessage(Commands.Flash.REQUEST);
         UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
         "' on '" + boardSerialNumber + "' started.");
         logger.info("[remoteFlash] Remote flash session has been started...");
