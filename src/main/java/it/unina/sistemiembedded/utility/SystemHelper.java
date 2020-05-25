@@ -116,13 +116,13 @@ public class SystemHelper {
                             "' on '" + boardSerialNumber + "' finished.");
                     logger.info("[remoteDebug] Remote debug session finished.");
 
-                } else if(flashProcess.exitValue() == 1) {
+                } else if(flashProcess.exitValue() == -1) {
 
-                    UIPrinterHelper.clientDebug("Remote debug session could not start: the given port is busy !");
+                    clientHandler.sendTextMessage(Commands.Debug.GDB_BUSY_PORT);
 
                 } else {
 
-                    UIPrinterHelper.clientDebug("There was an error while starting remote debugging session: EXIT VALUE = " + flashProcess.exitValue());
+                    clientHandler.sendTextMessage(Commands.Debug.GDB_ERROR);
 
                 }
 

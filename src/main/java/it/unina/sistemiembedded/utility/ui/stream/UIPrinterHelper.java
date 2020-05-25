@@ -65,8 +65,7 @@ public class UIPrinterHelper {
         write(TextArea.CLIENT_MESSAGE, msg);
     }
 
-    public static void clientDebug(String msg) { write(TextArea.CLIENT_DEBUG, msg);
-    }
+    public static void clientDebug(String msg) { write(TextArea.CLIENT_DEBUG, msg); }
 
     public static void clientFlash(String msg) {
         write(TextArea.CLIENT_FLASH, msg);

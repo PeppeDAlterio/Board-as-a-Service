@@ -313,6 +313,16 @@ public class ClientImpl extends Client {
                 serverCommunicationListener.startedDebugCallback();
                 break;
 
+            case Commands.Debug.GDB_BUSY_PORT:
+                loggerStringBuilder.append("Debugging session cannot start: busy port");
+                serverCommunicationListener.busyPortDebugCallback();
+                break;
+
+            case Commands.Debug.GDB_ERROR:
+                loggerStringBuilder.append("Debugging session error");
+                serverCommunicationListener.errorDebugCallback();
+                break;
+
             case Commands.Debug.ERROR:
             case Commands.Debug.FINISHED:
                 loggerStringBuilder.append("Debugging session finished");
