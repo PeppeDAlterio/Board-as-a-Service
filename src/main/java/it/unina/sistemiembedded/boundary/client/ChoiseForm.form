@@ -167,7 +167,7 @@
                 </constraints>
                 <properties>
                   <text value="Reset board"/>
-                  <toolTipText value="Click here to simulate pression of the phisical reset button on the board"/>
+                  <toolTipText value="Click here to press the Reset Button on the Board"/>
                 </properties>
               </component>
             </children>
