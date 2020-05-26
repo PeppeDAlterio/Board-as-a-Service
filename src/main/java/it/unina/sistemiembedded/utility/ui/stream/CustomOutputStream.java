@@ -31,15 +31,15 @@ public class CustomOutputStream extends OutputStream {
         final String stringBuffer = buffer.toString();
 
         if ( stringBuffer.endsWith("\r") || stringBuffer.endsWith("\n") ) {
-            if(stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_FLASH.getValue())){
+            if(textAreaRemoteFlash != null && stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_FLASH.getValue())){
                 textAreaRemoteFlash.append(stringBuffer.substring(UIPrinterHelper.TextArea.CLIENT_FLASH.getValue().length())+"\n");
-            }else if(stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_DEBUG.getValue())){
+            }else if(textAreaRemoteDegubFormDebug != null && stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_DEBUG.getValue())){
                 textAreaRemoteDegubFormDebug.append(stringBuffer.substring(UIPrinterHelper.TextArea.CLIENT_DEBUG.getValue().length())+"\n");
-            }else if(stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_MESSAGE.getValue())) {
+            }else if(textAreaSendMessage != null && stringBuffer.startsWith(UIPrinterHelper.TextArea.CLIENT_MESSAGE.getValue())) {
                 textAreaSendMessage.append(stringBuffer.substring(UIPrinterHelper.TextArea.CLIENT_MESSAGE.getValue().length())+"\n");
-            }else if(stringBuffer.startsWith(UIPrinterHelper.TextArea.SERVER_ACTION.getValue())) {
+            }else if(textAreaServerStartedFromClientAction != null && stringBuffer.startsWith(UIPrinterHelper.TextArea.SERVER_ACTION.getValue())) {
                 textAreaServerStartedFromClientAction.append(stringBuffer.substring(UIPrinterHelper.TextArea.SERVER_ACTION.getValue().length())+"\n");
-            } else if(stringBuffer.startsWith(UIPrinterHelper.TextArea.SERVER_COMMUNICATION.getValue())){
+            } else if(textAreaServerStartedFromClientComunication != null && stringBuffer.startsWith(UIPrinterHelper.TextArea.SERVER_COMMUNICATION.getValue())){
                 textAreaServerStartedFromClientComunication.append(stringBuffer.substring(UIPrinterHelper.TextArea.SERVER_COMMUNICATION.getValue().length())+"\n");
             }
 

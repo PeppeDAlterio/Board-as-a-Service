@@ -1,5 +1,6 @@
 package it.unina.sistemiembedded.utility;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -45,7 +46,7 @@ public class ObjectMapper {
      * @param <D> Destination class
      * @return D new instance of destination class with source data
      */
-    public static <S, D> D mapOnInstance(S source, D destinationInstance, String ... skipArgs) {
+    public static @Nullable <S, D> D mapOnInstance(@Nullable S source, D destinationInstance, String ... skipArgs) {
 
         if(source == null) return null;
 
@@ -110,7 +111,7 @@ public class ObjectMapper {
      * @param <D> Destination class
      * @return D new instance of destination class with source data
      */
-    public static <S, D> D map(S source, Class<D> destination, String ... skipArgs) {
+    public static @Nullable <S, D> D map(@Nullable S source, Class<D> destination, String ... skipArgs) {
 
         if(source == null) return null;
 

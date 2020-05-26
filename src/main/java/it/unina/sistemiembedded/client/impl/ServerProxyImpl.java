@@ -146,7 +146,9 @@ public class ServerProxyImpl extends ServerProxy {
     @Override
     public void disconnect() {
         try {
-            this.socket.close();
+            if(this.socket.isConnected()) {
+                this.socket.close();
+            }
         } catch (IOException ignored) {}
         logger.info("[disconnect] Disconnected from server");
     }

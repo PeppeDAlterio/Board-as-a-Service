@@ -5,6 +5,7 @@ import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.SystemHelper;
 import it.unina.sistemiembedded.utility.communication.Commands;
+import it.unina.sistemiembedded.utility.debug.GDBProcess;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,9 @@ public class ClientHandlerCommunicationListener {
 
         try {
             this.clientHandler.getBoard().setDebugging(true);
-            this.clientHandler.getBoard().setDebuggingProcess(SystemHelper.remoteDebug(this.clientHandler.getBoard().getSerialNumber(), debugPort, this.clientHandler));
+            Process osProcess = SystemHelper.remoteDebug(this.clientHandler.getBoard().getSerialNumber(), debugPort, this.clientHandler);
+            GDBProcess gdbProcess = new GDBProcess(osProcess, this.clientHandler.getIpAddress(), debugPort);
+            this.clientHandler.getBoard().setDebuggingProcess(gdbProcess);
         } catch (Exception e) {
             this.clientHandler.sendTextMessages(Commands.Debug.ERROR);
             stopActiveDebugSession();
@@ -144,8 +147,10 @@ public class ClientHandlerCommunicationListener {
                 this.clientHandler.getBoard().setDebugging(false);
                 if (this.clientHandler.getBoard().getDebuggingProcess() != null) {
                     try {
-                        this.clientHandler.getBoard().getDebuggingProcess().destroyForcibly().waitFor();
-
+                        Process process = this.clientHandler.getBoard().getDebuggingProcess().stopDebug();
+                        if(process!=null) {
+                            process.waitFor();
+                        }
                     } catch (InterruptedException ignored) {
                     } finally {
                         this.clientHandler.getBoard().setDebuggingProcess(null);

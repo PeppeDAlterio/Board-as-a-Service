@@ -2,6 +2,7 @@ package it.unina.sistemiembedded.driver;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

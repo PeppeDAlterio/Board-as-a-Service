@@ -48,6 +48,7 @@ public class RemoteDebugForm extends ClientJFrame {
                         try {
                             gdbPort = Integer.parseInt(textFieldgdbPort.getText());
                             UIPrinterHelper.clientDebug("Remote GDB debug session started on port : " + gdbPort + "\n");
+                            UIPrinterHelper.clientDebug("\tWaiting for debugger to be ready...\n");
                             client.requestDebug(gdbPort);
                         }catch (IllegalArgumentException ex) {
                             return ex;

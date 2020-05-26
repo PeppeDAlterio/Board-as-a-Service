@@ -182,7 +182,7 @@ public class ClientHandlerImpl extends ClientHandler {
     public String getIpAddress() {
 
         if(isAlive()) {
-            return this.socket.getInetAddress().toString();
+            return this.socket.getInetAddress().toString().replace("/", "");
         } else {
             return "";
         }
@@ -286,7 +286,8 @@ public class ClientHandlerImpl extends ClientHandler {
                 stringBuilder.append("Received: ").append(message);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 Date date = new Date();
-                UIPrinterHelper.serverCommunicationPrint("[ "+formatter.format(date)+" ]   "+message);
+                UIPrinterHelper.serverCommunicationPrint("[ "+formatter.format(date)+" | "
+                        + this.getName() + " ] "+message);
                 this.board.getComDriver().ifPresent(comDriver -> {
                     comDriver.writeln(message);
                 });

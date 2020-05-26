@@ -122,6 +122,7 @@ public class ServerCommunicationListener {
             synchronized (this.client.getBoard().getSerialNumber().intern()) {
                 this.client.getBoard().setDebugging(true);
             }
+            UIPrinterHelper.clientDebug("Debugger is ready!");
             UIPrinterHelper.clientDebug("To correctly use the remote debbugger :");
             UIPrinterHelper.clientDebug("\t1)  Open your STM32CubeIDE");
             UIPrinterHelper.clientDebug("\t2)  Open 'Degub Configuration' settings ");

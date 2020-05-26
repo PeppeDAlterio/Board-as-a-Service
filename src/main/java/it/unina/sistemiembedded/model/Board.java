@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.model;
 
 import it.unina.sistemiembedded.driver.COMDriver;
+import it.unina.sistemiembedded.utility.debug.GDBProcess;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.maven.shared.utils.StringUtils;
@@ -42,7 +43,7 @@ public class Board implements Serializable {
 
     private boolean inUse = false;
 
-    private Process debuggingProcess;
+    private GDBProcess debuggingProcess;
 
     private boolean debugging = false;
 
