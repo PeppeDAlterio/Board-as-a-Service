@@ -61,6 +61,7 @@ public class RemoteFlashForm extends ClientJFrame {
                         JOptionPane.showMessageDialog(this,"There was an error during flashing operation.","Error!",JOptionPane.ERROR_MESSAGE);
                     }else{
                         UIPrinterHelper.clientFlash("Flash of file '"+elf_file+"' completed");
+                        UIPrinterHelper.clientFlash("The programm is now running on the board "+client.board().get().toString()+"...");
                         //TODO : Aggiungere più info sul flash
                     }
                 });
