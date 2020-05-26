@@ -101,7 +101,8 @@ public class ChoiseForm extends ClientJFrame {
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
                 if (closeForm == 1) {
-                    JOptionPane.showMessageDialog($this, "You will be detached from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
+                    //JOptionPane.showMessageDialog($this, "You will be detached from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showConfirmDialog($this,"You will be detached from the current board","Closing the current session...",JOptionPane.YES_NO_OPTION);
                     client.requestReleaseBoard();
                     setVisibleFrames(false);
                     new AttachBoardForm(client, ip, port);
