@@ -21,6 +21,7 @@ public class ChoiseForm extends ClientJFrame {
     private JLabel label_name;
     private JButton requestAnotherBoardButton;
     private JLabel labelInfoServer;
+    private JButton buttonResetBoard;
 
     private RemoteDebugForm debugFrame;
     private RemoteFlashForm flashFrame;
@@ -105,6 +106,12 @@ public class ChoiseForm extends ClientJFrame {
                     setVisibleFrames(false);
                     new AttachBoardForm(client, ip, port);
                 }
+            }
+        });
+        buttonResetBoard.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }
