@@ -28,8 +28,6 @@ public class ChoiseForm extends ClientJFrame {
     private RemoteFlashForm flashFrame;
     private SendMessageForm msgFrame;
 
-    private int closeForm = 1;
-
     private final ClientJFrame $this=this;
 
     private PrintStream printStream;
@@ -87,27 +85,25 @@ public class ChoiseForm extends ClientJFrame {
             }
         });
         requestAnotherBoardButton.addActionListener(e -> {
-                closeForm = 0;
-                JOptionPane.showMessageDialog(this, "You will be detached from the current board. Continue?", "Request another board", JOptionPane.INFORMATION_MESSAGE);
-                client.requestReleaseBoard();
-                dispose();
-                setVisibleFrames(false);
-                new AttachBoardForm(client, ip, port);
-
+                int choise=JOptionPane.showConfirmDialog($this,"You will be detached from the current board. Continue?","Request another board",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if(choise==JOptionPane.YES_OPTION) {
+                    client.requestReleaseBoard();
+                    dispose();
+                    setVisibleFrames(false);
+                    new AttachBoardForm(client, ip, port);
+                }
         });
 
 
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                if (closeForm == 1) {
-                    int choise=JOptionPane.showConfirmDialog($this,"You will be detached from the current board","Closing the current session...",JOptionPane.YES_NO_OPTION);
-                    if(choise==JOptionPane.YES_OPTION) {
-                        client.requestReleaseBoard();
-                        setVisibleFrames(false);
-                        dispose();
-                        new AttachBoardForm(client, ip, port);
-                    }
+                int choise=JOptionPane.showConfirmDialog($this,"You will be detached from the current board. Continue?","Closing the current session...",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if(choise==JOptionPane.YES_OPTION) {
+                    client.requestReleaseBoard();
+                    setVisibleFrames(false);
+                    dispose();
+                    new AttachBoardForm(client, ip, port);
                 }
             }
         });

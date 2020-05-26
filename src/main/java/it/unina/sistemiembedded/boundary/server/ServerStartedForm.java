@@ -69,7 +69,7 @@ public class ServerStartedForm extends JFrame {
         tabbedPane.setTitleAt(1,"Clients communications");
         UISizeHelper.setSize(this,0.7, 0.7);
         this.setContentPane(mainPanel);
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
@@ -111,10 +111,11 @@ public class ServerStartedForm extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                //TODO : JOptionPane per segnalare termine sessione di debug(o eventualmente annullare)
-                super.windowClosing(e);
-                JOptionPane.showMessageDialog($this,"This will shoutdown the server!","Warning",JOptionPane.WARNING_MESSAGE);
-                new MainServerGUIForm();
+                int choise=JOptionPane.showConfirmDialog($this,"This will shoutdown the server! Continue?","Stop server.",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                if(choise==JOptionPane.YES_OPTION) {
+                    dispose();
+                    new MainServerGUIForm();
+                }
             }
         });
         boardSListButton.addActionListener(new ActionListener() {

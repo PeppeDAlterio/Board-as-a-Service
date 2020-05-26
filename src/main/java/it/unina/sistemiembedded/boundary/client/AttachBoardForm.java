@@ -54,7 +54,7 @@ public class AttachBoardForm extends ClientJFrame {
         super("Client - Board as a Service");
         UISizeHelper.setSize(this,0.5, 0.5);
         this.setContentPane(this.mainPanel);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
@@ -93,10 +93,12 @@ public class AttachBoardForm extends ClientJFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
-                    JOptionPane.showMessageDialog($this, "Your connection whit "+client.getServerName()+
-                            " [ "+ip+":"+port+" ] will be closed", "Closing connection...", JOptionPane.WARNING_MESSAGE);
+                int choise=JOptionPane.showConfirmDialog($this,"Your connection whit "+client.getServerName()+
+                        " [ "+ip+":"+port+" ] will be closed. Continue?","Closing connection...",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
+                if(choise==JOptionPane.YES_OPTION) {
+                    dispose();
                     new MainClientGUIForm();
+                }
             }
         });
     }
