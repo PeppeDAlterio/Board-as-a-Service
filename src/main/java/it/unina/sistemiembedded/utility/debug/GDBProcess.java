@@ -7,10 +7,13 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Getter @Setter
 public class GDBProcess {
+
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
 
     private Process delegate;
 
@@ -29,7 +32,7 @@ public class GDBProcess {
                 new Socket(ip, port).close();
             } catch (IOException ignored) {
             } finally {
-                Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                executor.schedule(() -> {
                     if (delegate.isAlive()) {
                         delegate.destroyForcibly();
                     }
