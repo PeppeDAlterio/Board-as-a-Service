@@ -69,6 +69,12 @@ public interface ClientCommandsInterface {
     void requestReset();
 
     /**
+     * Request board reset
+     * @return boolean, true if reset was successfull; false otherwise
+     */
+    boolean requestBlockingReset() throws NotConnectedException, BoardNotAvailableException;
+
+    /**
      * Blocking requests connected server's board list.
      * @throws NotConnectedException client is not connected to any server
      * @return List list or server's boards
