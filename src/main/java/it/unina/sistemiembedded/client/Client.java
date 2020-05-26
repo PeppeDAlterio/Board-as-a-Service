@@ -13,7 +13,7 @@ public abstract class Client implements ClientCommandsInterface {
     /**
      * Timeout for blocking requests in Seconds
      */
-    protected static int BLOCKING_REQUEST_SECONDS_TIMEOUT = 20;
+    protected static int BLOCKING_REQUEST_SECONDS_TIMEOUT = 10;
 
     /**
      * Set blocking requests timeout time in seconds

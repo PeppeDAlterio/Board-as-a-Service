@@ -39,14 +39,14 @@ public class ServerStartedForm extends JFrame {
 
     public PrintStream printStream;
 
-    private DefaultListModel defaultListModel;
+    private DefaultListModel<Object> defaultListModel;
 
     private Server server;
 
     private JFrame $this=this;
 
     private void initClientsConnectedList(){
-        defaultListModel = new DefaultListModel();
+        defaultListModel = new DefaultListModel<Object>();
         UILongRunningHelper.runAsync(this,"Loading connected client's list",()->{
             List<ConnectedClient> connectedClients = server.listConnectedClients();
             if(connectedClients.size()!=0) {
@@ -83,7 +83,7 @@ public class ServerStartedForm extends JFrame {
         initClientsConnectedList();
         printStream = new PrintStream(new CustomOutputStream(this.textAreaClientAction, this.textAreaClientComunication, null, null, null));
         UIPrinterHelper.setPrintStream(printStream);
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> { textAreaAssociatedBoard.setText("");initClientsConnectedList();}, 0, 5, TimeUnit.MINUTES);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> { textAreaAssociatedBoard.setText("");initClientsConnectedList();}, 0, 1, TimeUnit.MINUTES);
 
 
         listClientsConnected.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
