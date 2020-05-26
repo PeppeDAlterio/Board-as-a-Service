@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,7 +183,7 @@ public class ServerCommunicationListener {
     void successResetCallback() {
 
         logger.info("[successResetCallback] Board reset success");
-
+        JOptionPane.showMessageDialog(null,"Board reset successful","Reset success",JOptionPane.INFORMATION_MESSAGE);
         // TODO Success Reset Callback code HERE
 
     }
@@ -190,7 +191,7 @@ public class ServerCommunicationListener {
     void errorResetCallback() {
 
         logger.error("[successResetCallback] Board reset error");
-
+        JOptionPane.showMessageDialog(null,"Board reset error!","Reset error",JOptionPane.INFORMATION_MESSAGE);
         // TODO Error Reset Callback code HERE
 
     }

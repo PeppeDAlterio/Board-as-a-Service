@@ -111,7 +111,7 @@ public class ChoiseForm extends ClientJFrame {
         buttonResetBoard.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                client.requestReset();
             }
         });
     }
