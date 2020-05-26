@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.boundary.client;
 
 import it.unina.sistemiembedded.client.Client;
+import it.unina.sistemiembedded.utility.ui.UILongRunningHelper;
 import it.unina.sistemiembedded.utility.ui.UISizeHelper;
 import it.unina.sistemiembedded.utility.ui.stream.CustomOutputStream;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
@@ -62,7 +63,7 @@ public class ChoiseForm extends ClientJFrame {
         infoClient = infoClient.replace("[NAME]",client.getName());
         label_name.setText(infoClient);
         this.setContentPane(this.mainPanel);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setVisible(true);
         this.pack();
         this.setLocationRelativeTo(null);
@@ -87,7 +88,7 @@ public class ChoiseForm extends ClientJFrame {
         });
         requestAnotherBoardButton.addActionListener(e -> {
                 closeForm = 0;
-                JOptionPane.showMessageDialog(this, "You will be detached from the current board", "Request another board", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "You will be detached from the current board. Continue?", "Request another board", JOptionPane.INFORMATION_MESSAGE);
                 client.requestReleaseBoard();
                 dispose();
                 setVisibleFrames(false);
@@ -99,20 +100,23 @@ public class ChoiseForm extends ClientJFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
                 if (closeForm == 1) {
-                    //JOptionPane.showMessageDialog($this, "You will be detached from the current board", "Closing the current session...", JOptionPane.INFORMATION_MESSAGE);
-                    JOptionPane.showConfirmDialog($this,"You will be detached from the current board","Closing the current session...",JOptionPane.YES_NO_OPTION);
-                    client.requestReleaseBoard();
-                    setVisibleFrames(false);
-                    new AttachBoardForm(client, ip, port);
+                    int choise=JOptionPane.showConfirmDialog($this,"You will be detached from the current board","Closing the current session...",JOptionPane.YES_NO_OPTION);
+                    if(choise==JOptionPane.YES_OPTION) {
+                        client.requestReleaseBoard();
+                        setVisibleFrames(false);
+                        dispose();
+                        new AttachBoardForm(client, ip, port);
+                    }
                 }
             }
         });
         buttonResetBoard.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                client.requestReset();
+                UILongRunningHelper.runAsync($this,"Reset in progress...",()->{
+                    client.requestBlockingReset();
+                });
             }
         });
     }
