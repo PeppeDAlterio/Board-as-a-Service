@@ -41,6 +41,11 @@ public class MainClientGUIForm extends ClientJFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.textFieldName.setText(nameClient);
+
+        if(this.client!=null) {
+            this.client.disconnect();
+        }
+
         startConnectionButton.addActionListener(e -> {
             ipAddress = textFieldIP.getText();
             portNumber = Integer.parseInt(textFieldPort.getText());
