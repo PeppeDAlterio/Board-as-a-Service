@@ -1,6 +1,7 @@
 package it.unina.sistemiembedded.client.impl;
 
 import it.unina.sistemiembedded.exception.BoardAlreadyInUseException;
+import it.unina.sistemiembedded.exception.BoardNotAvailableException;
 import it.unina.sistemiembedded.exception.BoardNotFoundException;
 import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.utility.communication.Commands;
@@ -12,7 +13,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +45,7 @@ public class ServerCommunicationListener {
     private final Message blockingReceivingBuffer = new Message();
 
     private enum BlockingReceivingMethod {
-        none, listConnectedServerBoards, requestBoard, flash
+        none, listConnectedServerBoards, requestBoard, flash, reset
     }
 
     ServerCommunicationListener(ClientImpl client) {
@@ -182,16 +182,18 @@ public class ServerCommunicationListener {
     void successResetCallback() {
 
         logger.info("[successResetCallback] Board reset success");
-        JOptionPane.showMessageDialog(null,"Board reset successful","Reset success",JOptionPane.INFORMATION_MESSAGE);
-        // TODO Success Reset Callback code HERE
+        //JOptionPane.showMessageDialog(null,"Board reset successful","Reset success",JOptionPane.INFORMATION_MESSAGE);
+
+        fillBlockingReceiving(BlockingReceivingMethod.reset, true);
 
     }
 
     void errorResetCallback() {
 
         logger.error("[successResetCallback] Board reset error");
-        JOptionPane.showMessageDialog(null,"Board reset error!","Reset error",JOptionPane.INFORMATION_MESSAGE);
-        // TODO Error Reset Callback code HERE
+        //JOptionPane.showMessageDialog(null,"Board reset error!","Reset error",JOptionPane.INFORMATION_MESSAGE);
+
+        fillBlockingReceiving(BlockingReceivingMethod.reset, false);
 
     }
 
@@ -202,6 +204,40 @@ public class ServerCommunicationListener {
     /*
      * BEGIN OF BLOCKING REQUESTS
      */
+
+    boolean blockingBoardReset(int timeout) throws BoardNotAvailableException {
+
+        boolean result;
+
+        requestBlockingReceiving(BlockingReceivingMethod.reset);
+        try {
+            this.client.requestReset();
+        } catch (Exception e) {
+            releaseBlockingReceiving(BlockingReceivingMethod.reset);
+            throw e;
+        }
+
+        try {
+
+            blockingReceivingBufferReady.tryAcquire(timeout, TimeUnit.SECONDS);
+
+            if(blockingReceivingBuffer.getPayload() instanceof Boolean) {
+
+                result = (Boolean) blockingReceivingBuffer.getPayload();
+
+            } else {
+                result = false;
+            }
+
+        } catch (InterruptedException e) {
+            result = false;
+        } finally {
+            releaseBlockingReceiving(BlockingReceivingMethod.reset);
+        }
+
+        return result;
+
+    }
 
     /**
      * Blocking receives server's board list

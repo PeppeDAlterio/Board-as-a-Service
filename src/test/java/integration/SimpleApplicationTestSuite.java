@@ -513,5 +513,22 @@ class SimpleApplicationTestSuite {
 
     }
 
+    @Test @Disabled("manual test")
+    @DisplayName("Board reset manual test")
+    void resetBlockingTest1() throws IOException, BoardAlreadyExistsException, BoardAlreadyInUseException, BoardNotFoundException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        Board myBoard = new Board("Nucleo 64", "066FFF494849887767185233");
+        server.addBoards(myBoard);
+
+        client.requestBlockingBoard(myBoard.getSerialNumber());
+
+        assertTrue(client.requestBlockingReset());
+
+
+    }
+
 }
 

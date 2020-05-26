@@ -195,6 +195,17 @@ public class ClientImpl extends Client {
      *  BEGIN OF BLOCKING REQUESTS
      */
 
+
+    @Override
+    public boolean requestBlockingReset() throws NotConnectedException, BoardNotAvailableException {
+
+        assertConnected();
+        assertConnectedBoard();
+
+        return serverCommunicationListener.blockingBoardReset(BLOCKING_REQUEST_SECONDS_TIMEOUT);
+
+    }
+
     @Override
     public List<Board> requestBlockingServerBoardList() throws NotConnectedException {
 
