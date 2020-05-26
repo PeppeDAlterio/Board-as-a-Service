@@ -474,7 +474,6 @@ class SimpleApplicationTestSuite {
 
     @Test
     @DisplayName("COMDriver")
-
     void COMDriver1(){
 
         Collection<String> list = Collections.singletonList("XONXOFF_IN_ENABLED");
@@ -484,6 +483,34 @@ class SimpleApplicationTestSuite {
         
             System.out.println(driver);
         });
+    }
+
+    @Test @Disabled("manual test")
+    @DisplayName("Board reset manual test")
+    void resetTest1() throws IOException, BoardAlreadyExistsException {
+
+        Client client = new ClientImpl("Client");
+        client.connect("127.0.0.1");
+
+        Board myBoard = new Board("Nucleo 64", "066FFF494849887767185233");
+        server.addBoards(myBoard);
+
+        client.requestBoard(myBoard.getSerialNumber());
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        client.requestReset();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -178,6 +178,22 @@ public class ServerCommunicationListener {
         UIPrinterHelper.clientMessage(message);
     }
 
+    void successResetCallback() {
+
+        logger.info("[successResetCallback] Board reset success");
+
+        // TODO Success Reset Callback code HERE
+
+    }
+
+    void errorResetCallback() {
+
+        logger.error("[successResetCallback] Board reset error");
+
+        // TODO Error Reset Callback code HERE
+
+    }
+
     /*
      *  END OF ASYNC CALLBACKS
      */

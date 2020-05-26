@@ -282,6 +282,15 @@ public class ClientHandlerImpl extends ClientHandler {
 
                 break;
 
+            //
+            // Board reset
+
+            case Commands.Reset.REQUEST:
+                stringBuilder.append("Board reset request");
+                communicationListener.boardResetRequestCallback();
+
+                break;
+
             default:
                 stringBuilder.append("Received: ").append(message);
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

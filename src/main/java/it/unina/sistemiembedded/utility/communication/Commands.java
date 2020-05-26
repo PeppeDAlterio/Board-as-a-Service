@@ -168,4 +168,26 @@ public class Commands {
         public static final String END_OF_FILE_TX  = "$--- FLASH ON BOARD END OF FILE TX ---$";
     }
 
+    /**
+     * Board software reset
+     */
+    public static class Reset {
+
+        /**
+         * Sent by the client to request board software reset
+         */
+        public static final String REQUEST                     = "$--- BOARD SOFTWARE RESET REQUEST ---$";
+
+        /**
+         * Sent by the server to acknowledge software reset with success
+         */
+        public static final String SUCCESS                     = "$--- BOARD SOFTWARE RESET SUCCESS ---$";
+
+        /**
+         * Sent by the server to acknowledge software reset with success
+         */
+        public static final String ERROR                       = "$--- BOARD SOFTWARE RESET ERROR ---$";
+
+    }
+
 }

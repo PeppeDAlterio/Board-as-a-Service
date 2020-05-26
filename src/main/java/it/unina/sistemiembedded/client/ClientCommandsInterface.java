@@ -64,6 +64,11 @@ public interface ClientCommandsInterface {
     void requestServerBoardList() throws NotConnectedException;
 
     /**
+     * Request board reset
+     */
+    void requestReset();
+
+    /**
      * Blocking requests connected server's board list.
      * @throws NotConnectedException client is not connected to any server
      * @return List list or server's boards

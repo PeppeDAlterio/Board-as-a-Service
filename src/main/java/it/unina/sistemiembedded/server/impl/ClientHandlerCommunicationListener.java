@@ -72,7 +72,7 @@ public class ClientHandlerCommunicationListener {
         try {
             String receivedFile = this.clientHandler.receiveFile(".elf", null);
 
-            SystemHelper.remoteFlash(this.clientHandler.getBoard().getSerialNumber(), receivedFile, this.clientHandler);
+            SystemHelper.flash(this.clientHandler.getBoard().getSerialNumber(), receivedFile, this.clientHandler);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,6 +138,20 @@ public class ClientHandlerCommunicationListener {
 
     }
 
+    void boardResetRequestCallback() {
+
+        if(this.clientHandler.getBoard()!=null) {
+
+            synchronized (this.clientHandler.getBoard().getSerialNumber().intern()) {
+                SystemHelper.reset(this.clientHandler.getBoard().getSerialNumber(), this.clientHandler);
+            }
+
+        } else {
+            this.clientHandler.sendTextMessage(Commands.Reset.ERROR);
+        }
+
+    }
+
     /**
      * Utility to stop active debug session, if any
      */
@@ -159,5 +173,6 @@ public class ClientHandlerCommunicationListener {
             }
         }
     }
+
 
 }

@@ -4,9 +4,11 @@ import it.unina.sistemiembedded.model.Board;
 import it.unina.sistemiembedded.server.ClientHandler;
 import it.unina.sistemiembedded.utility.communication.Commands;
 import it.unina.sistemiembedded.utility.ui.stream.UIPrinterHelper;
+import org.apache.maven.shared.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -151,7 +153,11 @@ public class SystemHelper {
     }
 
     //TODO: scrivere descrizione
-    public static @Nullable Process remoteFlash (final String boardSerialNumber, final String elfPath, final ClientHandler clientHandler) {
+    public static @Nullable Process flash(final String boardSerialNumber, final String elfPath, @Nonnull final ClientHandler clientHandler) {
+
+        if(StringUtils.isBlank(boardSerialNumber) || StringUtils.isBlank(elfPath)) {
+            return null;
+        }
 
         final Process flashProcess;
         try {
@@ -203,6 +209,57 @@ public class SystemHelper {
         });
         
         return flashProcess;
+    }
+
+    //TODO: scrivere descrizione
+    public static void reset(final String boardSerialNumber, @Nonnull final ClientHandler clientHandler) {
+
+        if(StringUtils.isBlank(boardSerialNumber)) return;
+
+        final Process resetProcess;
+        try {
+            resetProcess = Runtime.getRuntime().exec("." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
+                    + " -c port=swd sn=" + boardSerialNumber + " -rst");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("[reset] There was an error while executing: " + "." + Constants.STM_PROGRAMMER_PATH + Constants.STM_PROGRAMMER_EXE_NAME
+                    + " -c port=swd sn=" + boardSerialNumber + " -rst" + ", " + e.getMessage());
+            return;
+        }
+
+        UIPrinterHelper.serverActionPrint("Board reset requested by '" + clientHandler.getName() +
+                "' on '" + boardSerialNumber + "'.");
+        logger.info("[reset] Board reset request started...");
+
+        resetProcess.onExit().thenRun(() -> {
+
+            try {
+                while (resetProcess.getInputStream().available() > 0) {
+                    int cnt = 0;
+                    if (((cnt = resetProcess.getInputStream().available()) > 0)) {
+                        final byte[] buffer = new byte[cnt];
+                        resetProcess.getInputStream().read(buffer, 0, cnt);
+                        System.out.println(new String(buffer));
+                    }
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+
+            if(resetProcess.exitValue()==0) {
+                UIPrinterHelper.serverActionPrint("Board reset performed by '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
+                logger.info("[remoteFlash] Board reset performed on '" + boardSerialNumber + "'");
+                clientHandler.sendTextMessage(Commands.Reset.SUCCESS);
+            } else {
+                UIPrinterHelper.serverActionPrint("Error while performing board reset from '" + clientHandler.getName() +
+                        "' on '" + boardSerialNumber + "' finished.");
+                logger.error("[remoteFlash] Error while performing board reset on '" + boardSerialNumber + "'");
+                clientHandler.sendTextMessage(Commands.Reset.ERROR);
+            }
+
+        });
+
     }
     
     /**

@@ -96,9 +96,27 @@ public class ClientImpl extends Client {
     }
 
     @Override
+    public Optional<Board> board() {
+        return Optional.ofNullable(this.board);
+    }
+
+    @Override
+    public void sendTextMessage(String message) throws NotConnectedException {
+
+        assertConnected();
+
+        // Avoids commands
+        if(message.startsWith("$--- ") && message.endsWith(" ---$")) {
+            message += " ";
+        }
+
+        this.server.sendMessage(message);
+    }
+
+    @Override
     public void requestBoard(String boardSerialNumber) throws NotConnectedException {
 
-        checkConnection();
+        assertConnected();
 
         this.server.sendMessages(Commands.AttachOnBoard.REQUEST_BOARD, boardSerialNumber);
 
@@ -107,7 +125,7 @@ public class ClientImpl extends Client {
     @Override
     public void requestReleaseBoard() throws NotConnectedException {
 
-        checkConnection();
+        assertConnected();
 
         this.server.sendMessage(Commands.DetachFromBoard.REQUEST);
     }
@@ -120,11 +138,8 @@ public class ClientImpl extends Client {
     @Override
     public void requestFlash(String file) throws NotConnectedException, BoardNotAvailableException, IOException {
 
-        checkConnection();
-
-        if(!board().isPresent()) {
-            throw new BoardNotAvailableException();
-        }
+        assertConnected();
+        assertConnectedBoard();
 
         logger.debug("[flash] Flash requested ...");
 
@@ -136,11 +151,8 @@ public class ClientImpl extends Client {
     @Override
     public void requestDebug(int port) throws NotConnectedException, BoardNotAvailableException, IllegalArgumentException {
 
-        checkConnection();
-
-        if(!board().isPresent()) {
-            throw new BoardNotAvailableException();
-        }
+        assertConnected();
+        assertConnectedBoard();
 
         if(port<0 || port>65535)
             throw new IllegalArgumentException("The port parameter is outside the specified range");
@@ -152,34 +164,30 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void requestStopDebug() {
+    public void requestStopDebug() throws BoardNotAvailableException {
+
+        assertConnected();
+        assertConnectedBoard();
+
         this.server.sendMessage(Commands.Debug.REQUEST_END);
-    }
-
-    @Override
-    public Optional<Board> board() {
-        return Optional.ofNullable(this.board);
-    }
-
-    @Override
-    public void sendTextMessage(String message) throws NotConnectedException {
-
-        checkConnection();
-
-        // Avoids commands
-        if(message.startsWith("$--- ") && message.endsWith(" ---$")) {
-            message += " ";
-        }
-
-        this.server.sendMessage(message);
     }
 
     @Override
     public void requestServerBoardList() throws NotConnectedException {
 
-        checkConnection();
+        assertConnected();
 
         this.server.sendMessage(Commands.Info.BOARD_LIST_REQUEST);
+
+    }
+
+    @Override
+    public void requestReset() {
+
+        assertConnected();
+        assertConnectedBoard();
+
+        this.server.sendMessages(Commands.Reset.REQUEST);
 
     }
 
@@ -190,7 +198,7 @@ public class ClientImpl extends Client {
     @Override
     public List<Board> requestBlockingServerBoardList() throws NotConnectedException {
 
-        checkConnection();
+        assertConnected();
 
         return serverCommunicationListener.blockingReceiveServerBoardList(BLOCKING_REQUEST_SECONDS_TIMEOUT);
     }
@@ -198,7 +206,7 @@ public class ClientImpl extends Client {
     @Override
     public Board requestBlockingBoard(String boardSerialNumber) throws NotConnectedException, BoardNotFoundException, BoardAlreadyInUseException {
 
-        checkConnection();
+        assertConnected();
 
         return serverCommunicationListener.blockingRequestBoard(boardSerialNumber, BLOCKING_REQUEST_SECONDS_TIMEOUT);
     }
@@ -206,7 +214,8 @@ public class ClientImpl extends Client {
     @Override
     public boolean requestBlockingFlash(String file) throws NotConnectedException, BoardNotAvailableException, IOException {
 
-        checkConnection();
+        assertConnected();
+        assertConnectedBoard();
 
         return serverCommunicationListener.blockingFlash(file, BLOCKING_REQUEST_SECONDS_TIMEOUT);
 
@@ -216,10 +225,22 @@ public class ClientImpl extends Client {
      *  END OF BLOCKING REQUESTS
      */
 
-    private void checkConnection() {
+    private void assertConnected() {
         if (!isConnected()) {
             throw new NotConnectedException();
         }
+    }
+
+    /**
+     * Asserts that client is connected to a board
+     * @throws BoardNotAvailableException
+     */
+    private void assertConnectedBoard() throws BoardNotAvailableException {
+
+        if(!board().isPresent()) {
+            throw new BoardNotAvailableException();
+        }
+
     }
 
     /**
@@ -343,6 +364,17 @@ public class ClientImpl extends Client {
 
             case Commands.Interrupt.SERVER_DISCONNECTED:
                 serverCommunicationListener.serverDisconnectedCallback();
+                break;
+
+            //
+            // Reset
+
+            case Commands.Reset.SUCCESS:
+                serverCommunicationListener.successResetCallback();
+                break;
+
+            case Commands.Reset.ERROR:
+                serverCommunicationListener.errorResetCallback();
                 break;
 
             //
