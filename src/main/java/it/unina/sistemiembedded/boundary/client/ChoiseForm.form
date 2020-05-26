@@ -158,6 +158,7 @@
                 </constraints>
                 <properties>
                   <text value="Change board"/>
+                  <toolTipText value="Change the selected board with another available board"/>
                 </properties>
               </component>
               <component id="7f5ff" class="javax.swing.JButton" binding="buttonResetBoard">
