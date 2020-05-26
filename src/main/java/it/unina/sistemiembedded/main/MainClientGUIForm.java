@@ -42,7 +42,7 @@ public class MainClientGUIForm extends ClientJFrame {
         this.setLocationRelativeTo(null);
         this.textFieldName.setText(nameClient);
 
-        if(this.client!=null) {
+        if(this.client!=null && this.client.isConnected()) {
             this.client.disconnect();
         }
 

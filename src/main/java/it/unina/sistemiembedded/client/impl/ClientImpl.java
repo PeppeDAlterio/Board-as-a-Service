@@ -53,7 +53,7 @@ public class ClientImpl extends Client {
         if(serverPort<0 || serverPort>65535)
             throw new IllegalArgumentException("The port parameter is outside the specified range");
 
-        this.disconnect();
+        if(this.isConnected()) this.disconnect();
 
         try {
 
