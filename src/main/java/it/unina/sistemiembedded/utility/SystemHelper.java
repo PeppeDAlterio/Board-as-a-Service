@@ -188,7 +188,7 @@ public class SystemHelper {
 
         executor.execute(() -> {
             try {
-                flashProcess.waitFor(5, TimeUnit.MINUTES);
+                flashProcess.waitFor();
                 UIPrinterHelper.serverActionPrint("Remote flash session requested by '" + clientHandler.getName() +
                 "' on '" + boardSerialNumber + "' finished.");
                 logger.info("[remoteFlash] Remote flash session finished and the program is started.");

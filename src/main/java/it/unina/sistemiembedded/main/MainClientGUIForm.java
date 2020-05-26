@@ -27,7 +27,7 @@ public class MainClientGUIForm extends ClientJFrame {
 
     private String ipAddress;
     private int portNumber;
-    private Client client;
+    private static Client client;
 
     private int clickedFistTime = 0;
 
@@ -42,8 +42,8 @@ public class MainClientGUIForm extends ClientJFrame {
         this.setLocationRelativeTo(null);
         this.textFieldName.setText(nameClient);
 
-        if(this.client!=null && this.client.isConnected()) {
-            this.client.disconnect();
+        if(client!=null && client.isConnected()) {
+            client.disconnect();
         }
 
         startConnectionButton.addActionListener(e -> {

@@ -182,7 +182,7 @@ public class ClientHandlerImpl extends ClientHandler {
     public String getIpAddress() {
 
         if(isAlive()) {
-            return this.socket.getInetAddress().toString();
+            return this.socket.getInetAddress().toString().replace("/", "");
         } else {
             return "";
         }
