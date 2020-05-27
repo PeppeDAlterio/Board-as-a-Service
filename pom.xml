@@ -6,7 +6,7 @@
 
     <groupId>it.unina.sistemiembedded</groupId>
     <artifactId>BaaS</artifactId>
-    <version>0.1-beta</version>
+    <version>0.1-beta-release</version>
 
     <!-- Custom properties -->
     <properties>
