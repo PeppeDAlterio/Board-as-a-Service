@@ -3,3 +3,9 @@ target
 *.class
 /.idea/
 /target/
+log/*
+.classpath
+.vscode
+.settings
+/received/**
+/received
