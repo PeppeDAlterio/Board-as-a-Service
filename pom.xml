@@ -13,13 +13,14 @@
 
         <main-class-package>it.unina.sistemiembedded.main</main-class-package>
 
-        <java-language-level>9</java-language-level>
-
         <client-app-name>Client application</client-app-name>
         <client-main-class>MainClientGUIForm</client-main-class>
 
         <server-app-name>Server application</server-app-name>
         <server-main-class>MainServerGUIForm</server-main-class>
+
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
 
     </properties>
 
@@ -40,16 +41,6 @@
 
     <build>
         <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${java-language-level}</source>
-                    <target>${java-language-level}</target>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
